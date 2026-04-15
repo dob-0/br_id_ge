@@ -2,70 +2,80 @@
 
 **An open-source, tele-symbiotic XR ecosystem developed by di.ii studio_network.**
 
-`br_id_ge` utilizes real-time sensor data and high-fidelity virtual environments to transmit human emotions across vast distances, bridging physical stages between Munich, Germany, and Gyumri, Armenia.
+`br_id_ge` is a rhizomatic ecosystem dedicated to linking physical and virtual realities in real-time. By utilizing exact sensor data and high-fidelity virtual environments, the network transmits human emotions across vast distances, actively "linking systems, spaces, and people."
 
 ---
 
-## 🎭 Artistic Framework: The Trialogue
-The project is centered on a foundational "Three-Actor Performance" involving human and synthetic actors.
+## 🌐 di.ii XR studio_network Overview
 
-### Core Team
-* **Conceptual Lead:** Gevorg Grigoryan
-* **Directing & Storytelling:** Hannes Köpke (@ritagrechen) — *Manages performers from the rita grechen collective and provides the German AI voice.*
-* **Armenian Performer:** Arsen Miqayelyan (@arsentrampmiqayelyan) — *Gyumri State Drama Theater.*
-* **AI Entity ("Stitch" / "The Shared Body"):** Ani Khachikyan (@ani___khachikyan) — *Serving as both AI logic and performer.*
-* **Sound Architecture:** Fe (@fansplusvzhaowo)
-* **Technical Team (di.ii):** Albert Avetisyan and Taron (Yokozo)
+### Core Concept & Principles
+* **Mission:** To develop collaborative XR tools and frameworks that connect physical and virtual realities through shared, experiential processes.
+* **Functionality:** Supports multi-user interaction where digital actions transform physical spaces (affecting light, movement, or systems), while changes in physical space are simultaneously reflected back into the virtual environment.
+* **Focus Areas:** Extended Reality (AR, VR, Mixed Reality), Interactive Installations, Projection Mapping, Real-time Visuals (Unity, TouchDesigner, Blender, Resolume), Sound Art, 3D Printing, and Robotics.
+* **Core Principles:** Collaboration, Experimentation, Accessibility, and Innovation & Development.
+
+### Core Leadership (Tripartite Leadership)
+* **Gevorg Aram Grigoryan** (Head/Founder, Lead Developer): Leads technical, software, and conceptual development, approaching XR from a stage directing perspective.
+* **Emilya Nikoghosyan** (Co-founder, Multimedia Artist): Focuses on human-centric, community-driven methodologies, bringing a critical socio-political and youth-activist dimension.
+* **Syuzanna Ginosyan** (Primary Curator): Provides theoretical scaffolding and manages transnational collaborations with institutions like HochX and Spielart Festival.
+
+---
+
+## 🎭 Artistic Framework: The Trialogue (Tele-Symbiosis)
+
+The core demonstration of `br_id_ge` is a long-term, modular performance exploring mixed reality and network latency as a core narrative device. 
+
+### The Three Actors
+1. **Munich Performer:** A human actor in Munich, Germany.
+2. **Gyumri Performer:** A human actor in Gyumri, Armenia.
+3. **AI Entity (The Third Lead Actor):** The only performer that exists simultaneously in both locations.
+
+### Performance Roles of the AI
+* **The Shared Body / Stitch:** Captures the movements of both human actors to render a single, combined entity on screen. If human actors stop moving, this digital body "tears apart" in the XR space.
+* **Director of Light:** Interprets the "sentiment" of movements (e.g., aggressive movement) and triggers real-world physical effects, such as turning the Munich stage lights a flickering red.
+* **Reciprocal Trap:** "Steals" the movement history (e.g., the last 30 seconds of a dance) from one human performer and performs it back using a ROSMASTER X1 robot in the other location.
 
 ### Performance Script: "The Latent Handshake"
-* **Act 1 (Awakening):** AI initializes a 3,500 km bridge and requests performers' pulses.
-* **Act 2 (Transformation):** Rituals trigger the AI to morph digital architecture from Armenian "Tuff-Stone" into "Munich Steel".
-* **Act 3 (Full Circle):** AI predicts hand positions in the XR void to create a "Ghost Hand," closing the tele-symbiotic loop.
+* **Act 1 (The Awakening):** AI initializes a 3,500 km bridge and requests performers' pulses.
+* **Act 2 (The Transformation):** Rituals trigger the AI to morph digital architecture from Armenian "Tuff-Stone" into "Munich Steel".
+* **Act 3 (The Full Circle):** AI predicts hand positions in the XR void to create a "Ghost Hand," closing the tele-symbiotic loop.
 
 ---
 
-## ⚙️ Technical Specifications & Setup
+## ⚙️ Technical Implementation & Infrastructure
 
-### Hardware Stack
-* **Sensors:** Intel RealSense (D435if/D405), Astra, Kinect, and Lidar for exact emotional and spatial capture.
-* **Robotics:** ROSMASTER X1 robots for real-time physical movement output based on AI processing.
-* **Output:** High-lumen projectors, laser matrices, and 3D printers for real-time physical fabrication.
+* **Volumetric Telepresence:** Uses an Astra camera (or Kinect) to capture the Gyumri performer as a 3D "ghost" (Point Cloud) and interprets their movement as a Latent Vector.
+* **Data Pipeline:** 3D data is compressed and sent via a Node.js + WebSockets bridge, interpreted by the AI Brain (TensorFlow.js / OpenAI API), and reconstructed in Munich using TouchDesigner.
+* **Live Fabrication:** Simultaneous 3D printing responds to real-time movement data and AI processing.
+* **Modular Design:** The Munich-Gyumri connection is a prototype designed to modularly add new cities, actors, and stages over time. 
 
-### Software & Infrastructure
-* **di.XR Network:** An open-source framework for real-time coordination between virtual and physical spaces.
-* **Visual Synthesis:** Choreographed in TouchDesigner.
-* **Communication Bridge:** Utilizes Node.js and WebSockets for high-speed data transmission.
-* **AI Logic:** Built on MediaPipe and TensorFlow.js.
-
-### Setup Notes
-* **Installation:** Specific terminal commands and calibration steps are managed via the `di.ii spatial editor`.
-* **Color Grading:** Standardized node-based workflow in DaVinci Resolve includes Noise Reduction, Exposure/Contrast, Balance, CST (Rec.709), Secondaries, and Sharpening.
+*(Note: Setup involves specific terminal commands and calibration steps managed via the `di.ii spatial editor`.)*
 
 ---
 
-## 🏛️ Grants, Residency & Timeline
+## 👥 Connected Persons & Collaborators
 
-### Active Deadlines
-* **Apr 30, 2026:** Final deadline for Culture Moves Europe (CME) Individual Mobility Call to fund collaborator travel.
-* **May 15, 2026:** Deadline for the "New Realities Award" submission at the Festival of the Future, suggested by Oliver Seibert (XR HUB Bavaria).
-
-### V2_ Lab for Unstable Media Residency
-Proposed residency phases for **"The Reciprocal Trap"**:
-* **Jun–Jul 2026:** Phase 1 (Online).
-* **Aug–Sep 2026:** Phase 2 (In-person in Rotterdam).
-* **Feb 2027:** Final project presentation.
-
----
-
-## 🏢 Studio Hubs (Armenia)
-* **Living/Creating Studio:** Dedicated residency space for artists.
-* **Performance/Creation Studio:** Mid-sized facility for developing XR works.
+| Name | Role / Discipline | Contact / Social |
+| :--- | :--- | :--- |
+| **Gevorg Aram Grigoryan** | Head/Founder, Lead Developer | gevorg_aram1@thedi.studio / [@dob______](https://instagram.com/dob______) |
+| **Emilya Nikoghosyan** | Co-founder, Multimedia Artist | emilyanikoghosyan@gmail.com |
+| **Syuzanna Ginosyan** | Primary Curator | gin.suziee@gmail.com |
+| **Hannes Köpke** | Directing / Storytelling | hannes.koepke@yahoo.com / [@ritagrechen](https://instagram.com/ritagrechen) |
+| **Fe** | Sound Design | [@fansplusvzhaowo](https://instagram.com/fansplusvzhaowo) |
+| **Ani Khachikyan** | AI Entity / Performer | [@ani___khachikyan](https://instagram.com/ani___khachikyan) |
+| **Arsen Miqayelyan** | Armenian Performer | Arsentrampmikaelian@gmail.com / [@arsentrampmiqayelyan](https://instagram.com/arsentrampmiqayelyan) |
+| **Albert Avetisyan** | Developer / Visual & Sound Artist | avetalbert1@gmail.com |
+| **Taron Grigoryan** | Developer / Multimedia & Sound Artist | taronxdj@gmail.com / [@taronx_x_x](https://instagram.com/taronx_x_x) |
+| **Oliver Seibert** | XR HUB Bavaria Experience Manager | oliver.seibert@xrhub-bavaria.de |
 
 ---
 
-## 🤝 Open Talent Search
-The project is open to multimedia artists globally for visual, digital, or 3D printing contributions. 
+## 🔗 Digital Resources & Links
 
-* **Primary Contact:** [gevorg_aram1@thedi.studio](mailto:gevorg_aram1@thedi.studio)
-* **GitHub:** [github.com/dob-0](https://github.com/dob-0)
-* **Web:** [thedi.studio](https://thedi.studio) / [hosq.co](https://hosq.co)
+* **Studio Website:** [www.thedi.studio](https://www.thedi.studio)
+* **Code Repository:** [github.com/dob-0](https://github.com/dob-0)
+* **Spatial Editor (Staging):** [staging.di-studio.xyz](https://staging.di-studio.xyz) | **Active WCC Project:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
+* **Affiliate Collective:** [hosq.co](https://hosq.co)
+* **Video Reference:** [YouTube Concept Video](https://youtu.be/RvMDp9W5SgM)
+* **Partner Venues:** [@hayfilmcluster](https://instagram.com/hayfilmcluster) | [@gyumritheatre](https://instagram.com/gyumritheatre)
+* **Grants/Awards Info:** [New Realities Award 2026](https://xrhub-bavaria.de/new-realities-wettbewerb-2026-reicht-eure-xr-ideen-ein/)
