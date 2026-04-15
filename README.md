@@ -1,64 +1,71 @@
-# br_id_ge (beta) 🌉
+# br_id_ge (Beta Version) 🌉
 
 **An open-source, tele-symbiotic XR ecosystem developed by di.ii studio_network.**
 
-`br_id_ge` utilizes exact sensors (Intel RealSense, Astra, Kinect, Lidar) to transmit human emotions across vast distances, bridging physical stages and virtual environments.
+`br_id_ge` utilizes real-time sensor data and high-fidelity virtual environments to transmit human emotions across vast distances, bridging physical stages between Munich, Germany, and Gyumri, Armenia.
 
 ---
 
-## 🎭 The "Trialogue" Performance
-The core of this project is a collaborative performance involving human and synthetic actors:
+## 🎭 Artistic Framework: The Trialogue
+The project is centered on a foundational "Three-Actor Performance" involving human and synthetic actors.
 
+### Core Team
 * **Conceptual Lead:** Gevorg Grigoryan
-* **Directing & Storytelling:** Hannes Köpke (@ritagrechen) — Managing performers and providing the German AI voice.
-* **Armenian Performer:** Arsen Miqayelyan (@arsentrampmiqayelyan) — Gyumri State Drama Theater.
-* **AI Entity ("Stitch" / "The Shared Body"):** Ani Khachikyan (@ani___khachikyan) — Serving as a performer and AI entity.
+* **Directing & Storytelling:** Hannes Köpke (@ritagrechen) — *Manages performers from the rita grechen collective and provides the German AI voice.*
+* **Armenian Performer:** Arsen Miqayelyan (@arsentrampmiqayelyan) — *Gyumri State Drama Theater.*
+* **AI Entity ("Stitch" / "The Shared Body"):** Ani Khachikyan (@ani___khachikyan) — *Serving as both AI logic and performer.*
 * **Sound Architecture:** Fe (@fansplusvzhaowo)
-* **Technical Team (di.ii):** Albert Avetisyan and Taron
-* **Open Talent Search:** We are actively seeking multimedia artists and collaborators for visual, digital, or 3D printing contributions.
+* **Technical Team (di.ii):** Albert Avetisyan and Taron (Yokozo)
+
+### Performance Script: "The Latent Handshake"
+* **Act 1 (Awakening):** AI initializes a 3,500 km bridge and requests performers' pulses.
+* **Act 2 (Transformation):** Rituals trigger the AI to morph digital architecture from Armenian "Tuff-Stone" into "Munich Steel".
+* **Act 3 (Full Circle):** AI predicts hand positions in the XR void to create a "Ghost Hand," closing the tele-symbiotic loop.
 
 ---
 
-## 🚀 Development Phases & Modular Growth
+## ⚙️ Technical Specifications & Setup
 
-### Phase 1: Trialogue
-A foundational three-actor performance connecting Munich, Germany, and Gyumri, Armenia.
+### Hardware Stack
+* **Sensors:** Intel RealSense (D435if/D405), Astra, Kinect, and Lidar for exact emotional and spatial capture.
+* **Robotics:** ROSMASTER X1 robots for real-time physical movement output based on AI processing.
+* **Output:** High-lumen projectors, laser matrices, and 3D printers for real-time physical fabrication.
 
-### Expansion Phase
-The network will modularly add new cities, stages, and standalone interactive installations. Staging areas are designed to act as interactive installations for the public even when live performances are inactive. 
+### Software & Infrastructure
+* **di.XR Network:** An open-source framework for real-time coordination between virtual and physical spaces.
+* **Visual Synthesis:** Choreographed in TouchDesigner.
+* **Communication Bridge:** Utilizes Node.js and WebSockets for high-speed data transmission.
+* **AI Logic:** Built on MediaPipe and TensorFlow.js.
 
-**Staging Research Locations:**
-* Gyumri State Theater
-* Hayfilm Cluster
-* Pathos Theater & public spaces in Munich
-
----
-
-## 💻 Technical Infrastructure
-
-* **Hardware:** Intel RealSense (D435if/D405), Astra/Kinect depth cameras, Lidar sensors, high-lumen projectors, and laser matrices.
-* **Physical Fabrication:** 3D printers and ROSMASTER X1 robots for real-time physical output based on AI processing.
-* **Software Ecosystem:** * di.XR Network (open-source)
-    * TouchDesigner
-    * Node.js / WebSockets (bridge)
-    * MediaPipe / TensorFlow.js
-
-### Armenian Studio Hubs (di studio)
-1.  **Living/Creating Studio:** A dedicated space for resident artists.
-2.  **Performance/Creation Studio:** A mid-sized facility for developing and executing XR works.
+### Setup Notes
+* **Installation:** Specific terminal commands and calibration steps are managed via the `di.ii spatial editor`.
+* **Color Grading:** Standardized node-based workflow in DaVinci Resolve includes Noise Reduction, Exposure/Contrast, Balance, CST (Rec.709), Secondaries, and Sharpening.
 
 ---
 
-## 📅 Key Timeline & Milestones
+## 🏛️ Grants, Residency & Timeline
 
-* **Apr 09, 2026:** Meeting with Oliver Seibert at XR HUB Bavaria (spatial editor discussion).
-* **Apr 30, 2026:** Final deadline for Culture Moves Europe (CME) Individual Mobility Call.
-* **May 15, 2026:** "New Realities Award" submission deadline (Festival of the Future).
-* **Aug–Sep 2026:** Proposed in-person phase at V2_ Lab for Unstable Media (Rotterdam) for the "Reciprocal Trap" residency.
+### Active Deadlines
+* **Apr 30, 2026:** Final deadline for Culture Moves Europe (CME) Individual Mobility Call to fund collaborator travel.
+* **May 15, 2026:** Deadline for the "New Realities Award" submission at the Festival of the Future, suggested by Oliver Seibert (XR HUB Bavaria).
+
+### V2_ Lab for Unstable Media Residency
+Proposed residency phases for **"The Reciprocal Trap"**:
+* **Jun–Jul 2026:** Phase 1 (Online).
+* **Aug–Sep 2026:** Phase 2 (In-person in Rotterdam).
+* **Feb 2027:** Final project presentation.
 
 ---
 
-## 🔗 Digital Resources
+## 🏢 Studio Hubs (Armenia)
+* **Living/Creating Studio:** Dedicated residency space for artists.
+* **Performance/Creation Studio:** Mid-sized facility for developing XR works.
 
-* **Platforms:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc) | [hosq.co](https://hosq.co)
-* **Socials:** [@di.iiiiiiiiiiiiiiiiiiiii](https://instagram.com/di.iiiiiiiiiiiiiiiiiiiii) | [@gyumritheatre](https://instagram.com/gyumritheatre) | [@hayfilmcluster](https://instagram.com/hayfilmcluster)
+---
+
+## 🤝 Open Talent Search
+The project is open to multimedia artists globally for visual, digital, or 3D printing contributions. 
+
+* **Primary Contact:** [gevorg_aram1@thedi.studio](mailto:gevorg_aram1@thedi.studio)
+* **GitHub:** [github.com/dob-0](https://github.com/dob-0)
+* **Web:** [thedi.studio](https://thedi.studio) / [hosq.co](https://hosq.co)
