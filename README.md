@@ -19,6 +19,14 @@ Optional:
 - Custom branch: `./scripts/auto-push-readme.sh my-branch`
 - Custom interval seconds: `./scripts/auto-push-readme.sh main 1`
 
+### VS Code Workflow
+
+You can also run this in one click inside VS Code:
+
+1. Open Command Palette and run: `Tasks: Run Task`
+2. Choose: `Auto Push: Start README Watcher`
+3. To stop it later, run: `Tasks: Run Task` and choose `Auto Push: Stop README Watcher`
+
 A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network
 
 br_id_ge represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of Tele-Symbiosis—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
