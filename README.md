@@ -40,16 +40,19 @@ This project is part of the larger **di.iiii** ecosystem (React/Vite/Three.js pl
 - **di.iiii Platform** ([GitHub](https://github.com/dob-0/di.iiii)): Main production spatial editor (React/Vite/Three.js + Node.js backend, v0.2.0)
   - Multi-surface: Studio, Beta, Public Viewer, Admin, V1 Legacy
   - Space-based architecture: create/manage/publish collaborative spatial projects
-  - Live at [di-studio.xyz](https://di-studio.xyz)
+  - **Environments:** [Production](https://di-studio.xyz) | [Staging](https://staging.di-studio.xyz)
 
 - **br_id_ge** (this repo): Focused prototype for the Munich-Gyumri tele-symbiotic performance
-  - Deployed as standalone static site on GitHub Pages
+  - **Multi-deployment:**
+    - [Production (GH Pages)](https://dob-0.github.io/br_id_ge/) – Standalone static site
+    - [Production (Platform)](https://di-studio.xyz/br_id_ge/) – Integrated spatial instance
+    - [Staging Preview](https://staging.di-studio.xyz/br_id_ge/) – Experimental/night builds
   - Interactive node editor with embedded Markdown documentation
   - Demonstrates core performance concepts: AI translation, latent space visualization, network choreography
 
-- **pe.portal_engine**: Portal/gateway engine (sibling prototype)
+- **Sibling Projects:** pe.portal_engine (portal engine), wcc (WebXR Creative Canvas), azd (experimental)
 
-All three projects share the same **creative vision**: using digital infrastructure as an active choreographic agent.
+All projects share the same **creative vision**: using digital infrastructure as an active choreographic agent.
 
 ---
 
