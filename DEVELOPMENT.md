@@ -1,5 +1,31 @@
 # Development & Workflow Setup
 
+## ⚠️ Security First
+
+### Never commit sensitive data:
+- **API Keys** — Use `.env` files (ignored by git)
+- **Passwords & Tokens** — Store locally only
+- **Private Keys** — Use `.gitignore`
+- **Database Credentials** — Use environment variables
+
+### Auto-Push Safety
+The auto-push watcher scans files before committing for patterns like:
+- `api_key`, `password`, `secret`, `token`
+- `private_key`, `credentials`
+- Database URLs with passwords
+
+**If sensitive data is detected:** The commit is BLOCKED and you'll see a warning.
+
+### Setup
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Add your real values to `.env` (never commit this file)
+3. Update `.env` locally as needed—it's automatically ignored
+
+---
+
 ## Quick Start & Development Workflow
 
 ### Auto-Push Mode

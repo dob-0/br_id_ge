@@ -26,7 +26,36 @@ fi
 
 last_mtime="$(stat -c %Y "$README_FILE")"
 
+# SECURITY: Patterns that should never be pushed
+FORBIDDEN_PATTERNS=(
+  "api[_-]?key"
+  "password"
+  "secret"
+  "token"
+  "credentials"
+  "private[_-]?key"
+  "aws[_-]?secret"
+  "DATABASE[_-]?URL"
+  "STRIPE[_-]"
+  "GITHUB[_-]?TOKEN"
+)
+
+# Function to check for sensitive data
+check_for_secrets() {
+  local file="$1"
+  for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
+    if grep -qi "$pattern" "$file" 2>/dev/null; then
+      echo "⚠️  WARNING: Possible sensitive data detected in $file"
+      echo "   Pattern: $pattern"
+      echo "   This file will NOT be committed."
+      return 1
+    fi
+  done
+  return 0
+}
+
 echo "Auto-push watcher started for $README_FILE on branch $BRANCH"
+echo "⚠️  SECURITY: Sensitive data checks enabled"
 echo "Checking every ${INTERVAL}s. Press Ctrl+C to stop."
 
 while true; do
@@ -42,6 +71,12 @@ while true; do
   sleep 1
 
   if git diff --quiet -- "$README_FILE"; then
+    continue
+  fi
+
+  # SECURITY: Check for sensitive patterns before committing
+  if ! check_for_secrets "$README_FILE"; then
+    echo "❌ Commit BLOCKED for security. Remove sensitive data and try again."
     continue
   fi
 
