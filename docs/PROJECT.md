@@ -1,8 +1,10 @@
-# br_id_ge (Beta Version)
+# br_id_ge (Beta Version): Interactive Spatial Prototype
 
-**A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network**
+**A tele-symbiotic XR performance framework and interactive node editor by the di.ii studio_network**
 
-`br_id_ge` represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
+`br_id_ge` (meaning "bridge") represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine acts as the Shared Body, keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
+
+**Platform Context:** br_id_ge is a prototype within the **di.iiii Spatial Platform** ecosystem, demonstrating core choreographic and performance concepts. The larger di.iiii platform (v0.2.0) is a collaborative web-based spatial editor with multi-surface architecture (Studio, Beta, Public, Admin). br_id_ge focuses specifically on the Munich-Gyumri connection as a case study in network choreography and AI-mediated presence.
 
 ## Table of Contents
 
