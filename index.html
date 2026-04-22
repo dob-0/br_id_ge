@@ -90,6 +90,8 @@
         .sys-data span { color: var(--tx-dim); }
         .pulse { color: var(--node-gyumri); animation: blink 2s infinite; }
 
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
         /* SYSTEM LOG CONSOLE */
         .system-log {
             position: fixed;
@@ -280,10 +282,6 @@
         }
         @keyframes pulseArt { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; color: var(--tx-primary); text-shadow: 0 0 8px #fff; } }
 
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-
         /* CLI Data Blocks (Wraps H2 Sections) */
         .data-block {
             border: 1px solid var(--border-tech);
@@ -437,21 +435,21 @@
             user-select: none;
         }
 
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            #canvas-container { opacity: 0.15; }
+            .pulse, .art-pulse, .log-entry { animation: none; }
         }
 
         @media (max-width: 900px) {
             .sys-matrix { display: none; }
             .document-layer { padding: 2rem 1.5rem 12rem 1.5rem; border: none; }
-            .interactive-node-map { height: 760px; }
+            .interactive-node-map { height: 750px; }
             .drag-node { font-size: 0.55rem; padding: 0.25rem; }
             .cli-h1 .art { font-size: 0.4rem; }
             .cli-hr { font-size: 0.4rem; }
             .system-log { width: 90%; bottom: 1rem; right: 5%; height: 150px; }
             .data-block { padding: 1.5rem; }
-            .data-block::before, .data-block::after { font-size: 0.65rem; }
             .inline-art-block { font-size: 0.5rem; }
         }
     </style>
@@ -487,12 +485,12 @@
     <!-- INTERACTIVE SYSTEM LOG -->
     <div class="system-log" id="sys-log">
         <div class="log-header">
-            <span>[SYSTEM_LOG]</span>
+            <span>[SIJIL_EL_NIZAM]</span>
             <span class="c-dim">DI_IIII_OS</span>
         </div>
         <div class="log-content" id="log-content">
-            <div class="log-entry log-sys">> INITIALIZING TELE-SYMBIOSIS ECOSYSTEM...</div>
-            <div class="log-entry log-info">> WAITING FOR NODE INTERACTION</div>
+            <div class="log-entry log-sys">> JARI TAHYE'AT NIZAM EL_TELE_SYMBIOSIS...</div>
+            <div class="log-entry log-info">> BINTIZAR TAFA'UL EL_UQDAH</div>
         </div>
     </div>
 
@@ -504,7 +502,7 @@
                 <div>
                     <span class="c-g">root@di.iiii</span><span style="color: var(--tx-dim);">:</span><span class="c-m">~/br_id_ge</span>$ ./open_spatial_node_editor.sh --full_topology
                 </div>
-                <div id="map-toggle-btn" style="cursor: pointer; color: var(--tx-dim); border: 1px solid var(--border-tech); padding: 2px 8px; border-radius: 2px; transition: all 0.2s;">[ - ] HIDE TOPOLOGY</div>
+                <div id="map-toggle-btn" style="cursor: pointer; color: var(--tx-dim); border: 1px solid var(--border-tech); padding: 2px 8px; border-radius: 2px; transition: all 0.2s;">[ - ] IKHFA EL_KHARITA</div>
             </div>
 
             <!-- INTERACTIVE FULL-ECOSYSTEM NODE MAP -->
@@ -605,7 +603,7 @@
 <span class="c-dim">
 ▗▟████████████████████████████████████████████████████████████████████▙▖
 ▐██                                                                  ██▌
-▐██        <span class="c-ai">[SYSTEM IDLE]</span>  > AWAITING FURTHER NODE INSTRUCTIONS...    ██▌
+▐██        <span class="c-ai">[NIZAM KHAMIL]</span>  > BINTIZAR TA'ALIMAT JADIDA...            ██▌
 ▐██                                                                  ██▌
 ▝▀████████████████████████████████████████████████████████████████████▀▘
 </span>
@@ -615,7 +613,7 @@
     </main>
 
     <script>
-        // --- 0. INTERACTIVE SYSTEM LOG CONTROLLER ---
+        // --- 0. MUHAKIM SIJIL EL_NIZAM EL_TAFA'ULI ---
         const logBox = document.getElementById('log-content');
         const sysLog = document.getElementById('sys-log');
         
@@ -688,7 +686,7 @@
 
             window.triggerLatentSurge = () => {
                 latentEnergy = 4.0;
-                addLog(`> LATENT SURGE INITIATED VIA TEXT INTERACTION`, 'log-warn');
+                addLog(`> TAFEEL EL_LATENT SURGE MIN KHALAL EL_NUSOOS`, 'log-warn');
             };
 
             window.addEventListener('scroll', () => {
@@ -755,12 +753,16 @@
 
             container.addEventListener('mousedown', (e) => {
                 const node = e.target.closest('.drag-node');
-                if (!node) return;
+                if (!node) {
+                    addLog(`> NAQRA 'ALA EL_KHARITA FI X:${e.clientX} Y:${e.clientY}`);
+                    return;
+                }
+                
                 activeNode = node;
                 const rect = node.getBoundingClientRect();
                 offsetX = e.clientX - rect.left; offsetY = e.clientY - rect.top;
                 node.style.borderColor = 'var(--tx-primary)';
-                addLog(`> EDITOR MAP: ENGAGING NODE [${node.id.toUpperCase()}]`, 'log-info');
+                addLog(`> TAFEEL EL_UQDAH: [${node.id.toUpperCase()}]`, 'log-info');
             });
 
             document.addEventListener('mousemove', (e) => {
@@ -775,23 +777,19 @@
             });
 
             document.addEventListener('mouseup', () => {
-                if (activeNode) { activeNode.style.borderColor = 'var(--tx-dim)'; activeNode = null; }
+                if (activeNode) {
+                    addLog(`> TAWDJEEH JADID LI ${activeNode.id.toUpperCase()}`, 'log-warn');
+                    activeNode.style.borderColor = 'var(--tx-dim)';
+                    activeNode = null;
+                }
             });
 
             setTimeout(updateWires, 100); window.addEventListener('resize', updateWires);
         };
 
-        // --- 3. INTERACTIVE TERMINAL TEXT ENGINE ---
-        const loadReadme = async () => {
-            let readmeData;
-            try {
-                const response = await fetch('docs/PROJECT.md', { cache: 'no-store' });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                readmeData = await response.text();
-            } catch (err) {
-                addLog('> WARN: docs/PROJECT.md unavailable, using fallback stream', 'log-warn');
-                readmeData = `
-# br_id_ge (Beta Version) 
+        // --- 3. MUHARRIK EL_NUSOOS EL_TAFA'ULI ---
+        const FALLBACK_README = `
+# br_id_ge (Beta Version)
 
 **A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network**
 
@@ -813,77 +811,107 @@ The project is structured as a three-actor performance involving the Munich perf
 ### The AI's Role ("Stitch")
 The AI acts as the Third Performer, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
 
-* **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability.
-* **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance.
+* **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability. It visualizes human emotions in the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
+* **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance. It effectively "steals" the human movement, turning the performers into the audience of their own data.
 
 ### The Latent Handshake (A Critique of Infrastructure)
-Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure.
+Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
 
 ## 2. Hardware & Technical Stack
 
 The core development utilizes a custom Spatial-Sync backend, aiming to maintain **sub-120ms latency** between digital nodes and physical hardware.
 
+The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
+
 ### The Omnisensory Capture Pipeline
+While the current spatial baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from the studio's exhaustive, collected taxonomy of open sensor arrays:
 * **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, LiDAR, ToF, Radar (mmWave), and PIR arrays.
 * **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
+* **Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
 
 ### AI Bridge & Interpretation (The Brain)
-* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API.
-* **Data Transport:** Bidirectional data flow via a decentralized Node.js server pipeline and WebSockets.
+* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the meaning and emotional sentiment of the movement and sensory data.
+* **3D Generation & Processing:** Utilizing **Meshy 6** alongside **Spline** (powered by Nano Banana 2 / Hana AI) for real-time visual generation, remixing, and refinement.
+* **Data Transport:** Bidirectional data flow is managed via a decentralized Node.js server pipeline and WebSockets.
+
+### Visual & Physical Output (The Canvas & Hands)
+The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to handle visual and physical rendering.
+* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
+* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
 
 ## 3. Active Production Environments
 
-* **Main WCC Platform:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
+The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing. It is actively operating across:
+* **Main WCC Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/)
 * **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
 * **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
+* **di.ii Official Web:** [www.thedi.studio](https://www.thedi.studio)
+* **di.iiii Network Core:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
 
 ## 4. Modular Expansion & Upcoming Milestones
 
+The core Munich-Gyumri connection is a modular prototype intended to transform into an ever-expanding mixed reality series with new cities and stages continuously joining the network.
+
 **Upcoming 2026 Project Milestones:**
+* **Imminent Release:** Open-sourcing of the \`dii platform v0.2.0\` API Specifications, ROS-Mapping protocols, and hardware calibration guides.
 * **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
 * **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
-* **Aug-Sep:** Proposed in-person residency phase at the V2\\_ Lab for Unstable Media in Rotterdam.
+* **Aug–Sep:** Proposed in-person residency phase at the V2\\_ Lab for Unstable Media in Rotterdam.
 
 ## 5. Core Team & Partners
 
 **Core Project Leadership:**
-* **Gevorg Aram Grigoryan** ([gevorg_aram1@thedi.studio](mailto:gevorg_aram1@thedi.studio)): Head of di.ii, Technical, Software & Conceptual Development.
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Technical, Software & Conceptual Development.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & Multimedia Artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
 
 **Creative & Technical Team:**
-* **Hannes Köpke:** Directing / Storytelling.
-* **Fe:** Sound Design / Sonic Architecture.
-* **Albert Avetisyan & Taron Grigoryan:** Developers / Artists.
-* **Ani Khachikyan & Arsen Miqayelyan:** Gyumri Anchor Performers.
-* **Emilya Nikoghosyan & Syuzanna Ginosyan:** Creative Contributors.
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing / Storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design / Sonic Architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/) & [**Yeva**](https://www.instagram.com/6addreams.art/): Developers / Artists.
+* [**Ani Khachikyan**](https://www.instagram.com/ani___khachikyan/) & [**Arsen Miqayelyan**](https://www.instagram.com/arsentrampmiqayelyan/): Gyumri Anchor Performers.
 
 **Institutional Partners & Affiliates:**
-* [**V2\\_ Lab for the Unstable Media**](https://www.v2.nl/events/open-call-the-reciprocal-trap) (Netherlands) — *Pending proposal*
-* **XR Hub Bavaria** (Germany)
-* **iMAL Digital Culture Center** — *Pending collaboration outreach*
-* **hosq.co** (Artistic & Technical Partner)
-* **Hayfilm Cluster** & **Gyumri State Drama Theater**
-`;
+* [**V2\\_ Lab for the Unstable Media**](https://v2.nl/events/open-call-the-reciprocal-trap) (Netherlands) — *Pending proposal*
+* [**XR Hub Bavaria**](https://xrhub-bavaria.de/) (Germany)
+* [**iMAL Digital Culture Center**](https://www.imal.org/) — *Pending collaboration outreach*
+* [**hosq.co**](https://hosq.co/) (Artistic & Technical Partner)
+* [**Hayfilm Cluster**](https://www.instagram.com/hayfilmcluster/) & [**Gyumri State Drama Theater**](https://www.instagram.com/gyumritheatre/)
+
+*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.*
+        `;
+
+        const loadReadme = async () => {
+            let readmeData = FALLBACK_README;
+            try {
+                const response = await fetch('docs/PROJECT.md');
+                if (response.ok) {
+                    readmeData = await response.text();
+                }
+            } catch (e) {
+                // use fallback
             }
 
-            // PRE-PROCESSOR 1: Strip emojis
+            // EL_MUA'ALIJ 1: Izalat el_emojis
             let cleanMarkdown = readmeData.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); 
             
             // PRE-PROCESSOR 2: Inject Interactive Keywords (Text -> Map Interaction)
-            cleanMarkdown = cleanMarkdown.replace(/\b(Gyumri)\b/g, '<span class="sys-keyword kw-g" data-target="node-gyumri">$1</span>');
             cleanMarkdown = cleanMarkdown.replace(/\b(Munich)\b/g, '<span class="sys-keyword kw-m" data-target="node-munich">$1</span>');
             cleanMarkdown = cleanMarkdown.replace(/\b(AI|Stitch|Latent Vectors|Latent Space)\b/g, '<span class="sys-keyword kw-ai" data-target="node-ai">$1</span>');
             
             // PRE-PROCESSOR 3: Inject Inline Terminal Art Schematics
+            // Latent Handshake Diagram
             const diagram1 = `\n<div class="inline-art-block"><span class="c-m">[MUNICH]</span> ──(lag)──► <span class="c-ai">[[ AI_STITCH ]]</span> ◄──(lag)── <span class="c-g">[GYUMRI]</span>\n <span class="c-dim">\\_ ▚▞▚▞ _/</span>       <span class="c-ai art-pulse">▗▄████▄▖</span>      <span class="c-dim">\\_ ▚▞▚▞ _/</span>\n<span class="c-dim"> [ GHOST HAND ]       [ TRANSLATOR ]       [ GHOST HAND ]</span></div>\n`;
             cleanMarkdown = cleanMarkdown.replace(/(### The Latent Handshake[\s\S]*?)(?=\n## |\n---|$)/, `$1\n${diagram1}`);
 
+            // Hardware Sensor Pipeline
             const diagram2 = `\n<div class="inline-art-block"><span class="c-dim">[LIDAR] ▚▞ ─┐</span>\n<span class="c-dim">[IMU]   ▚▞ ──┼─►</span> <span class="c-ai">[[ SPATIAL_SYNC ]]</span> <span class="c-dim">─► [ROS2_NODE]</span>\n<span class="c-dim">[EMG]   ▚▞ ─┘</span></div>\n`;
             cleanMarkdown = cleanMarkdown.replace(/(### The Omnisensory Capture Pipeline[\s\S]*?)(?=\n### |$)/, `$1\n${diagram2}`);
 
-            // 1. Parse Markdown
+            // 1. Parse Markdown first into HTML
             let parsedHTML = marked.parse(cleanMarkdown);
 
-            // 2. Wrap H2 sections into CLI DATA BLOCKS
+            // 2. Wrap H2 sections into DISTINCT CLI DATA BLOCKS
             let sections = parsedHTML.split(/(?=<h2)/i);
             let wrappedHTML = sections[0]; 
             for (let i = 1; i < sections.length; i++) {
@@ -913,11 +941,11 @@ The core development utilizes a custom Spatial-Sync backend, aiming to maintain 
                 if (href && href.startsWith('http')) {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
-                    link.addEventListener('click', () => { addLog(`> EXECUTING EXTERNAL ROUTE: ${href.substring(0, 25)}...`, 'log-info'); });
+                    link.addEventListener('click', () => { addLog(`> TANFEEZ MASAR KHARIJI: ${href.substring(0, 25)}...`, 'log-info'); });
                 }
             });
 
-            // BIND KEYWORD HOVERS TO THE NODE MAP AND LATENT SPACE
+            // RABT EL_HOVER BI KHARITAT EL_UQAD
             document.querySelectorAll('.sys-keyword').forEach(kw => {
                 kw.addEventListener('mouseenter', (e) => {
                     const targetId = e.target.getAttribute('data-target');
@@ -927,7 +955,7 @@ The core development utilizes a custom Spatial-Sync backend, aiming to maintain 
                         if (targetId.includes('gyumri')) targetNode.classList.add('node-highlight-g');
                         if (targetId.includes('munich')) targetNode.classList.add('node-highlight-m');
                     }
-                    addLog(`> QUERYING DATA FOR: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
+                    addLog(`> ISTI'LAM BAYANAT LI: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
                     if(window.triggerLatentSurge) window.triggerLatentSurge();
                 });
                 
@@ -940,7 +968,7 @@ The core development utilizes a custom Spatial-Sync backend, aiming to maintain 
                 });
             });
             
-            addLog('> DOCUMENT DATA STREAM LOADED FROM docs/PROJECT.md');
+            addLog('> TAM TAHMEEL BAYANAT EL_WATHEEQA BINAJAH');
         };
 
         window.onload = () => {
@@ -948,21 +976,21 @@ The core development utilizes a custom Spatial-Sync backend, aiming to maintain 
             initNodeEditor();
             loadReadme();
             
-            // Map Toggle Logic
+            // Mantiq Ikhfa' El_Kharita
             const mapToggleBtn = document.getElementById('map-toggle-btn');
             const nodeContainer = document.getElementById('node-container');
             
             mapToggleBtn.addEventListener('click', () => {
                 if(nodeContainer.style.display === 'none') {
                     nodeContainer.style.display = 'block';
-                    mapToggleBtn.innerText = '[ - ] HIDE TOPOLOGY';
+                    mapToggleBtn.innerText = '[ - ] IKHFA EL_KHARITA';
                     mapToggleBtn.style.color = 'var(--tx-dim)';
-                    addLog('> TOPOLOGY MAP RESTORED', 'log-sys');
+                    addLog('> ISTIJA\'AT KHARITAT EL_TOPOLOGY', 'log-sys');
                 } else {
                     nodeContainer.style.display = 'none';
-                    mapToggleBtn.innerText = '[ + ] SHOW TOPOLOGY';
+                    mapToggleBtn.innerText = '[ + ] IZHAR EL_KHARITA';
                     mapToggleBtn.style.color = 'var(--node-munich)';
-                    addLog('> TOPOLOGY MAP HIDDEN', 'log-warn');
+                    addLog('> IKHFA KHARITAT EL_TOPOLOGY', 'log-warn');
                 }
             });
         };

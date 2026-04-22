@@ -1,10 +1,10 @@
-# br_id_ge (Beta Version) 🌉
+# br_id_ge (Beta Version)
 
 **A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network**
 
-`br_id_ge` is an open-source Extended Reality (XR) network utilizing a custom WebXR Node-Based Reality Creation Language. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans from drifting apart.
+`br_id_ge` represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
 
-## 📖 Table of Contents
+## Table of Contents
 
 1. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
 2. [Hardware & Technical Stack](#2-hardware--technical-stack)
@@ -12,87 +12,79 @@
 4. [Modular Expansion & Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
 5. [Core Team & Partners](#5-core-team--partners)
 
----
-
-## 🎭 1. Thematic Core: Tele-Symbiosis & The AI Gaze
+## 1. Thematic Core: Tele-Symbiosis & The AI Gaze
 
 ### The Trialogue
-The piece is structured as an interactive trialogue between a performer in Munich (Node: "Steel"), a performer in Gyumri (Node: "Tuff-Stone"), and the AI itself.
+The project is structured as a three-actor performance involving the Munich performer, the Gyumri performer, and the AI itself.
 
 ### The AI's Role ("Stitch")
-The AI acts as the Third Lead Actor, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
+The AI acts as the Third Performer, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
 
-* **The AI Gaze (Latent Vectors):** The AI does not perceive human performers as physical objects, but as shifting clouds of probability. It visualizes human emotions within the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
-* **The Reciprocal Trap:** At the climax of the performance, the AI intervenes. It records the Gyumri actor's dance and forces a physical robotic surrogate to perform it back—effectively "stealing" the human movement and turning the performers into the audience of their own data.
+* **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability. It visualizes human emotions in the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
+* **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance. It effectively "steals" the human movement, turning the performers into the audience of their own data.
 
 ### The Latent Handshake (A Critique of Infrastructure)
-Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, elevating algorithmic latency to a structural narrative component. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
+Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
 
----
+## 2. Hardware & Technical Stack
 
-## ⚙️ 2. Hardware & Technical Stack
+The core development utilizes a custom Spatial-Sync backend, aiming to maintain **sub-120ms latency** between digital nodes and physical hardware.
 
-The core development utilizes a custom **Spatial-Sync** backend, actively targeting **sub-120ms latency** between digital nodes and physical hardware. 
+The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
 
-The framework is inherently open-source and hardware-agnostic. Any specific commercial software, cameras, or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
-
-### The Omnisensory Capture Pipeline (The Eyes)
-While the spatial baseline utilizes the studio's on-hand depth cameras (RealSense D435if optimized for IR lighting, RealSense D405 for macro/gestural precision, Azure Kinect, Astra, and LiDAR) alongside MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from an exhaustive taxonomy of open sensor arrays:
-* **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, ToF, Radar (mmWave), and PIR arrays.
+### The Omnisensory Capture Pipeline
+While the current spatial baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from the studio's exhaustive, collected taxonomy of open sensor arrays:
+* **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, LiDAR, ToF, Radar (mmWave), and PIR arrays.
 * **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
 * **Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
 
 ### AI Bridge & Interpretation (The Brain)
-* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the emotional meaning of the movement and sensory data.
+* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the meaning and emotional sentiment of the movement and sensory data.
 * **3D Generation & Processing:** Utilizing **Meshy 6** alongside **Spline** (powered by Nano Banana 2 / Hana AI) for real-time visual generation, remixing, and refinement.
 * **Data Transport:** Bidirectional data flow is managed via a decentralized Node.js server pipeline and WebSockets.
 
 ### Visual & Physical Output (The Canvas & Hands)
 The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to handle visual and physical rendering.
-* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner is included in the studio's collected resources for rapid visual prototyping, the ecosystem remains structurally independent of it).*
-* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific inventory items, such as collected ROSMASTER omnidirectional robots, are utilized simply as on-hand physical canvases).*
+* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
+* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
 
----
+## 3. Active Production Environments
 
-## 🔗 3. Active Production Environments
-
-The Main Production Spatial Editor Platform is currently undergoing security hardening in preparation for full open-sourcing. It is actively operating across:
-* **Main WCC Platform:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
+The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing. It is actively operating across:
+* **Main WCC Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/)
 * **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
 * **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
-* **RecordAR Platform:** [staging.di-studio.xyz/recordar_platform](https://staging.di-studio.xyz/recordar_platform)
+* **di.ii Official Web:** [www.thedi.studio](https://www.thedi.studio)
+* **di.iiii Network Core:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
 
----
+## 4. Modular Expansion & Upcoming Milestones
 
-## 🌍 4. Modular Expansion & Upcoming Milestones
-
-The core Munich-Gyumri connection is a modular prototype. Conceptually, the network is an ever-expanding mixed reality series, designed so that new cities, actors, and stages can continuously join.
+The core Munich-Gyumri connection is a modular prototype intended to transform into an ever-expanding mixed reality series with new cities and stages continuously joining the network.
 
 **Upcoming 2026 Project Milestones:**
-* **Imminent Release:** Open-sourcing of the `dii platform v0.2.0` API Specifications and ROS-Mapping protocols.
+* **Imminent Release:** Open-sourcing of the `dii platform v0.2.0` API Specifications, ROS-Mapping protocols, and hardware calibration guides.
 * **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
-* **May 15:** "New Realities Award" submission for the Festival of the Future (XR HUB Bavaria).
-* **July–Dec Target:** Proposed in-person residency phase at the V2\_ Lab for Unstable Media in Rotterdam, focusing on the fragility of digital infrastructure.
-* **Open Talent Search:** An Open Call for visual, digital, 3D printing, and performative artists to join the network.
+* **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
+* **Aug–Sep:** Proposed in-person residency phase at the V2\_ Lab for Unstable Media in Rotterdam.
 
----
-
-## 👥 5. Core Team & Partners
+## 5. Core Team & Partners
 
 **Core Project Leadership:**
-* **Gevorg Aram Grigoryan (dob-0):** Head of di.ii, Lead Technical, Software & Conceptual Developer.
-* **Emilya Nikoghosyan:** Co-founder & Multimedia Artist (socio-political/youth-activist dimensions).
-* **Syuzanna Ginosyan:** Primary Curator & German Partnership Liaison.
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Technical, Software & Conceptual Development.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & Multimedia Artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
 
 **Creative & Technical Team:**
-* **Hannes Köpke:** Directing & Storytelling.
-* **Fe:** Sound Design & Sonic Architecture.
-* **Albert Avetisyan & Taron Grigoryan:** Developers & Multimedia Artists.
-* **Ani Khachikyan & Arsen Miqayelyan:** Lead Performers (Gyumri Node).
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing / Storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design / Sonic Architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/) & [**Yeva**](https://www.instagram.com/6addreams.art/): Developers / Artists.
+* [**Ani Khachikyan**](https://www.instagram.com/ani___khachikyan/) & [**Arsen Miqayelyan**](https://www.instagram.com/arsentrampmiqayelyan/): Gyumri Anchor Performers.
 
 **Institutional Partners & Affiliates:**
-* **V2\_ Lab for Unstable Media** (Netherlands) — *Pending proposal*
-* **XR Hub Bavaria** (Germany)
-* **iMAL Digital Culture Center** — *Pending collaboration outreach*
-* **hosq.co** (Artistic & Technical Partner)
-* **Hayfilm Cluster** & **Gyumri State Drama Theater**
+* [**V2\_ Lab for the Unstable Media**](https://v2.nl/events/open-call-the-reciprocal-trap) (Netherlands) — *Pending proposal*
+* [**XR Hub Bavaria**](https://xrhub-bavaria.de/) (Germany)
+* [**iMAL Digital Culture Center**](https://www.imal.org/) — *Pending collaboration outreach*
+* [**hosq.co**](https://hosq.co/) (Artistic & Technical Partner)
+* [**Hayfilm Cluster**](https://www.instagram.com/hayfilmcluster/) & [**Gyumri State Drama Theater**](https://www.instagram.com/gyumritheatre/)
+
+*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.*
