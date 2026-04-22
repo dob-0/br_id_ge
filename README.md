@@ -108,18 +108,26 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 
 ---
 
-## 🔗 3. Production Environments
+## 🔗 3. Deployment Environments
 
-**br_id_ge Deployment:**
-* **Live:** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/) (GitHub Pages from `main` branch)
-* **Source:** [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge)
+**br_id_ge Multi-Instance Architecture:**
 
-**Ecosystem Platforms (di.iiii):**
-* **Production:** [di-studio.xyz](https://di-studio.xyz) – Main spatial editor platform (v0.2.0)
-* **Staging:** [staging.di-studio.xyz](https://staging.di-studio.xyz) – Preview/verification lane
-* **Backend Health:** [di-studio.xyz/serverXR/api/health](https://di-studio.xyz/serverXR/api/health)
+| Tier | Environment | URL | Status |
+|---|---|---|---|
+| **PRODUCTION** | GitHub Pages | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) | 🟢 Stable |
+| **PRODUCTION** | di.iiii Platform | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) | 🟢 Stable |
+| **STAGING** | Preview Lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) | 🟡 Experimental |
+| **DEV** | Source Repository | [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) | 🟢 Active |
 
-The broader di.iiii platform is currently undergoing security hardening (secret-scanning, deployment isolation) in preparation for full open-sourcing.
+**Broader di.iiii Platform Services (v0.2.0):**
+
+| Service | Production | Staging | Purpose |
+|---|---|---|---|
+| **Main Platform** | [di-studio.xyz](https://di-studio.xyz) | [staging.di-studio.xyz](https://staging.di-studio.xyz) | Spatial editor: Studio/Beta/Public/Admin |
+| **WCC** | [di-studio.xyz/wcc](https://di-studio.xyz/wcc) | [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc) | WebXR Creative Canvas |
+| **Backend Health** | [api health](https://di-studio.xyz/serverXR/api/health) | [api health](https://staging.di-studio.xyz/serverXR/api/health) | System status |
+
+The di.iiii platform is currently undergoing security hardening (secret-scanning, deployment isolation) in preparation for full open-sourcing.
 
 ---
 
