@@ -114,4 +114,4 @@ For inquiries, collaboration, or to join the network, contact **Gevorg Aram Grig
 
 ## Update
 
-- main page design
+* main page design index.html
