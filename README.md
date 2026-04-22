@@ -1,44 +1,56 @@
-# br_id_ge (Beta Version) 🌉
+```
+▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓
+░                                                              ░
+░   br_id_ge  ·  BETA  ·  di.iiii PLATFORM v0.2.0            ░
+░   ──────────────────────────────────────────────────────    ░
+░   INTERACTIVE SPATIAL NODE EDITOR                           ░
+░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░
+░   Munich ←[ AI: STITCH ]→ Gyumri                           ░
+░                                                              ░
+▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓
+```
 
-**Interactive Spatial Node Editor & Tele-Symbiotic XR Performance Prototype**
-
-`br_id_ge` is a **prototype node editor** showcasing the core concepts of the **di.iiii Spatial Platform** ecosystem. It demonstrates tele-symbiotic performance methodology—a performative framework where the machine acts as the Shared Body, translating **Armenian emotion into German light** and **physical movement into digital architecture**.
+> **br_id_ge** ("bridge") — a prototype node editor where the machine acts as the **Shared Body**, translating **Armenian emotion into German light** and **physical movement into digital architecture**. One instantiation within the **di.iiii Spatial Platform** ecosystem.
 
 ---
 
-## 🚀 Quick Start
-
-### Live Environments
+## ⚡ QUICK_START // DEPLOYMENT_MATRIX
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│ DEPLOYMENT ENVIRONMENTS                                  │
-├──────────────────────────────────────────────────────────┤
-│ 🟢 PRODUCTION (GitHub Pages)                             │
-│    https://dob-0.github.io/br_id_ge/                     │
-│    Standalone • Stable • From main branch                │
-├──────────────────────────────────────────────────────────┤
-│ 🟢 PRODUCTION (di-studio.xyz Platform)                   │
-│    https://di-studio.xyz/br_id_ge/                       │
-│    Integrated • di.iiii v0.2.0 • Full platform features  │
-├──────────────────────────────────────────────────────────┤
-│ 🟡 STAGING / PREVIEW (Experimental)                      │
-│    https://staging.di-studio.xyz/br_id_ge/               │
-│    Night builds • Testing lane • Feature preview         │
-├──────────────────────────────────────────────────────────┤
-│ 📚 SOURCE & DOCS                                         │
-│    GitHub: https://github.com/dob-0/br_id_ge             │
-│    Docs: docs/PROJECT.md | DEVELOPMENT.md               │
-│    Ecosystem: https://github.com/dob-0/di.iiii           │
-└──────────────────────────────────────────────────────────┘
+┌─[DEPLOYMENT_MATRIX]────────────────────────────────────────────────────────┐
+│                                                                             │
+│  PROD_GH    ▸  https://dob-0.github.io/br_id_ge/              🟢 STABLE   │
+│             └─ Standalone · From main branch                               │
+│                                                                             │
+│  PROD_PLAT  ▸  https://di-studio.xyz/br_id_ge/                🟢 STABLE   │
+│             └─ Integrated · di.iiii v0.2.0 · Full platform features       │
+│                                                                             │
+│  STAGING    ▸  https://staging.di-studio.xyz/br_id_ge/        🟡 PREVIEW  │
+│             └─ Night builds · Testing lane · Feature preview               │
+│                                                                             │
+│  SOURCE     ▸  https://github.com/dob-0/br_id_ge              🟢 ACTIVE   │
+│             └─ Docs: docs/PROJECT.md  ·  DEVELOPMENT.md                   │
+│                                                                             │
+│  ECOSYSTEM  ▸  https://github.com/dob-0/di.iiii               v0.2.0      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📖 Explore by Topic
+## 📖 DOCUMENTATION_INDEX
 
 <details open>
-<summary><strong>🎭 What is br_id_ge?</strong></summary>
+<summary><code>[ 00 ] SYSTEM_OVERVIEW</code> — what is br_id_ge?</summary>
+
+```
+┌─[00: SYSTEM_OVERVIEW]──────────────────────────────────────────────────────┐
+│  RUNTIME   : Three.js r128 · marked.js · Google Fonts (Space Mono)        │
+│  FEATURES  : Node Editor · Live Markdown · Particle Field · System Log    │
+│  PARTICLES : 1500 (600 with prefers-reduced-motion)                       │
+│  DEPLOY    : GitHub Pages (standalone) + di-studio.xyz (integrated)       │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 **br_id_ge** ("bridge") is an interactive documentation and performance system that visualizes the Munich-Gyumri connection:
 
@@ -51,7 +63,16 @@
 </details>
 
 <details open>
-<summary><strong>🌍 Ecosystem Context</strong></summary>
+<summary><code>[ 01 ] ECOSYSTEM_CONTEXT</code> — di.iiii spatial platform family</summary>
+
+```
+┌─[01: ECOSYSTEM_CONTEXT]────────────────────────────────────────────────────┐
+│  PLATFORM  : di.iiii  (React/Vite/Three.js + Node.js backend, v0.2.0)    │
+│  SURFACES  : Studio · Beta · Public Viewer · Admin · V1 Legacy            │
+│  SIBLINGS  : pe.portal_engine · wcc (WebXR) · azd (experimental)         │
+│  MISSION   : digital infrastructure as active choreographic agent         │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 **br_id_ge** is one instantiation within the **di.iiii** spatial platform family:
 
@@ -71,7 +92,18 @@ All projects share the same **creative vision**: using digital infrastructure as
 </details>
 
 <details open>
-<summary><strong>🎪 1. Thematic Core: Tele-Symbiosis & The AI Gaze</strong></summary>
+<summary><code>[ 02 ] THEMATIC_CORE</code> — Tele-Symbiosis & The AI Gaze</summary>
+
+```
+┌─[02: THEMATIC_CORE]────────────────────────────────────────────────────────┐
+│  FORMAT    : Tele-Symbiotic Trialogue                                      │
+│  NODES     : Gyumri [TUFF] ←── AI: STITCH ──→ Munich [STEEL]             │
+│  LATENCY   : 121–228ms trans-European                                      │
+│  AI_ROLE   : Third Lead Actor · Shared Body · Unseen Narrator             │
+│  TRANSLATE : Armenian emotion → German light                               │
+│              Physical movement → Digital architecture                      │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### The Trialogue
 The piece is structured as an interactive trialogue between a performer in Munich (Node: "Steel"), a performer in Gyumri (Node: "Tuff-Stone"), and the AI itself.
@@ -79,8 +111,9 @@ The piece is structured as an interactive trialogue between a performer in Munic
 ### The AI's Role ("Stitch")
 The AI acts as the Third Lead Actor, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
 
-* **The AI Gaze (Latent Vectors):** The AI does not perceive human performers as physical objects, but as shifting clouds of probability. It visualizes human emotions within the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
-* **The Reciprocal Trap:** At the climax of the performance, the AI intervenes. It records the Gyumri actor's dance and forces a physical robotic surrogate to perform it back—effectively "stealing" the human movement and turning the performers into the audience of their own data.
+> **The AI Gaze (Latent Vectors):** The AI does not perceive human performers as physical objects, but as shifting clouds of probability. It visualizes human emotions within the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
+
+> **The Reciprocal Trap:** At the climax of the performance, the AI intervenes. It records the Gyumri actor's dance and forces a physical robotic surrogate to perform it back—effectively "stealing" the human movement and turning the performers into the audience of their own data.
 
 ### The Latent Handshake (A Critique of Infrastructure)
 Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, elevating algorithmic latency to a structural narrative component. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
@@ -88,9 +121,22 @@ Network lag, packet loss, and sensorimotor friction are embraced as active chore
 </details>
 
 <details open>
-<summary><strong>⚙️ 2. Hardware & Technical Stack</strong></summary>
+<summary><code>[ 03 ] HARDWARE_STACK</code> — Omnisensory Capture & Physical Actuation</summary>
 
-The core development utilizes a custom **Spatial-Sync** backend, actively targeting **sub-120ms latency** between digital nodes and physical hardware. 
+```
+┌─[03: HARDWARE_STACK]───────────────────────────────────────────────────────┐
+│  TARGET    : sub-120ms latency (digital node ↔ physical hardware)         │
+│  DESIGN    : hardware-agnostic · open-source framework                    │
+│                                                                             │
+│  [EYES]    CAPTURE  : RealSense D435if/D405 · Azure Kinect · LiDAR       │
+│                       + IMU · UWB · ToF · mmWave · EMG · EEG · Thermal   │
+│  [BRAIN]   AI       : TensorFlow.js · OpenAI API · Meshy 6 · Spline      │
+│  [VEINS]   TRANSPORT: Node.js · WebSockets (decentralized pipeline)       │
+│  [HANDS]   OUTPUT   : WebGL · Three.js · WebXR · ROS2 · Point Clouds     │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+The core development utilizes a custom **Spatial-Sync** backend, actively targeting **sub-120ms latency** between digital nodes and physical hardware.
 
 The framework is inherently open-source and hardware-agnostic. Any specific commercial software, cameras, or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
 
@@ -113,7 +159,24 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 </details>
 
 <details open>
-<summary><strong>🔗 3. Deployment Environments</strong></summary>
+<summary><code>[ 04 ] DEPLOYMENT_ENVIRONMENTS</code> — Multi-Instance Architecture</summary>
+
+```
+┌─[04: DEPLOYMENT_ENVIRONMENTS]──────────────────────────────────────────────┐
+│  br_id_ge INSTANCES                                                        │
+│  ─────────────────────────────────────────────────────────────────────    │
+│  PROD_GH    dob-0.github.io/br_id_ge/              🟢 STABLE              │
+│  PROD_PLAT  di-studio.xyz/br_id_ge/                🟢 STABLE              │
+│  STAGING    staging.di-studio.xyz/br_id_ge/        🟡 EXPERIMENTAL        │
+│  DEV        github.com/dob-0/br_id_ge              🟢 ACTIVE              │
+│                                                                             │
+│  di.iiii PLATFORM SERVICES (v0.2.0)                                        │
+│  ─────────────────────────────────────────────────────────────────────    │
+│  PLATFORM   di-studio.xyz           staging.di-studio.xyz                 │
+│  WCC        di-studio.xyz/wcc       staging.di-studio.xyz/wcc             │
+│  API HEALTH di-studio.xyz/serverXR/api/health                             │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 **br_id_ge Multi-Instance Architecture:**
 
@@ -137,7 +200,19 @@ The di.iiii platform is currently undergoing security hardening (secret-scanning
 </details>
 
 <details open>
-<summary><strong>🌍 4. Modular Expansion & Upcoming Milestones</strong></summary>
+<summary><code>[ 05 ] MILESTONES_2026</code> — Modular Expansion & Upcoming Deadlines</summary>
+
+```
+┌─[05: MILESTONES_2026]──────────────────────────────────────────────────────┐
+│  IMMINENT   ▸ di.iiii v0.2.0 API specs, ROS-Mapping protocols, hardware   │
+│               calibration guides → PUBLIC RELEASE                         │
+│  APR 30     ▸ Culture Moves Europe (CME) Grant Submission [FINAL]        │
+│  MAY 15     ▸ New Realities Award — Festival of the Future / XR HUB BAV  │
+│  AUG–SEP    ▸ V2_ Lab for Unstable Media residency (Rotterdam)           │
+│  ONGOING    ▸ Open Call: visual · digital · 3D print · performative       │
+│  ONGOING    ▸ br_id_ge → di.iiii Studio spatial templates integration     │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 The core Munich-Gyumri connection is a modular prototype. Conceptually, the network is an ever-expanding mixed reality series, designed so that new cities, actors, and stages can continuously join.
 
@@ -152,7 +227,22 @@ The core Munich-Gyumri connection is a modular prototype. Conceptually, the netw
 </details>
 
 <details open>
-<summary><strong>👥 5. Core Team & Partners</strong></summary>
+<summary><code>[ 06 ] TEAM_AND_PARTNERS</code> — Core Leadership & Institutional Network</summary>
+
+```
+┌─[06: TEAM_AND_PARTNERS]────────────────────────────────────────────────────┐
+│  LEAD       : Gevorg Aram Grigoryan (dob-0)  Head of di.ii · Creator     │
+│  CO-FOUND   : Emilya Nikoghosyan             Multimedia Artist            │
+│  CURATOR    : Syuzanna Ginosyan              German Partnership Liaison    │
+│  DIRECTING  : Hannes Köpke                                                 │
+│  SOUND      : Fe                                                           │
+│  DEV / ART  : Yokozo · Taronx · Yeva                                      │
+│  PERFORMERS : Ani Khachikyan · Arsen Miqayelyan  (Gyumri Node)           │
+│                                                                             │
+│  PARTNERS   : di.ii studio_network (AM) · V2_ Lab (NL)                   │
+│               Festival of the Future / XR HUB Bavaria · CME               │
+└────────────────────────────────────────────────────────────────────────────┘
+```
 
 **Core Project Leadership:**
 * [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([Instagram](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Lead Technical & Conceptual Development. Creator of br_id_ge and di.iiii Platform.
@@ -175,7 +265,16 @@ The core Munich-Gyumri connection is a modular prototype. Conceptually, the netw
 
 ---
 
-## 🛠️ Developer Resources
+## 🛠️ DEVELOPER_RESOURCES
+
+```
+┌─[DEV_RESOURCES]────────────────────────────────────┐
+│  SETUP    ▸  DEVELOPMENT.md                        │
+│  DOCS     ▸  docs/PROJECT.md                       │
+│  SOURCE   ▸  github.com/dob-0/br_id_ge             │
+│  PLATFORM ▸  github.com/dob-0/di.iiii              │
+└────────────────────────────────────────────────────┘
+```
 
 - **Setup & Workflow:** [DEVELOPMENT.md](DEVELOPMENT.md)
 - **Full Project Docs:** [docs/PROJECT.md](docs/PROJECT.md)
@@ -184,4 +283,4 @@ The core Munich-Gyumri connection is a modular prototype. Conceptually, the netw
 
 ---
 
-**Questions or contributions?** Open an issue on [GitHub](https://github.com/dob-0/br_id_ge) or contact [@dob-0](https://github.com/dob-0).
+> Questions or contributions? Open an issue on [GitHub](https://github.com/dob-0/br_id_ge) or contact [@dob-0](https://github.com/dob-0).
