@@ -10,10 +10,14 @@ This project is part of the larger **di.iiii** ecosystem (React/Vite/Three.js pl
 
 ## Quick Links
 
-- **Live Site:** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/)
-- **Ecosystem Hub:** [di.iiii Platform](https://github.com/dob-0/di.iiii) | [Creator Profile](https://github.com/dob-0)
-- **Developers:** See [DEVELOPMENT.md](DEVELOPMENT.md) for setup
-- **Full Docs:** [docs/PROJECT.md](docs/PROJECT.md)
+**Live Deployments:**
+- **GitHub Pages (stable):** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/)
+- **Production (di-studio.xyz):** [https://di-studio.xyz/br_id_ge/](https://di-studio.xyz/br_id_ge/)
+- **Staging (preview & night builds):** [https://staging.di-studio.xyz/br_id_ge/](https://staging.di-studio.xyz/br_id_ge/)
+
+**Resources:**
+- [di.iiii Platform (GitHub)](https://github.com/dob-0/di.iiii) | [Creator @dob-0](https://github.com/dob-0) | [di-studio.xyz](https://di-studio.xyz/)
+- [DEVELOPMENT.md](DEVELOPMENT.md) | [docs/PROJECT.md](docs/PROJECT.md)
 
 ---
 
