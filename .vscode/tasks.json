@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Auto Push: Start README Watcher",
+      "type": "shell",
+      "command": "./scripts/auto-push-readme.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Auto Push: Stop README Watcher",
+      "type": "shell",
+      "command": "pkill -f scripts/auto-push-readme.sh || true",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
