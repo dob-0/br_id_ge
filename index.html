@@ -118,7 +118,6 @@
             padding: 0.6rem 1rem;
             background: rgba(0,229,255,0.08);
             border-bottom: 1px solid var(--border-tech);
-            border-bottom-width: 1px;
             font-size: 0.7rem;
             color: var(--node-munich);
             display: flex;
@@ -447,7 +446,8 @@
             border-bottom: 1px dashed var(--node-munich);
             transition: all 0.2s;
             padding-bottom: 2px;
-            word-break: break-all; 
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         .markdown-body a:hover { 
             color: var(--tx-primary);
@@ -621,12 +621,12 @@
     <!-- INTERACTIVE SYSTEM LOG -->
     <div class="system-log" id="sys-log">
         <div class="log-header">
-            <span>[SIJIL_EL_NIZAM]</span>
+            <span>[SYSTEM_LOG]</span>
             <span class="c-dim">DI_IIII_OS</span>
         </div>
         <div class="log-content" id="log-content">
-            <div class="log-entry log-sys">> JARI TAHYE'AT NIZAM EL_TELE_SYMBIOSIS...</div>
-            <div class="log-entry log-info">> BINTIZAR TAFA'UL EL_UQDAH</div>
+            <div class="log-entry log-sys">> INITIALIZING TELE_SYMBIOSIS RUNTIME...</div>
+            <div class="log-entry log-info">> WAITING FOR NODE CONNECTION</div>
         </div>
     </div>
 
@@ -638,7 +638,7 @@
                 <div>
                     <span class="c-g">root@di.iiii</span><span style="color: var(--tx-dim);">:</span><span class="c-m">~/br_id_ge</span>$ ./open_spatial_node_editor.sh --full_topology
                 </div>
-                <div id="map-toggle-btn" style="cursor: pointer; color: var(--tx-dim); border: 1px solid var(--border-tech); padding: 2px 8px; border-radius: 2px; transition: all 0.2s;">[ - ] IKHFA EL_KHARITA</div>
+                <div id="map-toggle-btn" style="cursor: pointer; color: var(--tx-dim); border: 1px solid var(--border-tech); padding: 2px 8px; border-radius: 2px; transition: all 0.2s;">[ - ] HIDE_MAP</div>
             </div>
 
             <!-- INTERACTIVE FULL-ECOSYSTEM NODE MAP -->
@@ -682,7 +682,7 @@
                 </div>
 
                 <div class="drag-node" id="node-ai" style="left: 40%; top: 38%;">
-<div class="node-content c-ai">┌─[[01: AI_CORE]]─┐
+<div class="node-content c-ai">┌─[[00: AI_CORE]]─┐
 │ <span class="c-data">[OP: LATENT]</span>    │
 │   ▗▄██████▄▖    │
 │  ▐██▚▞▚▞▚▞██▌   │
@@ -691,7 +691,7 @@
                 </div>
 
                 <div class="drag-node" id="node-munich" style="left: 72%; top: 40%;">
-<div class="node-content c-m">┌─[01: MUNICH]────┐
+<div class="node-content c-m">┌─[02: MUNICH]────┐
 │ <span class="c-data">[MAT: STEEL]</span>    │
 │   ▗▟██████▙▖    │
 │  ▐██████████▌   │
@@ -739,7 +739,7 @@
 <span class="c-dim">
 ▗▟████████████████████████████████████████████████████████████████████▙▖
 ▐██                                                                  ██▌
-▐██        <span class="c-ai">[NIZAM KHAMIL]</span>  > BINTIZAR TA'ALIMAT JADIDA...            ██▌
+▐██        <span class="c-ai">[SYSTEM_IDLE]</span>  > AWAITING NEW INSTRUCTIONS...           ██▌
 ▐██                                                                  ██▌
 ▝▀████████████████████████████████████████████████████████████████████▀▘
 </span>
@@ -749,7 +749,7 @@
     </main>
 
     <script>
-        // --- 0. MUHAKIM SIJIL EL_NIZAM EL_TAFA'ULI ---
+        // --- 0. SYSTEM LOG CONTROLLER ---
         const logBox = document.getElementById('log-content');
         const sysLog = document.getElementById('sys-log');
         
@@ -822,7 +822,7 @@
 
             window.triggerLatentSurge = () => {
                 latentEnergy = 4.0;
-                addLog(`> TAFEEL EL_LATENT SURGE MIN KHALAL EL_NUSOOS`, 'log-warn');
+                addLog(`> LATENT_SURGE: TRIGGERED FROM TEXT INTERACTION`, 'log-warn');
             };
 
             window.addEventListener('scroll', () => {
@@ -887,43 +887,68 @@
                 drawCurve('wire-env-exp', 'node-env', 'node-exp'); drawCurve('wire-team-ai', 'node-team', 'node-ai');
             };
 
-            container.addEventListener('mousedown', (e) => {
-                const node = e.target.closest('.drag-node');
-                if (!node) {
-                    addLog(`> NAQRA 'ALA EL_KHARITA FI X:${e.clientX} Y:${e.clientY}`);
-                    return;
-                }
-                
-                activeNode = node;
+            const startDrag = (node, clientX, clientY) => {
                 const rect = node.getBoundingClientRect();
-                offsetX = e.clientX - rect.left; offsetY = e.clientY - rect.top;
+                activeNode = node;
+                offsetX = clientX - rect.left;
+                offsetY = clientY - rect.top;
                 node.style.borderColor = 'var(--tx-primary)';
-                addLog(`> TAFEEL EL_UQDAH: [${node.id.toUpperCase()}]`, 'log-info');
-            });
+                addLog(`> NODE ACTIVATED: [${node.id.toUpperCase()}]`, 'log-info');
+            };
 
-            document.addEventListener('mousemove', (e) => {
+            const moveDrag = (clientX, clientY) => {
                 if (!activeNode) return;
                 const containerRect = container.getBoundingClientRect();
-                let x = e.clientX - containerRect.left - offsetX; let y = e.clientY - containerRect.top - offsetY;
+                let x = clientX - containerRect.left - offsetX;
+                let y = clientY - containerRect.top - offsetY;
                 x = Math.max(0, Math.min(x, containerRect.width - activeNode.offsetWidth));
                 y = Math.max(0, Math.min(y, containerRect.height - activeNode.offsetHeight));
-                activeNode.style.left = `${x}px`; activeNode.style.top = `${y}px`;
-                latentEnergy += 0.05; if(latentEnergy > 2) latentEnergy = 2;
+                activeNode.style.left = `${x}px`;
+                activeNode.style.top = `${y}px`;
+                latentEnergy += 0.05; if (latentEnergy > 2) latentEnergy = 2;
                 updateWires();
-            });
+            };
 
-            document.addEventListener('mouseup', () => {
+            const endDrag = () => {
                 if (activeNode) {
-                    addLog(`> TAWDJEEH JADID LI ${activeNode.id.toUpperCase()}`, 'log-warn');
+                    addLog(`> NODE REPOSITIONED: ${activeNode.id.toUpperCase()}`, 'log-warn');
                     activeNode.style.borderColor = 'var(--tx-dim)';
                     activeNode = null;
                 }
+            };
+
+            // Mouse events
+            container.addEventListener('mousedown', (e) => {
+                const node = e.target.closest('.drag-node');
+                if (!node) {
+                    addLog(`> MAP CLICK: X:${e.clientX} Y:${e.clientY}`);
+                    return;
+                }
+                startDrag(node, e.clientX, e.clientY);
             });
+            document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+            document.addEventListener('mouseup', endDrag);
+
+            // Touch events (mobile support)
+            container.addEventListener('touchstart', (e) => {
+                const node = e.target.closest('.drag-node');
+                if (!node) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrag(node, touch.clientX, touch.clientY);
+            }, { passive: false });
+            document.addEventListener('touchmove', (e) => {
+                if (!activeNode) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                moveDrag(touch.clientX, touch.clientY);
+            }, { passive: false });
+            document.addEventListener('touchend', endDrag);
 
             setTimeout(updateWires, 100); window.addEventListener('resize', updateWires);
         };
 
-        // --- 3. MUHARRIK EL_NUSOOS EL_TAFA'ULI ---
+        // --- 3. INTERACTIVE DOCUMENT ENGINE ---
         const FALLBACK_README = `
 # br_id_ge (Beta Version)
 
@@ -1033,6 +1058,7 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
             
             // PRE-PROCESSOR 2: Inject Interactive Keywords (Text -> Map Interaction)
             cleanMarkdown = cleanMarkdown.replace(/\b(Munich)\b/g, '<span class="sys-keyword kw-m" data-target="node-munich">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Gyumri)\b/g, '<span class="sys-keyword kw-g" data-target="node-gyumri">$1</span>');
             cleanMarkdown = cleanMarkdown.replace(/\b(AI|Stitch|Latent Vectors|Latent Space)\b/g, '<span class="sys-keyword kw-ai" data-target="node-ai">$1</span>');
             
             // PRE-PROCESSOR 3: Inject Inline Terminal Art Schematics
@@ -1077,7 +1103,7 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
                 if (href && href.startsWith('http')) {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
-                    link.addEventListener('click', () => { addLog(`> TANFEEZ MASAR KHARIJI: ${href.substring(0, 25)}...`, 'log-info'); });
+                    link.addEventListener('click', () => { addLog(`> EXTERNAL LINK: ${href.substring(0, 30)}...`, 'log-info'); });
                 }
             });
 
@@ -1091,7 +1117,7 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
                         if (targetId.includes('gyumri')) targetNode.classList.add('node-highlight-g');
                         if (targetId.includes('munich')) targetNode.classList.add('node-highlight-m');
                     }
-                    addLog(`> ISTI'LAM BAYANAT LI: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
+                    addLog(`> KEYWORD HOVER: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
                     if(window.triggerLatentSurge) window.triggerLatentSurge();
                 });
                 
@@ -1104,7 +1130,7 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
                 });
             });
             
-            addLog('> TAM TAHMEEL BAYANAT EL_WATHEEQA BINAJAH');
+            addLog('> DOCUMENT DATA LOADED SUCCESSFULLY');
         };
 
         window.onload = () => {
@@ -1112,21 +1138,21 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
             initNodeEditor();
             loadReadme();
             
-            // Mantiq Ikhfa' El_Kharita
+            // Map toggle logic
             const mapToggleBtn = document.getElementById('map-toggle-btn');
             const nodeContainer = document.getElementById('node-container');
             
             mapToggleBtn.addEventListener('click', () => {
-                if(nodeContainer.style.display === 'none') {
+                if (nodeContainer.style.display === 'none') {
                     nodeContainer.style.display = 'block';
-                    mapToggleBtn.innerText = '[ - ] IKHFA EL_KHARITA';
+                    mapToggleBtn.innerText = '[ - ] HIDE_MAP';
                     mapToggleBtn.style.color = 'var(--tx-dim)';
-                    addLog('> ISTIJA\'AT KHARITAT EL_TOPOLOGY', 'log-sys');
+                    addLog('> TOPOLOGY MAP: VISIBLE', 'log-sys');
                 } else {
                     nodeContainer.style.display = 'none';
-                    mapToggleBtn.innerText = '[ + ] IZHAR EL_KHARITA';
+                    mapToggleBtn.innerText = '[ + ] SHOW_MAP';
                     mapToggleBtn.style.color = 'var(--node-munich)';
-                    addLog('> IKHFA KHARITAT EL_TOPOLOGY', 'log-warn');
+                    addLog('> TOPOLOGY MAP: HIDDEN', 'log-warn');
                 }
             });
         };
