@@ -37,7 +37,7 @@
 
 ## 📖 Explore by Topic
 
-<details>
+<details open>
 <summary><strong>🎭 What is br_id_ge?</strong></summary>
 
 **br_id_ge** ("bridge") is an interactive documentation and performance system that visualizes the Munich-Gyumri connection:
@@ -50,7 +50,7 @@
 
 </details>
 
-<details>
+<details open>
 <summary><strong>🌍 Ecosystem Context</strong></summary>
 
 **br_id_ge** is one instantiation within the **di.iiii** spatial platform family:
@@ -70,7 +70,7 @@ All projects share the same **creative vision**: using digital infrastructure as
 
 </details>
 
-<details>
+<details open>
 <summary><strong>🎪 1. Thematic Core: Tele-Symbiosis & The AI Gaze</strong></summary>
 
 ### The Trialogue
@@ -87,7 +87,7 @@ Network lag, packet loss, and sensorimotor friction are embraced as active chore
 
 </details>
 
-<details>
+<details open>
 <summary><strong>⚙️ 2. Hardware & Technical Stack</strong></summary>
 
 The core development utilizes a custom **Spatial-Sync** backend, actively targeting **sub-120ms latency** between digital nodes and physical hardware. 
@@ -112,7 +112,7 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 
 </details>
 
-<details>
+<details open>
 <summary><strong>🔗 3. Deployment Environments</strong></summary>
 
 **br_id_ge Multi-Instance Architecture:**
@@ -136,7 +136,7 @@ The di.iiii platform is currently undergoing security hardening (secret-scanning
 
 </details>
 
-<details>
+<details open>
 <summary><strong>🌍 4. Modular Expansion & Upcoming Milestones</strong></summary>
 
 The core Munich-Gyumri connection is a modular prototype. Conceptually, the network is an ever-expanding mixed reality series, designed so that new cities, actors, and stages can continuously join.
@@ -151,7 +151,7 @@ The core Munich-Gyumri connection is a modular prototype. Conceptually, the netw
 
 </details>
 
-<details>
+<details open>
 <summary><strong>👥 5. Core Team & Partners</strong></summary>
 
 **Core Project Leadership:**
