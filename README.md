@@ -69,7 +69,7 @@
 ┌─[01: ECOSYSTEM_CONTEXT]────────────────────────────────────────────────────┐
 │  PLATFORM  : di.iiii  (React/Vite/Three.js + Node.js backend, v0.2.0)    │
 │  SURFACES  : Studio · Beta · Public Viewer · Admin · V1 Legacy            │
-│  SIBLINGS  : pe.portal_engine · wcc (WebXR) · azd (experimental)         │
+│  SIBLINGS  : pe.portal_engine (campaign engine) · wcc · platform_recordar │
 │  MISSION   : digital infrastructure as active choreographic agent         │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -85,7 +85,11 @@
   - Interactive node editor with embedded Markdown documentation
   - Demonstrates core performance concepts: AI translation, latent space visualization, network choreography
 
-- **Sibling Projects:** pe.portal_engine (portal engine), wcc (WebXR Creative Canvas), azd (experimental surfaces)
+- **pe.portal_engine** ([github.com/dob-0/pe.portal_engine](https://github.com/dob-0/pe.portal_engine)): Portable single-file **Campaign Engine** (React + Three.js + Tailwind) — powers open calls, speaker events, 3D poster export, and Google Forms collection. One HTML file, zero build step, admin panel hidden behind 3-tap trigger.
+
+- **WCC — Women Creating Change** ([di-studio.xyz/wcc](https://di-studio.xyz/wcc)): Live pe.portal_engine deployment for the WCC program — a bilingual Armenian/English open call + talks hub for a 3-month creative lab based in Gyumri (Apr–Jun 2026). Targets artists, women, and individuals from marginalized communities.
+
+- **platform_recordar** ([di-studio.xyz/platform_recordar](https://di-studio.xyz/platform_recordar)): WebXR VR/AR immersive scene — memory and spatial experience layer within the di.iiii ecosystem.
 
 All projects share the same **creative vision**: using digital infrastructure as an active choreographic agent.
 
@@ -192,7 +196,8 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 | Service | Production | Staging | Purpose |
 |---|---|---|---|
 | **Main Platform** | [di-studio.xyz](https://di-studio.xyz) | [staging.di-studio.xyz](https://staging.di-studio.xyz) | Spatial editor: Studio/Beta/Public/Admin |
-| **WCC** | [di-studio.xyz/wcc](https://di-studio.xyz/wcc) | [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc) | WebXR Creative Canvas |
+| **WCC** | [di-studio.xyz/wcc](https://di-studio.xyz/wcc) | [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc) | Women Creating Change — open call + talks hub (pe.portal_engine) |
+| **platform_recordar** | [di-studio.xyz/platform_recordar](https://di-studio.xyz/platform_recordar) | — | WebXR VR/AR immersive memory scene |
 | **Backend Health** | [api health](https://di-studio.xyz/serverXR/api/health) | [api health](https://staging.di-studio.xyz/serverXR/api/health) | System status |
 
 The di.iiii platform is currently undergoing security hardening (secret-scanning, deployment isolation) in preparation for full open-sourcing.
