@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>di.iiii // br_id_ge</title>
+    <title>di.iiii // br_id_ge Node Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-
+    
     <style>
         /* di.iiii BESPOKE SPATIAL OS THEME */
         :root {
             --void-0: #050505;
             --void-1: #0a0a0a;
-
-            --tx-primary: #e4e4e7;
-            --tx-secondary: #a1a1aa;
-            --tx-dim: #52525b;
-
+            
+            --tx-primary: #ffffff;
+            --tx-secondary: #c4c4cc; 
+            --tx-dim: #62626b;
+            
             --node-gyumri: #ff2a5f; /* Crimson/Tuff-stone */
             --node-munich: #00e5ff; /* Sharp Cyan/Steel */
             --ai-stitch: #ffffff;
-
-            --border-tech: rgba(255, 255, 255, 0.1);
+            
+            --border-tech: rgba(255, 255, 255, 0.15);
+            --border-active: rgba(255, 255, 255, 0.4);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            scrollbar-width: thin;
+            scrollbar-width: thin; 
             scrollbar-color: var(--tx-dim) var(--void-0);
         }
-
+        
         *::-webkit-scrollbar { width: 6px; }
         *::-webkit-scrollbar-track { background: var(--void-0); }
         *::-webkit-scrollbar-thumb { background: var(--tx-dim); border-radius: 3px; }
@@ -60,16 +61,17 @@
             width: 100vw;
             height: 100vh;
             z-index: 0;
-            pointer-events: none;
-            opacity: 0.35;
+            cursor: crosshair;
+            opacity: 0.35; 
         }
 
-        /* SPATIAL HEADER */
+        /* SPATIAL HEADER - Hardened against overlaps */
         .spatial-header {
             position: relative;
             width: 100%;
-            padding: 2rem 4rem;
+            padding: 2rem;
             display: flex;
+            flex-wrap: wrap; /* Prevents overlap on shrink */
             justify-content: space-between;
             align-items: flex-start;
             font-size: 0.8rem;
@@ -77,13 +79,57 @@
             z-index: 30;
             border-bottom: 1px solid var(--border-tech);
             background: linear-gradient(180deg, rgba(5,5,5,1) 0%, rgba(5,5,5,0.8) 100%);
+            gap: 2rem;
         }
 
-        .sys-identity { display: flex; gap: 3rem; }
+        .sys-identity { display: flex; gap: 2rem; flex-wrap: wrap; }
         .sys-matrix { color: var(--tx-dim); white-space: pre; font-size: 0.75rem; }
-        .sys-data { color: var(--tx-primary); }
+        .sys-data { color: var(--tx-primary); min-width: 200px; }
         .sys-data span { color: var(--tx-dim); }
         .pulse { color: var(--node-gyumri); animation: blink 2s infinite; }
+
+        /* SYSTEM LOG CONSOLE (New Interactivity) */
+        .system-log {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 340px;
+            height: 200px;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid var(--border-tech);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 2px;
+            transition: border-color 0.2s;
+        }
+
+        .log-header {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid var(--border-tech);
+            font-size: 0.7rem;
+            color: var(--tx-primary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .log-content {
+            padding: 0.75rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.7rem;
+        }
+
+        .log-entry { animation: slideIn 0.2s ease-out; word-wrap: break-word; }
+        .log-info { color: var(--node-munich); }
+        .log-warn { color: var(--node-gyumri); }
+        .log-sys { color: var(--tx-dim); }
 
         /* LAYER 1: MAIN DOCUMENT WRAPPER */
         .viewport {
@@ -96,128 +142,196 @@
 
         .document-layer {
             width: 100%;
-            max-width: 900px;
-            padding: 3rem 2rem 8rem 2rem;
-            background: rgba(5, 5, 5, 0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            max-width: 960px;
+            padding: 3rem 4rem 8rem 4rem; 
+            background: rgba(8, 8, 8, 0.96); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-left: 1px dashed var(--border-tech);
             border-right: 1px dashed var(--border-tech);
             min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* VISUAL INFO FLOW (Block-Art Concept Diagram) */
-        .ascii-concept-map {
-            font-size: 0.8rem;
-            line-height: 1.25;
-            margin-bottom: 4rem;
-            color: var(--tx-dim);
-            white-space: pre;
-            overflow-x: auto;
-            border: 1px solid var(--border-tech);
-            padding: 2rem;
-            border-radius: 2px;
-            background: var(--void-1);
-        }
-
-        .data-flow {
-            display: inline-block;
-            animation: flowRight 1s linear infinite;
-        }
-
-        @keyframes flowRight {
-            0% { transform: translateX(-4px); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateX(4px); opacity: 0; }
-        }
-
-        /* CLI STYLED MARKDOWN */
-        .markdown-body {
-            font-size: 0.95rem;
-            line-height: 1.8;
-            color: var(--tx-secondary);
-        }
-
-        .markdown-body h1 {
-            font-size: 1.8rem;
-            margin-bottom: 3rem;
-            color: var(--tx-primary);
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            border-bottom: 1px solid var(--border-tech);
-            padding-bottom: 0.5rem;
-            display: inline-block;
+        /* DRAGGABLE NODE MAP CONTAINER */
+        .interactive-node-map {
+            position: relative;
             width: 100%;
+            height: 420px;
+            background: var(--void-1);
+            border: 1px solid var(--border-tech);
+            border-radius: 2px;
+            margin-bottom: 5rem;
+            overflow: hidden;
+            background-image: radial-gradient(var(--tx-dim) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: -12px -12px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
         }
 
-        .markdown-body h2 {
-            font-size: 1.05rem;
-            margin-top: 4rem;
-            margin-bottom: 1.5rem;
-            color: var(--tx-primary);
-            background: rgba(255,255,255,0.02);
-            padding: 0.5rem 1rem;
-            border-left: 1px solid var(--border-tech);
-            text-transform: uppercase;
-        }
-
-        .markdown-body h3 {
-            font-size: 0.95rem;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--tx-primary);
-        }
-
-        .markdown-body p { margin-bottom: 1.5rem; }
-        .markdown-body strong { color: var(--tx-primary); font-weight: normal; }
-
-        .markdown-body ul { margin-bottom: 2rem; padding-left: 0; list-style-type: none; }
-        .markdown-body li { margin-bottom: 0.8rem; padding-left: 2rem; position: relative; }
-
-        /* Injecting Block-Art into lists */
-        .markdown-body li::before {
-            content: '▚';
+        .node-wires {
             position: absolute;
-            left: 0.5rem;
-            color: var(--node-gyumri);
-            font-size: 0.8rem;
-            top: 0.2rem;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
+        
+        .wire-path {
+            transition: stroke 0.3s ease, stroke-width 0.3s ease;
+        }
+
+        /* DRAGGABLE CLI NODES */
+        .drag-node {
+            position: absolute;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid var(--tx-dim);
+            padding: 0;
+            cursor: grab;
+            font-size: 0.8rem;
+            white-space: pre;
+            user-select: none;
+            z-index: 10;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.1s;
+            backdrop-filter: blur(4px);
+        }
+
+        .drag-node:hover {
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+            z-index: 15;
+        }
+
+        .drag-node:active {
+            cursor: grabbing;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(255,255,255,0.15);
+            transform: translateY(0);
+        }
+
+        .node-content {
+            padding: 1.2rem;
+            line-height: 1.25;
+        }
+
+        /* HIGH-READABILITY CLI MARKDOWN */
+        .markdown-body {
+            font-size: 1rem;
+            line-height: 1.85;
+            color: var(--tx-secondary);
+            word-wrap: break-word; /* Prevents long links from causing horizontal overlap */
+        }
+
+        /* Custom Structural Block-Art Headers */
+        .cli-h1 {
+            margin-bottom: 4rem;
+            width: 100%;
+            text-align: center;
+        }
+        .cli-h1 .art { color: var(--tx-dim); font-size: 0.65rem; letter-spacing: 1px; }
+        .cli-h1 .title { 
+            font-size: 2rem; 
+            color: var(--tx-primary); 
+            text-transform: uppercase; 
+            letter-spacing: -1px; 
+            margin: 0.5rem 0;
+        }
+
+        .cli-h2 {
+            margin-top: 5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255,255,255,0.03);
+            padding: 0.8rem 1rem;
+            border-left: 2px solid var(--tx-primary);
+        }
+        .cli-h2 .art-m { color: var(--node-munich); font-size: 1.2rem; }
+        .cli-h2 .title { font-size: 1.2rem; color: var(--tx-primary); text-transform: uppercase; letter-spacing: 1px; }
+
+        .cli-h3 {
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .cli-h3 .art-g { color: var(--node-gyumri); }
+        .cli-h3 .title { font-size: 1.05rem; color: var(--tx-primary); }
+
+        .markdown-body p { margin-bottom: 1.8rem; }
+        .markdown-body strong { color: var(--tx-primary); font-weight: bold; }
+        
+        .markdown-body ul { 
+            margin-bottom: 2.5rem; 
+            padding-left: 0.5rem; 
+            list-style-type: none; 
+            border-left: 2px solid var(--tx-dim);
+        }
+        .markdown-body li { 
+            margin-bottom: 1rem; 
+            padding-left: 2.5rem; 
+            position: relative; 
+        }
+        .markdown-body li::before {
+            content: '├── ▓▒░';
+            position: absolute;
+            left: 0;
+            color: var(--node-gyumri);
+            font-size: 0.85rem;
+            top: 0.1rem;
+            background: rgba(8, 8, 8, 0.96); 
+            padding-right: 0.5rem;
+        }
+        .markdown-body li:last-child::before { content: '└── ▓▒░'; }
 
         .markdown-body a {
             color: var(--node-munich);
             text-decoration: none;
             border-bottom: 1px dashed var(--tx-dim);
             transition: all 0.2s;
+            padding-bottom: 2px;
+            word-break: break-all; /* Fixes overlap on mobile */
         }
-        .markdown-body a:hover {
+        .markdown-body a:hover { 
             color: var(--tx-primary);
             border-bottom-style: solid;
+            background: rgba(255,255,255,0.05);
         }
-
+        
         .markdown-body code {
             color: var(--tx-primary);
-            background: rgba(255,255,255,0.05);
-            padding: 0.15rem 0.4rem;
-            border-radius: 2px;
+            background: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
             border: 1px solid var(--border-tech);
+            word-break: break-word;
+        }
+        
+        .cli-hr {
+            text-align: center;
+            color: var(--tx-dim);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            margin: 5rem 0;
+            user-select: none;
         }
 
-        .markdown-body hr { border: 0; border-top: 1px dashed var(--border-tech); margin: 4rem 0; opacity: 0.5; }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         @media (max-width: 900px) {
-            .spatial-header { flex-direction: column; gap: 1rem; padding: 1.5rem; }
             .sys-matrix { display: none; }
-            .document-layer {
-                padding: 2rem 1rem 6rem 1rem;
-                border: none;
-            }
-            .ascii-concept-map { font-size: 0.6rem; padding: 1rem; overflow-x: scroll; }
+            .document-layer { padding: 2rem 1.5rem 6rem 1.5rem; border: none; }
+            .interactive-node-map { height: 500px; }
+            .drag-node { font-size: 0.6rem; padding: 0.25rem; }
+            .cli-h1 .art { font-size: 0.4rem; }
+            .cli-hr { font-size: 0.4rem; }
+            .system-log { width: 90%; bottom: 1rem; right: 5%; height: 150px; }
         }
     </style>
 </head>
@@ -249,42 +363,139 @@
         </div>
     </header>
 
+    <!-- INTERACTIVE SYSTEM LOG -->
+    <div class="system-log" id="sys-log">
+        <div class="log-header">
+            <span>[SYSTEM_LOG]</span>
+            <span class="c-dim">DI_IIII_OS</span>
+        </div>
+        <div class="log-content" id="log-content">
+            <div class="log-entry log-sys">> INITIALIZING TELE-SYMBIOSIS...</div>
+            <div class="log-entry log-info">> WAITING FOR NODE INPUT</div>
+        </div>
+    </div>
+
     <!-- LAYER 1: THE DATA STREAM -->
     <main class="viewport">
         <div class="document-layer">
-
-            <div class="sys-data" style="margin-bottom: 1rem; font-size: 0.8rem;">
-                <span class="c-g">root@di.iiii</span><span style="color: var(--tx-dim);">:</span><span class="c-m">~/br_id_ge</span>$ ./visualize_tele_symbiosis.sh
+            
+            <div class="sys-data" style="margin-bottom: 1.5rem; font-size: 0.85rem;">
+                <span class="c-g">root@di.iiii</span><span style="color: var(--tx-dim);">:</span><span class="c-m">~/br_id_ge</span>$ ./open_spatial_node_editor.sh --interactive
             </div>
 
-            <!-- THE VISUAL INFO FLOW (Block-Art Concept) -->
-            <div class="ascii-concept-map">
-┌──────────────────┐        ┌──────────────────┐        ┌──────────────────┐
-│  <span class="c-g">[NODE: GYUMRI]</span>  │        │  <span class="c-ai">[[AI_STITCH]]</span>   │        │  <span class="c-m">[NODE: MUNICH]</span>  │
-│  <span class="c-dim">[MAT: TUFF]</span>     │        │  <span class="c-dim">[OP: LATENT]</span>    │        │  <span class="c-dim">[MAT: STEEL]</span>    │
-│                  │        │                  │        │                  │
-│    <span class="c-g">▗▟██████▙▖</span>    │        │    <span class="c-ai">▗▄██████▄▖</span>    │        │    <span class="c-m">▗▟██████▙▖</span>    │
-│   <span class="c-g">▐██▓▒░░▒▓██▌</span>   │ <span class="c-data">──<span class="data-flow">▓▒░</span>►</span> │   <span class="c-ai">▐██▚▞▚▞▚▞██▌</span>   │ <span class="c-data">──<span class="data-flow">░▒▓</span>►</span> │   <span class="c-m">▐██████████▌</span>   │
-│    <span class="c-g">▝▀██████▀▘</span>    │        │    <span class="c-ai">▝▀██████▀▘</span>    │        │    <span class="c-m">▝▀██████▀▘</span>    │
-└──────────────────┘        └──────────────────┘        └──────────────────┘
-         │                           │                           │
-   <span class="c-data">[EMOTION_IN]</span>                <span class="c-data">[TRANSLATION]</span>               <span class="c-data">[SPATIAL_OUT]</span>
+            <!-- INTERACTIVE DRAGGABLE NODE MAP (Bidirectional) -->
+            <div class="interactive-node-map" id="node-container">
+                
+                <!-- SVG Wires -->
+                <svg class="node-wires">
+                    <path id="wire-g-ai" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                    <path id="wire-ai-m" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
+                    
+                    <!-- Outbound Data (Gyumri -> AI -> Munich) -->
+                    <text font-family="Space Mono" font-size="14" fill="var(--node-gyumri)" letter-spacing="-2">
+                        <textPath href="#wire-g-ai" startOffset="0%">
+                            ▓▒░
+                            <animate attributeName="startOffset" from="0%" to="100%" dur="2.5s" repeatCount="indefinite" />
+                        </textPath>
+                    </text>
+                    <text font-family="Space Mono" font-size="14" fill="var(--node-munich)" letter-spacing="-2">
+                        <textPath href="#wire-ai-m" startOffset="0%">
+                            ▓▒░
+                            <animate attributeName="startOffset" from="0%" to="100%" dur="3s" repeatCount="indefinite" />
+                        </textPath>
+                    </text>
+
+                    <!-- Inbound / Reciprocal Data (Munich -> AI -> Gyumri) -->
+                    <text font-family="Space Mono" font-size="14" fill="var(--ai-stitch)" letter-spacing="-2">
+                        <textPath href="#wire-ai-m" startOffset="100%">
+                            ░▒▓
+                            <animate attributeName="startOffset" from="100%" to="0%" dur="2.2s" repeatCount="indefinite" />
+                        </textPath>
+                    </text>
+                    <text font-family="Space Mono" font-size="14" fill="var(--ai-stitch)" letter-spacing="-2">
+                        <textPath href="#wire-g-ai" startOffset="100%">
+                            ░▒▓
+                            <animate attributeName="startOffset" from="100%" to="0%" dur="2.8s" repeatCount="indefinite" />
+                        </textPath>
+                    </text>
+                </svg>
+
+                <!-- NODE 1: GYUMRI -->
+                <div class="drag-node" id="node-gyumri" style="left: 5%; top: 25%;">
+<div class="node-content c-g">┌─[NODE: GYUMRI]──┐
+│ <span class="c-data">[MAT: TUFF]</span>     │
+│   ▗▟██████▙▖    │
+│  ▐██▓▒░░▒▓██▌   │
+│   ▝▀██████▀▘    │
+└─────────────────┘</div>
+                </div>
+
+                <!-- NODE 2: AI STITCH -->
+                <div class="drag-node" id="node-ai" style="left: 40%; top: 40%;">
+<div class="node-content c-ai">┌─[[AI_STITCH]]───┐
+│ <span class="c-data">[OP: LATENT]</span>    │
+│   ▗▄██████▄▖    │
+│  ▐██▚▞▚▞▚▞██▌   │
+│   ▝▀██████▀▘    │
+└─────────────────┘</div>
+                </div>
+
+                <!-- NODE 3: MUNICH -->
+                <div class="drag-node" id="node-munich" style="left: 70%; top: 15%;">
+<div class="node-content c-m">┌─[NODE: MUNICH]──┐
+│ <span class="c-data">[MAT: STEEL]</span>    │
+│   ▗▟██████▙▖    │
+│  ▐██████████▌   │
+│   ▝▀██████▀▘    │
+└─────────────────┘</div>
+                </div>
+
             </div>
 
             <div class="markdown-body" id="readme-content">
                 <!-- CLI processed markdown injected here -->
             </div>
+
+            <!-- EOF Block Art -->
+            <div class="sys-data" style="margin-top: 6rem; display: flex; justify-content: center; font-size: 0.75rem;">
+<span class="c-dim">
+▗▟████████████████████████████████████████████████████████████████████▙▖
+▐██                                                                  ██▌
+▐██        <span class="c-ai">[SYSTEM IDLE]</span>  > WAITING FOR NEW NODE CONNECTION...       ██▌
+▐██                                                                  ██▌
+▝▀████████████████████████████████████████████████████████████████████▀▘
+</span>
+            </div>
+
         </div>
     </main>
 
     <script>
-        // --- 1. THREE.JS SPATIAL ENGINE ---
+        // --- 0. INTERACTIVE SYSTEM LOG CONTROLLER ---
+        const logBox = document.getElementById('log-content');
+        const sysLog = document.getElementById('sys-log');
+        
+        const addLog = (msg, type = 'log-sys') => {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toISOString().substring(11, 19) + 'Z';
+            entry.innerText = `[${time}] ${msg}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+            if(logBox.children.length > 25) logBox.removeChild(logBox.firstChild);
+            
+            // Highlight box slightly
+            sysLog.style.borderColor = 'var(--tx-primary)';
+            setTimeout(() => { sysLog.style.borderColor = 'var(--border-tech)'; }, 200);
+        };
+
+        // --- 1. THREE.JS SPATIAL ENGINE (Interactive) ---
         let latentEnergy = 0;
 
         const initThreeJS = () => {
             const container = document.getElementById('canvas-container');
             const scene = new THREE.Scene();
-
+            
             const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 15, 50);
 
@@ -297,26 +508,26 @@
             const particlesCount = 1500;
             const posArray = new Float32Array(particlesCount * 3);
             const colorArray = new Float32Array(particlesCount * 3);
-            const initialY = new Float32Array(particlesCount);
+            const initialY = new Float32Array(particlesCount); 
 
-            const colorG = new THREE.Color(0xff2a5f);
-            const colorM = new THREE.Color(0x00e5ff);
-            const colorW = new THREE.Color(0x666666);
+            const colorG = new THREE.Color(0xff2a5f); 
+            const colorM = new THREE.Color(0x00e5ff); 
+            const colorW = new THREE.Color(0x666666); 
 
-            for (let i = 0; i < particlesCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * 100;
-                posArray[i + 1] = (Math.random() - 0.5) * 40;
-                posArray[i + 2] = (Math.random() - 0.5) * 100;
-                initialY[i / 3] = posArray[i + 1];
+            for(let i = 0; i < particlesCount * 3; i+=3) {
+                posArray[i] = (Math.random() - 0.5) * 100;   
+                posArray[i+1] = (Math.random() - 0.5) * 40;  
+                posArray[i+2] = (Math.random() - 0.5) * 100; 
+                initialY[i/3] = posArray[i+1];
 
                 const rand = Math.random();
                 let color = colorW;
-                if (rand > 0.8) color = colorG;
+                if(rand > 0.8) color = colorG;
                 else if (rand > 0.6) color = colorM;
 
                 colorArray[i] = color.r;
-                colorArray[i + 1] = color.g;
-                colorArray[i + 2] = color.b;
+                colorArray[i+1] = color.g;
+                colorArray[i+2] = color.b;
             }
 
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
@@ -345,15 +556,20 @@
                 mouseY = (event.clientY - window.innerHeight / 2) * 0.03;
             });
 
-            // Sync scrolling with 3D energy
-            window.addEventListener('scroll', () => {
-                latentEnergy += 0.05;
-                if (latentEnergy > 2) latentEnergy = 2;
+            // 1B. BACKGROUND INTERACTIVITY (LATENT SURGE)
+            container.addEventListener('click', (e) => {
+                latentEnergy = 4.0; // Massive spike
+                addLog(`> LATENT SURGE TRIGGERED AT X:${e.clientX} Y:${e.clientY}`, 'log-warn');
+            });
 
+            window.addEventListener('scroll', () => {
+                latentEnergy += 0.05; 
+                if(latentEnergy > 1.5) latentEnergy = 1.5; 
+                
                 const latencyMonitor = document.getElementById('latency-monitor');
                 latencyMonitor.innerText = `${Math.floor(118 + (Math.random() * 12))}ms`;
                 latencyMonitor.style.color = '#ff2a5f';
-
+                
                 clearTimeout(window.latTimeout);
                 window.latTimeout = setTimeout(() => {
                     latencyMonitor.innerText = '112ms';
@@ -366,11 +582,11 @@
                 const time = clock.getElapsedTime();
 
                 const positions = particlesGeometry.attributes.position.array;
-                for (let i = 0; i < particlesCount; i++) {
+                for(let i = 0; i < particlesCount; i++) {
                     const i3 = i * 3;
                     const x = positions[i3];
-                    const z = positions[i3 + 2];
-                    positions[i3 + 1] = initialY[i] + Math.sin(time * 0.3 + x * 0.05 + z * 0.05) * (1 + latentEnergy * 10);
+                    const z = positions[i3+2];
+                    positions[i3+1] = initialY[i] + Math.sin(time * 0.3 + x * 0.05 + z * 0.05) * (1 + latentEnergy * 10);
                 }
                 particlesGeometry.attributes.position.needsUpdate = true;
 
@@ -380,8 +596,8 @@
                 camera.position.x += (mouseX - camera.position.x) * 0.05;
                 camera.position.y += (-mouseY - camera.position.y) * 0.05;
                 camera.lookAt(0, 0, 0);
-
-                latentEnergy *= 0.95;
+                
+                latentEnergy *= 0.95; 
 
                 renderer.render(scene, camera);
             };
@@ -395,7 +611,98 @@
             animate();
         };
 
-        // --- 2. DATA INJECTION & BLOCK-ART PRE-PROCESSOR ---
+        // --- 2. DRAGGABLE NODE ENGINE & REACTIVE WIRES ---
+        const initNodeEditor = () => {
+            const container = document.getElementById('node-container');
+            const nGyumri = document.getElementById('node-gyumri');
+            const nAI = document.getElementById('node-ai');
+            const nMunich = document.getElementById('node-munich');
+            const wireGAI = document.getElementById('wire-g-ai');
+            const wireAIM = document.getElementById('wire-ai-m');
+            
+            let activeNode = null;
+            let offsetX = 0, offsetY = 0;
+
+            const updateWires = () => {
+                const drawCurve = (pathEl, el1, el2) => {
+                    const x1 = el1.offsetLeft + el1.offsetWidth;
+                    const y1 = el1.offsetTop + el1.offsetHeight / 2;
+                    const x2 = el2.offsetLeft;
+                    const y2 = el2.offsetTop + el2.offsetHeight / 2;
+                    
+                    const cpOffset = Math.max(Math.abs(x2 - x1) * 0.5, 50); 
+                    const d = `M ${x1} ${y1} C ${x1 + cpOffset} ${y1}, ${x2 - cpOffset} ${y2}, ${x2} ${y2}`;
+                    pathEl.setAttribute('d', d);
+                };
+
+                drawCurve(wireGAI, nGyumri, nAI);
+                drawCurve(wireAIM, nAI, nMunich);
+            };
+
+            // INTERACTIVE WIRE HIGHLIGHTING
+            nGyumri.addEventListener('mouseenter', () => { wireGAI.style.stroke = 'var(--node-gyumri)'; wireGAI.style.strokeWidth = '2.5'; });
+            nGyumri.addEventListener('mouseleave', () => { wireGAI.style.stroke = 'var(--tx-dim)'; wireGAI.style.strokeWidth = '1.5'; });
+            
+            nMunich.addEventListener('mouseenter', () => { wireAIM.style.stroke = 'var(--node-munich)'; wireAIM.style.strokeWidth = '2.5'; });
+            nMunich.addEventListener('mouseleave', () => { wireAIM.style.stroke = 'var(--tx-dim)'; wireAIM.style.strokeWidth = '1.5'; });
+
+            nAI.addEventListener('mouseenter', () => { 
+                wireGAI.style.stroke = 'var(--tx-primary)'; wireAIM.style.stroke = 'var(--tx-primary)';
+                wireGAI.style.strokeWidth = '2'; wireAIM.style.strokeWidth = '2'; 
+            });
+            nAI.addEventListener('mouseleave', () => { 
+                wireGAI.style.stroke = 'var(--tx-dim)'; wireAIM.style.stroke = 'var(--tx-dim)';
+                wireGAI.style.strokeWidth = '1.5'; wireAIM.style.strokeWidth = '1.5';
+            });
+
+            container.addEventListener('mousedown', (e) => {
+                const node = e.target.closest('.drag-node');
+                if (!node) {
+                    addLog(`> EDITOR CLICKED AT X:${e.clientX} Y:${e.clientY}`);
+                    return;
+                }
+                
+                activeNode = node;
+                const rect = node.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                
+                node.style.borderColor = 'var(--tx-primary)';
+                addLog(`> ENGAGING NODE: ${node.id.toUpperCase()}`, 'log-info');
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!activeNode) return;
+                
+                const containerRect = container.getBoundingClientRect();
+                let x = e.clientX - containerRect.left - offsetX;
+                let y = e.clientY - containerRect.top - offsetY;
+
+                x = Math.max(0, Math.min(x, containerRect.width - activeNode.offsetWidth));
+                y = Math.max(0, Math.min(y, containerRect.height - activeNode.offsetHeight));
+
+                activeNode.style.left = `${x}px`;
+                activeNode.style.top = `${y}px`;
+                
+                latentEnergy += 0.05; 
+                if(latentEnergy > 2) latentEnergy = 2;
+                
+                updateWires();
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (activeNode) {
+                    addLog(`> RE-ROUTED ${activeNode.id.toUpperCase()} TO NEW COORDINATES`, 'log-warn');
+                    activeNode.style.borderColor = 'var(--tx-dim)';
+                    activeNode = null;
+                }
+            });
+
+            setTimeout(updateWires, 100); 
+            window.addEventListener('resize', updateWires);
+        };
+
+        // --- 3. OVERLAP-SAFE DATA INJECTION ---
         const loadReadme = () => {
             const readmeData = `
 # br_id_ge (Beta Version) 🌉
@@ -412,6 +719,8 @@
 4. [Modular Expansion & Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
 5. [Core Team & Partners](#5-core-team--partners)
 
+---
+
 ## 🎭 1. Thematic Core: Tele-Symbiosis & The AI Gaze
 
 ### The Trialogue
@@ -425,6 +734,8 @@ The AI acts as the Third Performer, the Shared Body, and the Unseen Narrator. It
 
 ### The Latent Handshake (A Critique of Infrastructure)
 Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
+
+---
 
 ## ⚙️ 2. Hardware & Technical Stack
 
@@ -448,6 +759,8 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 * **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
 * **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
 
+---
+
 ## 🔗 3. Active Production Environments
 
 The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing. It is actively operating across:
@@ -455,6 +768,8 @@ The Main Production Spatial Editor Platform is currently undergoing security har
 * **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
 * **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
 * **RecordAR Platform:** [staging.di-studio.xyz/recordar_platform](https://staging.di-studio.xyz/recordar_platform)
+
+---
 
 ## 🌍 4. Modular Expansion & Upcoming Milestones
 
@@ -465,6 +780,8 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
 * **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
 * **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
 * **Aug–Sep:** Proposed in-person residency phase at the V2\\_ Lab for Unstable Media in Rotterdam.
+
+---
 
 ## 👥 5. Core Team & Partners
 
@@ -487,33 +804,46 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
 *For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.*
             `;
 
-            // PRE-PROCESSOR: Strip emojis and inject Block-Art headers
-            let cleanMarkdown = readmeData.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
-
-            // H1: AI Latent Block Motif
-            cleanMarkdown = cleanMarkdown.replace(/^#\s+(.*)/gm, '# <span class="c-ai">▗▄██▄▖</span> $1');
-
-            // H2: Munich Steel Block Motif
-            cleanMarkdown = cleanMarkdown.replace(/^##\s+(.*)/gm, '## <span class="c-m">▐████▌</span> >> [$1]');
-
-            // H3: Gyumri Tuff-stone Block Motif
-            cleanMarkdown = cleanMarkdown.replace(/^###\s+(.*)/gm, '### <span class="c-g">▓▒░</span> ├─ $1');
-
+            // PRE-PROCESSOR: Strip emojis safely before parsing
+            let cleanMarkdown = readmeData.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); 
+            
             const contentDiv = document.getElementById('readme-content');
-            contentDiv.innerHTML = marked.parse(cleanMarkdown);
+            
+            // Parse Markdown FIRST (prevents Markdown from mis-wrapping our block-art HTML)
+            let parsedHTML = marked.parse(cleanMarkdown);
 
+            // POST-PROCESSOR: Inject Block-Art structurally into the clean HTML
+            parsedHTML = parsedHTML.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '<div class="cli-h1"><div class="art">▗▄████████████████████████████████████████████▄▖</div><div class="title">/// $1</div><div class="art">▝▀████████████████████████████████████████████▀▘</div></div>');
+            
+            parsedHTML = parsedHTML.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '<div class="cli-h2"><span class="art-m">▐██████▌</span> <span class="title">>> [$1]</span></div>');
+            
+            parsedHTML = parsedHTML.replace(/<h3[^>]*>(.*?)<\/h3>/gi, '<div class="cli-h3"><span class="art-g">▓▒░▒▓</span> ├─ <span class="title">$1</span></div>');
+
+            parsedHTML = parsedHTML.replace(/<hr>/gi, '<div class="cli-hr">▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰</div>');
+
+            contentDiv.innerHTML = parsedHTML;
+            
+            // Format external links securely
             const links = contentDiv.querySelectorAll('a');
             links.forEach(link => {
                 const href = link.getAttribute('href');
                 if (href && href.startsWith('http')) {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
+                    
+                    // Add interactivity logging to links
+                    link.addEventListener('click', () => {
+                        addLog(`> EXECUTING EXTERNAL ROUTE: ${href.substring(0, 25)}...`, 'log-info');
+                    });
                 }
             });
+            
+            addLog('> DOCUMENT DATA STREAM LOADED SUCCESSFULLY');
         };
 
         window.onload = () => {
             initThreeJS();
+            initNodeEditor();
             loadReadme();
         };
     </script>
