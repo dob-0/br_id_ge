@@ -111,3 +111,7 @@ The core Munich-Gyumri connection is a modular prototype. Conceptually, the netw
 ## Contributing
 
 For inquiries, collaboration, or to join the network, contact **Gevorg Aram Grigoryan (dob-0)**. See [DEVELOPMENT.md](DEVELOPMENT.md) for contributor setup.
+
+## Update
+
+- main page design
