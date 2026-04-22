@@ -1,29 +1,67 @@
 # br_id_ge (Beta Version) 🌉
 
-**A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network**
+**Interactive Spatial Node Editor & Tele-Symbiotic XR Performance Prototype**
 
-`br_id_ge` is an open-source Extended Reality (XR) network utilizing a custom WebXR Node-Based Reality Creation Language. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans from drifting apart.
+`br_id_ge` is a **prototype node editor** showcasing the core concepts of the **di.iiii Spatial Platform** ecosystem. It demonstrates tele-symbiotic performance methodology—a performative framework where the machine acts as the Shared Body, translating **Armenian emotion into German light** and **physical movement into digital architecture**.
+
+This project is part of the larger **di.iiii** ecosystem (React/Vite/Three.js platform for collaborative spatial editing). br_id_ge focuses specifically on the **Munich-Gyumri connection**, a bi-directional XR performance exploring network latency, AI-mediated presence, and algorithmic choreography.
 
 ---
 
-## Getting Started
+## Quick Links
 
-- **Developers & Contributors:** See [DEVELOPMENT.md](DEVELOPMENT.md) for setup and workflow
-- **Project Details:** Full documentation in [docs/PROJECT.md](docs/PROJECT.md)
+- **Live Site:** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/)
+- **Ecosystem Hub:** [di.iiii Platform](https://github.com/dob-0/di.iiii) | [Creator Profile](https://github.com/dob-0)
+- **Developers:** See [DEVELOPMENT.md](DEVELOPMENT.md) for setup
+- **Full Docs:** [docs/PROJECT.md](docs/PROJECT.md)
 
 ---
 
 ## 📖 Table of Contents
 
-1. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
-2. [Hardware & Technical Stack](#2-hardware--technical-stack)
-3. [Active Production Environments](#3-active-production-environments)
-4. [Modular Expansion & Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
-5. [Core Team & Partners](#5-core-team--partners)
+1. [Ecosystem Context](#ecosystem-context)
+2. [What is br_id_ge?](#what-is-br_id_ge)
+3. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
+4. [Hardware & Technical Stack](#2-hardware--technical-stack)
+5. [Production Environments](#3-active-production-environments)
+6. [Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
+7. [Core Team](#5-core-team--partners)
 
 ---
 
-## 🎭 1. Thematic Core: Tele-Symbiosis & The AI Gaze
+## � Ecosystem Context
+
+**br_id_ge** is one instantiation within the **di.iiii** spatial platform family:
+
+- **di.iiii Platform** ([GitHub](https://github.com/dob-0/di.iiii)): Main production spatial editor (React/Vite/Three.js + Node.js backend, v0.2.0)
+  - Multi-surface: Studio, Beta, Public Viewer, Admin, V1 Legacy
+  - Space-based architecture: create/manage/publish collaborative spatial projects
+  - Live at [di-studio.xyz](https://di-studio.xyz)
+
+- **br_id_ge** (this repo): Focused prototype for the Munich-Gyumri tele-symbiotic performance
+  - Deployed as standalone static site on GitHub Pages
+  - Interactive node editor with embedded Markdown documentation
+  - Demonstrates core performance concepts: AI translation, latent space visualization, network choreography
+
+- **pe.portal_engine**: Portal/gateway engine (sibling prototype)
+
+All three projects share the same **creative vision**: using digital infrastructure as an active choreographic agent.
+
+---
+
+## 🎭 What is br_id_ge?
+
+**br_id_ge** ("bridge") is an interactive documentation and performance system that visualizes the Munich-Gyumri connection:
+
+1. **Node Editor**: Drag-and-drop spatial nodes representing performers (Gyumri, Munich), systems (AI, Hardware, Environment), and processes
+2. **Live Markdown Sync**: Fetches project documentation from `docs/PROJECT.md`, rendered with keyword highlighting and collapsible sections
+3. **Particle Background**: Three.js latent space visualization (1500 particles, motion-preference aware)
+4. **System Log**: Real-time event stream showing performance state, AI decisions, and network metrics
+5. **Terminal-Art Styling**: ASCII-inspired borders and visual separators for readability across devices
+
+---
+
+## �🎭 1. Thematic Core: Tele-Symbiosis & The AI Gaze
 
 ### The Trialogue
 The piece is structured as an interactive trialogue between a performer in Munich (Node: "Steel"), a performer in Gyumri (Node: "Tuff-Stone"), and the AI itself.
@@ -63,13 +101,18 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 
 ---
 
-## 🔗 3. Active Production Environments
+## 🔗 3. Production Environments
 
-The Main Production Spatial Editor Platform is currently undergoing security hardening in preparation for full open-sourcing. It is actively operating across:
-* **Main WCC Platform:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
-* **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
-* **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
-* **RecordAR Platform:** [staging.di-studio.xyz/recordar_platform](https://staging.di-studio.xyz/recordar_platform)
+**br_id_ge Deployment:**
+* **Live:** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/) (GitHub Pages from `main` branch)
+* **Source:** [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge)
+
+**Ecosystem Platforms (di.iiii):**
+* **Production:** [di-studio.xyz](https://di-studio.xyz) – Main spatial editor platform (v0.2.0)
+* **Staging:** [staging.di-studio.xyz](https://staging.di-studio.xyz) – Preview/verification lane
+* **Backend Health:** [di-studio.xyz/serverXR/api/health](https://di-studio.xyz/serverXR/api/health)
+
+The broader di.iiii platform is currently undergoing security hardening (secret-scanning, deployment isolation) in preparation for full open-sourcing.
 
 ---
 
@@ -78,26 +121,33 @@ The Main Production Spatial Editor Platform is currently undergoing security har
 The core Munich-Gyumri connection is a modular prototype. Conceptually, the network is an ever-expanding mixed reality series, designed so that new cities, actors, and stages can continuously join.
 
 **Upcoming 2026 Project Milestones:**
-* **Imminent Release:** Open-sourcing of the `dii platform v0.2.0` API Specifications and ROS-Mapping protocols.
-* **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
-* **May 15:** "New Realities Award" submission for the Festival of the Future (XR HUB Bavaria).
-* **July–Dec Target:** Proposed in-person residency phase at the V2\_ Lab for Unstable Media in Rotterdam, focusing on the fragility of digital infrastructure.
-* **Open Talent Search:** An Open Call for visual, digital, 3D printing, and performative artists to join the network.
+* **Imminent:** di.iiii platform v0.2.0 API specs, ROS-Mapping protocols, and hardware calibration guides for public release
+* **April 30:** Culture Moves Europe (CME) Individual Mobility Grant submission (final)
+* **May 15:** "New Realities Award" submission for Festival of the Future (XR HUB Bavaria)
+* **Aug–Sep:** Proposed residency at V2\_ Lab for Unstable Media (Rotterdam) — exploring fragility of digital infrastructure
+* **Ongoing:** Open Call for visual, digital, 3D printing, and performative artists to join the network
+* **Ongoing:** Integration of br_id_ge prototypes into di.iiii Studio as reusable spatial templates
 
 ---
 
 ## 👥 5. Core Team & Partners
 
 **Core Project Leadership:**
-* **Gevorg Aram Grigoryan (dob-0):** Head of di.ii, Lead Technical, Software & Conceptual Developer.
-* **Emilya Nikoghosyan:** Co-founder & Multimedia Artist (socio-political/youth-activist dimensions).
-* **Syuzanna Ginosyan:** Primary Curator & German Partnership Liaison.
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([Instagram](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Lead Technical & Conceptual Development. Creator of br_id_ge and di.iiii Platform.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan) ([Instagram](https://www.instagram.com/emilya_nikogosyan/)): Co-founder & Multimedia Artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
 
 **Creative & Technical Team:**
-* **Hannes Köpke:** Directing & Storytelling.
-* **Fe:** Sound Design & Sonic Architecture.
-* **Albert Avetisyan & Taron Grigoryan:** Developers & Multimedia Artists.
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing & Storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design & Sonic Architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/), [**Yeva**](https://www.instagram.com/6addreams.art/): Developers & Artists.
 * **Ani Khachikyan & Arsen Miqayelyan:** Lead Performers (Gyumri Node).
+
+**Institutional Partners:**
+* di.ii studio_network (Armenia)
+* V2\_ Lab for Unstable Media (Rotterdam)
+* Festival of the Future / XR HUB Bavaria (Munich)
+* Culture Moves Europe (CME)
 
 **Institutional Partners & Affiliates:**
 * **V2\_ Lab for Unstable Media** (Netherlands) — *Pending proposal*
