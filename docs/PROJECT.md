@@ -50,14 +50,36 @@ The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to 
 * **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
 * **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
 
-## 3. Active Production Environments
+## 3. Deployment Environments
 
-The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing. It is actively operating across:
-* **Main WCC Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/)
-* **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
-* **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
-* **di.ii Official Web:** [www.thedi.studio](https://www.thedi.studio)
-* **di.iiii Network Core:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
+**br_id_ge Multi-Instance Architecture:**
+
+**Production Tier:**
+* **GitHub Pages:** [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) – Standalone static deployment (from `main` branch)
+* **di-studio.xyz:** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) – Integrated spatial instance on di.iiii platform
+
+**Staging/Preview Tier:**
+* **staging.di-studio.xyz:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) – Experimental testing lane, night builds, feature preview
+
+**Development Tier:**
+* **GitHub:** Feature branches, dev versions, and experimental variants available on [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge)
+
+**di.iiii Platform Services (v0.2.0):**
+The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing.
+
+**Production:**
+* **Main Platform:** [di-studio.xyz](https://di-studio.xyz/) – Studio/Beta/Public/Admin surfaces
+* **WCC (WebXR Creative Canvas):** [di-studio.xyz/wcc](https://di-studio.xyz/wcc)
+* **Backend Health:** [di-studio.xyz/serverXR/api/health](https://di-studio.xyz/serverXR/api/health)
+
+**Staging Preview:**
+* **Main Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/) – Preview all surfaces
+* **WCC:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
+* **Backend Health:** [staging.di-studio.xyz/serverXR/api/health](https://staging.di-studio.xyz/serverXR/api/health)
+
+**Community & Info:**
+* **di.ii Official:** [www.thedi.studio](https://www.thedi.studio)
+* **Social:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
 
 ## 4. Modular Expansion & Upcoming Milestones
 
