@@ -138,4 +138,13 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
 * [**hosq.co**](https://hosq.co/) (Artistic & Technical Partner)
 * [**Hayfilm Cluster**](https://www.instagram.com/hayfilmcluster/) & [**Gyumri State Drama Theater**](https://www.instagram.com/gyumritheatre/)
 
-*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.*
+*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.
+
+---
+
+## MASTER CONTEXT
+
+The canonical master context for br_id_ge v.0000 is available in docs/MASTER_CONTEXT.md. It contains the full curatorial framework (vi_ritualZzzZ), the Phase 0–2 N-Node rollout plan, aesthetic/UI baselines, and team/integration notes. Keep docs/MASTER_CONTEXT.md synchronized with this file and README.md.
+
+See: ./docs/MASTER_CONTEXT.md
+*
