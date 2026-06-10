@@ -1,7 +1,7 @@
 {
   "name": "br_id_ge",
   "version": "1.0.0",
-  "description": "``` ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ░                                                              ░ ░   br_id_ge  ·  BETA  ·  di.iiii PLATFORM v0.2.0            ░ ░   ──────────────────────────────────────────────────────    ░ ░   INTERACTIVE SPATIAL NODE EDITOR                           ░ ░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░ ░   Munich ←[ AI: STITCH ]→ Gyumri                           ░ ░                                                              ░ ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ```",
+  "description": "``` ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ░                                                              ░ ░   br_id_ge  ·  BETA  ·  di.iiii PLATFORM v0.2.0            ░ ░   ──────────────────────────────────────────────────────    ░ ░   NODE OF THE di.iiii PLATFORM                               ░ ░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░ ░   Munich ←[ AI: STITCH ]→ Gyumri                           ░ ░                                                              ░ ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ```",
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -11,6 +11,8 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "start": "vite preview --port 8080",
+    "sync:readme": "bash scripts/auto-push-readme.sh",
+    "sync:space": "bash scripts/auto-push-space.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

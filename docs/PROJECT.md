@@ -4,7 +4,17 @@
 
 `br_id_ge` (meaning "bridge") represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a dynamic N-Node Tele-Symbiotic Mesh — the machine functions as a Shared Body bridging multiple geographical stages, using algorithmic latency as a choreographic element.
 
-**Platform Context:** br_id_ge is part of the **di.iiii Spatial Platform** ecosystem (v0.2.0). The repository moves the prototype from a hardcoded point-to-point case study into a data-driven N-Node topology supporting live curation and generative ritual practice.
+**Platform Context:** br_id_ge is the node of the **di.iiii Spatial Platform** ecosystem (v0.2.0). The repository moves the prototype from a hardcoded point-to-point case study into a data-driven N-Node topology supporting live curation and generative ritual practice.
+
+**Platform Surface Map:**
+* **Public node:** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) – live br_id_ge space node
+* **Source:** [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) – repo and docs
+* **Platform core:** [github.com/dob-0/di.iiii](https://github.com/dob-0/di.iiii) – the surrounding di.iiii runtime
+
+**Repo Sync Modes:**
+* **Manual:** edit locally, commit, push, and refresh the live node
+* **Auto:** branch-based or workflow-based mirroring for repeatable multi-file updates
+* **Multi-file ready:** keep reusable code in `src/`, `scripts/`, and `docs/` instead of forcing everything into one HTML file
 
 ## Table of Contents
 

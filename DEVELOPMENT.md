@@ -44,7 +44,20 @@ chmod +x scripts/auto-push-readme.sh
 - Custom branch: `./scripts/auto-push-readme.sh my-branch`
 - Custom interval: `./scripts/auto-push-readme.sh main 1` (check every 1 second)
 
-#### Option 2: VS Code (One-Click)
+#### Option 2: Multi-file repo sync
+
+```bash
+chmod +x scripts/auto-push-space.sh
+./scripts/auto-push-space.sh
+```
+
+- Watches `index.html`, `README.md`, `docs/`, `src/`, `scripts/`, `serverXR/`, and related repo files.
+- Use this for the multi-file project workflow instead of the README-only watcher.
+- Or run `npm run sync:space` (pass branch/interval after `--` if needed).
+- Custom branch: `./scripts/auto-push-space.sh my-branch`
+- Custom interval: `./scripts/auto-push-space.sh main 1`
+
+#### Option 3: VS Code (One-Click)
 
 1. Open Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
 2. Run: `Tasks: Run Task`
@@ -62,7 +75,8 @@ br_id_ge/
 ├── docs/
 │   └── PROJECT.md              # Full project documentation
 ├── scripts/
-│   └── auto-push-readme.sh      # Auto-push watcher script
+│   ├── auto-push-readme.sh      # README-only auto-push watcher
+│   └── auto-push-space.sh       # Multi-file repo sync watcher
 ├── hardware/                    # Hardware specifications & assets
 ├── node_bridge/                 # Node.js backend & middleware
 ├── touchdesigner/               # TouchDesigner projects & assets
