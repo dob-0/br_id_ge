@@ -1,0 +1,28 @@
+{
+  "name": "br_id_ge",
+  "version": "1.0.0",
+  "description": "``` ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ░                                                              ░ ░   br_id_ge  ·  BETA  ·  di.iiii PLATFORM v0.2.0            ░ ░   ──────────────────────────────────────────────────────    ░ ░   INTERACTIVE SPATIAL NODE EDITOR                           ░ ░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░ ░   Munich ←[ AI: STITCH ]→ Gyumri                           ░ ░                                                              ░ ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ```",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "npx http-server . -p 8080 --silent",
+    "start": "npx http-server . -p 8080 --silent",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dob-0/br_id_ge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dob-0/br_id_ge/issues"
+  },
+  "homepage": "https://github.com/dob-0/br_id_ge#readme",
+  "dependencies": {
+    "ws": "^8.21.0"
+  }
+}
