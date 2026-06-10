@@ -7,9 +7,14 @@
     "doc": "docs"
   },
   "scripts": {
-    "dev": "npx http-server . -p 8080 --silent",
-    "start": "npx http-server . -p 8080 --silent",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 8080",
+    "start": "vite preview --port 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21"
   },
   "repository": {
     "type": "git",
