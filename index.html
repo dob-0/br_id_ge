@@ -644,88 +644,85 @@
             <!-- INTERACTIVE FULL-ECOSYSTEM NODE MAP -->
             <div class="interactive-node-map" id="node-container">
                 
-                <svg class="node-wires">
-                    <path id="wire-hw-g" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    <path id="wire-g-ai" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    <path id="wire-team-ai" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    <path id="wire-ai-m" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    <path id="wire-ai-env" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    <path id="wire-env-exp" class="wire-path" d="" stroke="var(--tx-dim)" stroke-width="1.5" stroke-dasharray="4 4" fill="none" />
-                    
-                    <text font-family="Space Mono" font-size="14" fill="var(--tx-dim)" letter-spacing="-2">
-                        <textPath href="#wire-hw-g" startOffset="0%">▓▒░<animate attributeName="startOffset" from="0%" to="100%" dur="2s" repeatCount="indefinite" /></textPath>
-                    </text>
-                    <text font-family="Space Mono" font-size="14" fill="var(--node-gyumri)" letter-spacing="-2">
-                        <textPath href="#wire-g-ai" startOffset="0%">▓▒░<animate attributeName="startOffset" from="0%" to="100%" dur="2.5s" repeatCount="indefinite" /></textPath>
-                    </text>
-                    <text font-family="Space Mono" font-size="14" fill="var(--tx-dim)" letter-spacing="-2">
-                        <textPath href="#wire-team-ai" startOffset="0%">░▒▓<animate attributeName="startOffset" from="0%" to="100%" dur="3.5s" repeatCount="indefinite" /></textPath>
-                    </text>
-                    <text font-family="Space Mono" font-size="14" fill="var(--node-munich)" letter-spacing="-2">
-                        <textPath href="#wire-ai-m" startOffset="0%">▓▒░<animate attributeName="startOffset" from="0%" to="100%" dur="3s" repeatCount="indefinite" /></textPath>
-                    </text>
-                    <text font-family="Space Mono" font-size="14" fill="var(--tx-primary)" letter-spacing="-2">
-                        <textPath href="#wire-ai-env" startOffset="0%">░▒▓<animate attributeName="startOffset" from="0%" to="100%" dur="2.2s" repeatCount="indefinite" /></textPath>
-                    </text>
-                    <text font-family="Space Mono" font-size="14" fill="var(--tx-dim)" letter-spacing="-2">
-                        <textPath href="#wire-env-exp" startOffset="0%">░▒▓<animate attributeName="startOffset" from="0%" to="100%" dur="2.8s" repeatCount="indefinite" /></textPath>
-                    </text>
-                </svg>
+                <svg class="node-wires" id="node-wires-svg"></svg>
 
-                <div class="drag-node" id="node-gyumri" style="left: 10%; top: 40%;">
-<div class="node-content c-g">┌─[01: GYUMRI]────┐
-│ <span class="c-data">[MAT: TUFF]</span>     │
-│   ▗▟██████▙▖    │
-│  ▐██▓▒░░▒▓██▌   │
-│   ▝▀██████▀▘    │
-└─────────────────┘</div>
-                </div>
+                <script>
+                    // Data-driven N-Node mesh (renders nodes and wires dynamically)
+                    (function(){
+                        const container = document.getElementById('node-container');
+                        const svgNS = 'http://www.w3.org/2000/svg';
 
-                <div class="drag-node" id="node-ai" style="left: 40%; top: 38%;">
-<div class="node-content c-ai">┌─[[00: AI_CORE]]─┐
-│ <span class="c-data">[OP: LATENT]</span>    │
-│   ▗▄██████▄▖    │
-│  ▐██▚▞▚▞▚▞██▌   │
-│   ▝▀██████▀▘    │
-└─────────────────┘</div>
-                </div>
+                        const nodeDefs = [
+                            { id: 'node-hw', label: 'HW_STACK', left: '8%', top: '70%', cls: 'c-sub', data: 'OP: SENSORS' },
+                            { id: 'node-gyumri', label: 'GYUMRI', left: '10%', top: '40%', cls: 'c-g', data: 'MAT: TUFF' },
+                            { id: 'node-yerevan', label: 'YEREVAN', left: '25%', top: '48%', cls: 'c-g', data: 'MAT: STONE' },
+                            { id: 'node-ai', label: 'AI_CORE', left: '40%', top: '38%', cls: 'c-ai', data: 'OP: LATENT' },
+                            { id: 'node-leipzig', label: 'LEIPZIG', left: '52%', top: '46%', cls: 'c-sub', data: 'NODE: LEIPZIG' },
+                            { id: 'node-env', label: 'ENVIRON', left: '40%', top: '8%', cls: 'c-sub', data: 'NET: WCC_SYNC' },
+                            { id: 'node-exp', label: 'EXPANSION', left: '72%', top: '12%', cls: 'c-sub', data: 'FWD: 2026_CME' },
+                            { id: 'node-munich', label: 'MUNICH', left: '72%', top: '40%', cls: 'c-m', data: 'MAT: STEEL' },
+                            { id: 'node-spain', label: 'SPAIN', left: '86%', top: '30%', cls: 'c-sub', data: 'NODE: SPAIN' },
+                            { id: 'node-team', label: 'USR_DEF', left: '40%', top: '72%', cls: 'c-sub', data: 'ID: DI.II_NET' }
+                        ];
 
-                <div class="drag-node" id="node-munich" style="left: 72%; top: 40%;">
-<div class="node-content c-m">┌─[02: MUNICH]────┐
-│ <span class="c-data">[MAT: STEEL]</span>    │
-│   ▗▟██████▙▖    │
-│  ▐██████████▌   │
-│   ▝▀██████▀▘    │
-└─────────────────┘</div>
-                </div>
+                        // Define topology links (bi-directional visually represented as single curved path)
+                        const links = [
+                            ['node-hw','node-gyumri'],
+                            ['node-gyumri','node-ai'],
+                            ['node-ai','node-munich'],
+                            ['node-ai','node-yerevan'],
+                            ['node-yerevan','node-leipzig'],
+                            ['node-leipzig','node-spain'],
+                            ['node-ai','node-env'],
+                            ['node-env','node-exp'],
+                            ['node-team','node-ai']
+                        ];
 
-                <div class="drag-node" id="node-hw" style="left: 8%; top: 70%;">
-<div class="node-content c-sub">┌─[02: HW_STACK]──┐
-│ <span class="c-data">[OP: SENSORS]</span>   │
-│   ▗▄▚▞▚▞▚▞▄▖    │
-└─────────────────┘</div>
-                </div>
+                        // expose for editor updateWires to use
+                        window.nodeDefs = nodeDefs; window.nodeLinks = links;
 
-                <div class="drag-node" id="node-env" style="left: 40%; top: 8%;">
-<div class="node-content c-sub">┌─[03: ENVIRON]───┐
-│ <span class="c-data">[NET: WCC_SYNC]</span> │
-│   ▗▟██░▒▓██▙▖   │
-└─────────────────┘</div>
-                </div>
+                        // create SVG container
+                        const svg = document.getElementById('node-wires-svg');
+                        if (!svg) return;
+                        svg.setAttribute('width','100%'); svg.setAttribute('height','100%');
 
-                <div class="drag-node" id="node-exp" style="left: 72%; top: 12%;">
-<div class="node-content c-sub">┌─[04: EXPANSION]─┐
-│ <span class="c-data">[FWD: 2026_CME]</span> │
-│   ▐████►►►███▌  │
-└─────────────────┘</div>
-                </div>
+                        // create path elements for links
+                        links.forEach((ln, i) => {
+                            const p = document.createElementNS(svgNS, 'path');
+                            p.setAttribute('id', `wire-${i}`);
+                            p.setAttribute('class', 'wire-path');
+                            p.setAttribute('d','');
+                            p.setAttribute('stroke','var(--tx-dim)');
+                            p.setAttribute('stroke-width','1.5');
+                            p.setAttribute('fill','none');
+                            p.setAttribute('stroke-dasharray','4 4');
+                            svg.appendChild(p);
 
-                <div class="drag-node" id="node-team" style="left: 40%; top: 72%;">
-<div class="node-content c-sub">┌─[05: USR_DEF]───┐
-│ <span class="c-data">[ID: DI.II_NET]</span> │
-│   ▝▀██████▀▘    │
-└─────────────────┘</div>
-                </div>
+                            // add animated text marker along first few wires for visual motion
+                            if (i < 4) {
+                                const t = document.createElementNS(svgNS, 'text');
+                                t.setAttribute('font-family','Space Mono'); t.setAttribute('font-size','14');
+                                t.setAttribute('fill', i===1? 'var(--node-gyumri)': (i===2? 'var(--node-munich)' : 'var(--tx-dim)'));
+                                t.setAttribute('letter-spacing','-2');
+                                const tp = document.createElementNS(svgNS,'textPath');
+                                tp.setAttributeNS('http://www.w3.org/1999/xlink','href',`#wire-${i}`);
+                                tp.setAttribute('startOffset','0%');
+                                tp.innerHTML = '▓▒░<animate attributeName="startOffset" from="0%" to="100%" dur="2.8s" repeatCount="indefinite" />';
+                                t.appendChild(tp); svg.appendChild(t);
+                            }
+                        });
+
+                        // render node divs
+                        nodeDefs.forEach(nd => {
+                            const div = document.createElement('div');
+                            div.className = 'drag-node'; div.id = nd.id; div.style.position = 'absolute';
+                            div.style.left = nd.left; div.style.top = nd.top;
+                            div.innerHTML = `<div class="node-content ${nd.cls}">┌─[${nd.label}]─┐\n│ <span class="c-data">[${nd.data}]</span> │\n└─────────────────┘</div>`;
+                            container.appendChild(div);
+                        });
+
+                    })();
+                </script>
 
             </div>
 
@@ -873,18 +870,31 @@
             let activeNode = null; let offsetX = 0, offsetY = 0;
 
             const updateWires = () => {
-                const drawCurve = (pathId, el1Id, el2Id) => {
-                    const p = document.getElementById(pathId);
-                    const el1 = document.getElementById(el1Id); const el2 = document.getElementById(el2Id);
-                    if (!p || !el1 || !el2) return;
+                const drawCurveEl = (pEl, el1, el2) => {
                     const x1 = el1.offsetLeft + el1.offsetWidth / 2; const y1 = el1.offsetTop + el1.offsetHeight / 2;
                     const x2 = el2.offsetLeft + el2.offsetWidth / 2; const y2 = el2.offsetTop + el2.offsetHeight / 2;
                     const cpX1 = x1 + (x2 - x1) / 2; const cpY1 = y1; const cpX2 = x1 + (x2 - x1) / 2; const cpY2 = y2;
-                    p.setAttribute('d', `M ${x1} ${y1} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${x2} ${y2}`);
+                    pEl.setAttribute('d', `M ${x1} ${y1} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${x2} ${y2}`);
                 };
-                drawCurve('wire-g-ai', 'node-gyumri', 'node-ai'); drawCurve('wire-ai-m', 'node-ai', 'node-munich');
-                drawCurve('wire-hw-g', 'node-hw', 'node-gyumri'); drawCurve('wire-ai-env', 'node-ai', 'node-env');
-                drawCurve('wire-env-exp', 'node-env', 'node-exp'); drawCurve('wire-team-ai', 'node-team', 'node-ai');
+
+                // dynamic: iterate links generated from data-driven mesh
+                if (window.nodeLinks && window.nodeLinks.length) {
+                    window.nodeLinks.forEach((ln, i) => {
+                        const p = document.getElementById(`wire-${i}`);
+                        // if path missing (maybe not created yet), skip
+                        if(!p) return;
+                        const el1 = document.getElementById(ln[0]); const el2 = document.getElementById(ln[1]);
+                        if (!el1 || !el2) return;
+                        drawCurveEl(p, el1, el2);
+                    });
+                } else {
+                    // fallback to older hardcoded ids if present
+                    const fallbackPairs = [['wire-g-ai','node-gyumri','node-ai'], ['wire-ai-m','node-ai','node-munich']];
+                    fallbackPairs.forEach(pair => {
+                        const p = document.getElementById(pair[0]); const el1 = document.getElementById(pair[1]); const el2 = document.getElementById(pair[2]);
+                        if(p && el1 && el2) drawCurveEl(p, el1, el2);
+                    });
+                }
             };
 
             const startDrag = (node, clientX, clientY) => {
@@ -894,6 +904,8 @@
                 offsetY = clientY - rect.top;
                 node.style.borderColor = 'var(--tx-primary)';
                 addLog(`> NODE ACTIVATED: [${node.id.toUpperCase()}]`, 'log-info');
+                // ensure wires update after drag start so dynamic svg exists
+                updateWires();
             };
 
             const moveDrag = (clientX, clientY) => {
@@ -1057,8 +1069,12 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
             let cleanMarkdown = readmeData.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); 
             
             // PRE-PROCESSOR 2: Inject Interactive Keywords (Text -> Map Interaction)
+            // highlight city and system keywords and attach to dynamic node ids
             cleanMarkdown = cleanMarkdown.replace(/\b(Munich)\b/g, '<span class="sys-keyword kw-m" data-target="node-munich">$1</span>');
             cleanMarkdown = cleanMarkdown.replace(/\b(Gyumri)\b/g, '<span class="sys-keyword kw-g" data-target="node-gyumri">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Yerevan)\b/g, '<span class="sys-keyword kw-g" data-target="node-yerevan">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Leipzig)\b/g, '<span class="sys-keyword kw-sub" data-target="node-leipzig">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Spain)\b/g, '<span class="sys-keyword kw-sub" data-target="node-spain">$1</span>');
             cleanMarkdown = cleanMarkdown.replace(/\b(AI|Stitch|Latent Vectors|Latent Space)\b/g, '<span class="sys-keyword kw-ai" data-target="node-ai">$1</span>');
             
             // PRE-PROCESSOR 3: Inject Inline Terminal Art Schematics
@@ -1114,8 +1130,8 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
                     const targetNode = document.getElementById(targetId);
                     if(targetNode) {
                         targetNode.classList.add('node-highlight');
-                        if (targetId.includes('gyumri')) targetNode.classList.add('node-highlight-g');
-                        if (targetId.includes('munich')) targetNode.classList.add('node-highlight-m');
+                        if (targetId.includes('gyumri') || targetId.includes('yerevan')) targetNode.classList.add('node-highlight-g');
+                        if (targetId.includes('munich') || targetId.includes('leipzig')) targetNode.classList.add('node-highlight-m');
                     }
                     addLog(`> KEYWORD HOVER: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
                     if(window.triggerLatentSurge) window.triggerLatentSurge();

@@ -5,7 +5,7 @@
 ░   ──────────────────────────────────────────────────────    ░
 ░   INTERACTIVE SPATIAL NODE EDITOR                           ░
 ░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░
-░   Munich ←[ AI: STITCH ]→ Gyumri                           ░
+░   N-NODE MESH ←[ AI: STITCH ]→ DISTRIBUTED NODES               ░
 ░                                                              ░
 ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓
 ```
@@ -101,7 +101,7 @@ All projects share the same **creative vision**: using digital infrastructure as
 ```
 ┌─[02: THEMATIC_CORE]────────────────────────────────────────────────────────┐
 │  FORMAT    : Tele-Symbiotic Trialogue                                      │
-│  NODES     : Gyumri [TUFF] ←── AI: STITCH ──→ Munich [STEEL]             │
+│  NODES     : Gyumri [TUFF], Yerevan, Leipzig, Munich [STEEL], Spain — AI: STITCH (N-Node Mesh) │
 │  LATENCY   : 121–228ms trans-European                                      │
 │  AI_ROLE   : Third Lead Actor · Shared Body · Unseen Narrator             │
 │  TRANSLATE : Armenian emotion → German light                               │
@@ -110,7 +110,7 @@ All projects share the same **creative vision**: using digital infrastructure as
 ```
 
 ### The Trialogue
-The piece is structured as an interactive trialogue between a performer in Munich (Node: "Steel"), a performer in Gyumri (Node: "Tuff-Stone"), and the AI itself.
+The piece is structured as a distributed multilateral performance: multiple human nodes (Gyumri, Yerevan, Leipzig, Munich, Spain) interact with the AI Core. The Lead Curator acts as the human "Stitch"—an active translator and conductor.
 
 ### The AI's Role ("Stitch")
 The AI acts as the Third Lead Actor, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.

@@ -2,25 +2,27 @@
 
 **A tele-symbiotic XR performance framework and interactive node editor by the di.ii studio_network**
 
-`br_id_ge` (meaning "bridge") represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine acts as the Shared Body, keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
+`br_id_ge` (meaning "bridge") represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a dynamic N-Node Tele-Symbiotic Mesh — the machine functions as a Shared Body bridging multiple geographical stages, using algorithmic latency as a choreographic element.
 
-**Platform Context:** br_id_ge is a prototype within the **di.iiii Spatial Platform** ecosystem, demonstrating core choreographic and performance concepts. The larger di.iiii platform (v0.2.0) is a collaborative web-based spatial editor with multi-surface architecture (Studio, Beta, Public, Admin). br_id_ge focuses specifically on the Munich-Gyumri connection as a case study in network choreography and AI-mediated presence.
+**Platform Context:** br_id_ge is part of the **di.iiii Spatial Platform** ecosystem (v0.2.0). The repository moves the prototype from a hardcoded point-to-point case study into a data-driven N-Node topology supporting live curation and generative ritual practice.
 
 ## Table of Contents
 
 1. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
 2. [Hardware & Technical Stack](#2-hardware--technical-stack)
 3. [Active Production Environments](#3-active-production-environments)
-4. [Modular Expansion & Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
-5. [Core Team & Partners](#5-core-team--partners)
+4. [N-Node Rollout: Phase 0–2](#4-n-node-rollout-phase-0-2)
+5. [Curatorial Framework: vi_ritualZzzZ & Notations #2](#5-curatorial-framework-vi_ritualzzz-notes)
+6. [Core Team & Partners](#6-core-team--partners)
 
 ## 1. Thematic Core: Tele-Symbiosis & The AI Gaze
 
-### The Trialogue
-The project is structured as a three-actor performance involving the Munich performer, the Gyumri performer, and the AI itself.
+### Networked Performance
+br_id_ge structures a distributed, multi-actor performance where multiple human nodes (venues, performers, labs) interact through an AI Core. The human Lead Curator acts as the "Stitch"—a translator and active mediator—while the AI provides latency buffering, prediction (the "Ghost Hand"), and emergent visual rituals.
 
 ### The AI's Role ("Stitch")
-The AI acts as the Third Performer, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
+The AI functions as the Shared Body and interpretive engine. Rather than a simple relay, it translates sensorimotor streams into visual and temporal architectures that scaffold collective ritual behavior across geographically distributed stages.
+
 
 * **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability. It visualizes human emotions in the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
 * **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance. It effectively "steals" the human movement, turning the performers into the audience of their own data.
@@ -32,13 +34,38 @@ Network lag, packet loss, and sensorimotor friction are embraced as active chore
 
 The core development utilizes a custom Spatial-Sync backend, aiming to maintain **sub-120ms latency** between digital nodes and physical hardware.
 
-The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
+The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are part of the **di.ii studio's collected inventory** rather than fixed dependencies.
 
 ### The Omnisensory Capture Pipeline
-While the current spatial baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from the studio's exhaustive, collected taxonomy of open sensor arrays:
+
+While the current baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from an extensive taxonomy of open sensor arrays:
 * **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, LiDAR, ToF, Radar (mmWave), and PIR arrays.
 * **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
-* **Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
+
+## 4. N-Node Rollout: Phase 0–2
+
+The N-Node expansion supports a phased rollout designed for incremental stress-testing and cross-continental scale-up:
+
+- Phase 0 (Imminent): Gyumri ── Yerevan
+  - Purpose: Localized stress test within Armenia; validate peer discovery, sync, and Ghost Hand prediction on sub-50ms intra-country links.
+- Phase 1: Yerevan ── Leipzig ── Gyumri
+  - Purpose: Establish the first triangular network; test multi-directional Ghost Hand latency buffering and distributed AI stitching.
+- Phase 2: Munich ── Spain
+  - Purpose: Cross-continental expansion pushing sub-120ms latency constraints across trans-European infrastructure; measure end-to-end jitter and artistic affordances.
+
+These phases map directly to curatorial steps for Notations #2 and festival deployments.
+
+## 5. Curatorial Framework: vi_ritualZzzZ & Notations #2
+
+The software architecture supports a live curatorial methodology (vi_ritualZzzZ) used within Notations #2. Core principles:
+
+- Open Visual Jam: Shift from isolated short films to a horizontal, live jam where participants merge code, archives, moving images, live music and movement.
+- The Human Stitch: The Lead Curator actively translates and composes incoming node streams into a shared ritual.
+- Latency as Choreography: Algorithmic latency becomes a structural element in the performance; Ghost Hands are visible artifacts used for timing and choreography.
+
+Notations #2 (July 20–Aug 2, 2026) is the first major event to deploy Phase 1 topologies and the vi_ritualZzzZ methodology.
+
+**Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
 
 ### AI Bridge & Interpretation (The Brain)
 * **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the meaning and emotional sentiment of the movement and sensory data.
