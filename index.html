@@ -153,7 +153,7 @@ const M=THREE.MathUtils;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x050608,0.02);
+scene.fog=new THREE.FogExp2(0x050608,0.013);
 const camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,0.1,700);
 
 // ── the bridge path ──
@@ -206,9 +206,19 @@ const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferA
 const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xcdb98f,size:0.07,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false}));
 scene.add(dust);
 
+// ── glowing bridge rails + ties: structure you can see and travel along ──
+const railMat=new THREE.LineBasicMaterial({color:0xffb347,transparent:true,opacity:.55,blending:THREE.AdditiveBlending});
+function railLine(off){const pts=[];for(let i=0;i<=180;i++){const t=i/180,c=pathAt(t);pts.push(new THREE.Vector3(c.x+off,c.y-1.7,c.z));}
+  return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),railMat);}
+scene.add(railLine(-2.4));scene.add(railLine(2.4));
+const tieMat=new THREE.LineBasicMaterial({color:0xcdb98f,transparent:true,opacity:.28,blending:THREE.AdditiveBlending});
+for(let i=0;i<90;i++){const t=i/90,c=pathAt(t);
+  const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(c.x-2.4,c.y-1.7,c.z),new THREE.Vector3(c.x+2.4,c.y-1.7,c.z)]);
+  scene.add(new THREE.Line(g,tieMat));}
+
 // ── your lamp (a tight halo bound to your focus) ──
-const lamp=new THREE.PointLight(0xffb347,2.4,55);scene.add(lamp);
-scene.add(new THREE.AmbientLight(0x141d2c,0.45));
+const lamp=new THREE.PointLight(0xffb347,2.6,95);scene.add(lamp);
+scene.add(new THREE.AmbientLight(0x1b2742,0.7));
 const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xffce8c,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
 halo.scale.set(7,7,7);scene.add(halo);
 
@@ -306,9 +316,9 @@ function frame(){
   const tm=clock.getElapsedTime();
   // advance: hold W / ArrowUp / pointer in upper screen nudges forward; always gentle drift once started
   if(started){
-    let v=0.0009;
-    if(keys['w']||keys['arrowup'])v+=0.0026;
-    if(keys['s']||keys['arrowdown'])v-=0.0030;
+    let v=0.0016;
+    if(keys['w']||keys['arrowup'])v+=0.0030;
+    if(keys['s']||keys['arrowdown'])v-=0.0034;
     target=M.clamp(target+v,0,1);
   }
   prog+=(target-prog)*0.05;
@@ -332,14 +342,17 @@ function frame(){
   // letters: lit by path proximity + your lamp focus; awoken stay; flare on click
   let hot=false;
   sprites.forEach(sp=>{const u=sp.userData;
-    const nearPath=M.clamp(1-Math.abs(u.t-p)*6.0,0,1);
+    const dt=u.t-p;
+    const ahead=M.clamp((0.36-dt)/0.42,0,1);     // glows just ahead, fades into the fog
+    const behind=M.clamp(1+dt*12,0,1);           // fades once you've passed
+    let o=ahead*behind*0.6;
     const df=sp.position.distanceTo(focus);
-    const nearLamp=M.clamp(1-df/13,0,1);
-    if(nearLamp>0.55)hot=true;
-    let o=Math.max(nearPath*0.5, nearLamp*1.0);
-    if(u.awoken)o=Math.max(o,0.72);
+    const nearLamp=M.clamp(1-df/14,0,1);
+    if(nearLamp>0.5)hot=true;
+    o=Math.max(o, nearLamp);                      // your lamp pops letters where you point
+    if(u.awoken)o=Math.max(o,0.78);
     if(u.flare>0){u.flare*=0.92;o=Math.min(1,o+u.flare);}
-    sp.material.opacity=o*(u.awoken?1:(0.6+0.4*Math.sin(tm*u.speed+u.phase)));
+    sp.material.opacity=o*(0.72+0.28*Math.sin(tm*u.speed+u.phase));
     const pulse=1+Math.sin(tm*u.speed+u.phase)*0.06+(u.awoken?0.25:0)+u.flare*0.8;
     sp.scale.setScalar(u.base*pulse);
   });
