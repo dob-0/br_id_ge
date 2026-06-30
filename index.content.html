@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>br_id_ge · v.0000 — a digital rite of transmission</title>
+    <meta name="description" content="br_id_ge (kamurj / կամուրջ) — a tele-symbiotic WebXR rite. Cross a bridge of glowing Armenian letters, inscribe a khachkar, join the digital diaspora. A node of the di.iiii platform.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Armenian:wght@300;500;700&family=Outfit:wght@200;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void-0: #050608;
+            --void-1: #0a0d12;
+            --void-2: #11161d;
+
+            --gantegh: #ffb347;   /* church-lamp amber */
+            --apricot: #ff9d5c;   /* duduk apricot wood */
+            --tuff:    #ff2a5f;    /* Gyumri tuff-stone */
+            --steel:   #00e5ff;    /* Munich steel */
+            --khachkar:#cdb98f;   /* carved stone */
+
+            --tx-primary: #f4ede0;
+            --tx-secondary: #b9b1a3;
+            --tx-dim: #6b6457;
+            --border: rgba(205,185,143,0.16);
+            --border-hot: rgba(255,179,71,0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::selection { background: rgba(255,179,71,0.25); color: #fff; }
+        html { scroll-behavior: smooth; font-size: 118%; }
+        @media (max-width: 640px){ html { font-size: 104%; } }
+        body {
+            background: var(--void-0);
+            color: var(--tx-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            line-height: 1.62;
+        }
+        .mono { font-family: 'Space Mono', monospace; }
+        .arm  { font-family: 'Noto Serif Armenian', serif; }
+        a { color: inherit; }
+
+        /* WEBGL LAYER — the bridge of letters across the void */
+        #scene {
+            position: fixed; inset: 0; width: 100vw; height: 100vh;
+            z-index: 0; cursor: crosshair;
+        }
+        #scene-veil {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background:
+              radial-gradient(120% 80% at 50% 30%, transparent 40%, rgba(5,6,8,0.55) 100%),
+              linear-gradient(180deg, rgba(5,6,8,0.2) 0%, transparent 25%, transparent 60%, var(--void-0) 100%);
+        }
+
+        /* HEADER */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.1rem 1.6rem; font-size: 0.72rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--tx-dim);
+            backdrop-filter: blur(6px);
+            background: linear-gradient(180deg, rgba(5,6,8,0.85), transparent);
+        }
+        .topbar b { color: var(--tx-primary); letter-spacing: 0.3em; }
+        .topbar .dot { color: var(--gantegh); animation: blink 2.4s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .topbar nav { display: flex; gap: 1.2rem; }
+        .topbar nav a { text-decoration: none; transition: color .2s; }
+        .topbar nav a:hover { color: var(--gantegh); }
+
+        /* CONTENT */
+        main { position: relative; z-index: 10; }
+        section { padding: 6rem 1.6rem; max-width: 980px; margin: 0 auto; }
+        .eyebrow {
+            font-family: 'Space Mono', monospace; font-size: 0.72rem;
+            letter-spacing: 0.34em; text-transform: uppercase; color: var(--gantegh);
+            margin-bottom: 1.2rem; display: flex; align-items: center; gap: .8rem;
+        }
+        .eyebrow::before { content:''; width: 28px; height: 1px; background: var(--gantegh); display:inline-block; }
+        h1 { font-family: 'Outfit', sans-serif; font-weight: 200; line-height: 1.04;
+             font-size: clamp(2.6rem, 8vw, 6rem); color: var(--tx-primary); letter-spacing: -0.02em; }
+        h2 { font-weight: 200; font-size: clamp(1.8rem, 4vw, 3rem); color: var(--tx-primary);
+             letter-spacing: -0.01em; margin-bottom: 1.4rem; }
+        h3 { font-weight: 600; font-size: 1.1rem; color: var(--tx-primary); margin-bottom: .5rem; letter-spacing: .01em; }
+        p { max-width: 64ch; margin-bottom: 1rem; }
+        .lead { font-size: clamp(1.05rem, 2.2vw, 1.35rem); color: var(--tx-secondary); font-weight: 200; }
+        .dim { color: var(--tx-dim); }
+        strong { color: var(--tx-primary); font-weight: 600; }
+
+        /* HERO */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+                max-width: 1100px; }
+        .hero .glyphline { font-family:'Noto Serif Armenian',serif; color: var(--gantegh);
+            font-size: clamp(1rem,3vw,1.8rem); letter-spacing: .5em; opacity:.7; margin-bottom: 1.5rem;
+            text-shadow: 0 0 24px rgba(255,179,71,.4); }
+        .hero h1 .arm { display:block; font-size: .42em; color: var(--khachkar); font-weight: 300; margin-top: .4rem; letter-spacing:.04em;}
+        .hero .question { margin-top: 2.4rem; font-family:'Space Mono',monospace; color: var(--tx-secondary);
+            font-size: clamp(.95rem,2vw,1.15rem); border-left: 2px solid var(--gantegh); padding-left: 1.2rem; }
+        .hero .question .arm { display:block; color: var(--tx-dim); margin-top:.4rem; font-size:.9em; }
+        .scrollcue { margin-top: 3rem; font-family:'Space Mono',monospace; font-size:.7rem;
+            letter-spacing:.3em; text-transform:uppercase; color: var(--tx-dim); animation: float 2.6s infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(6px);opacity:1} }
+
+        /* RITE — 4 acts */
+        .acts { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top:2rem;}
+        .act { background: var(--void-1); padding: 2rem; transition: background .3s; }
+        .act:hover { background: var(--void-2); }
+        .act .n { font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.2em; color: var(--gantegh); }
+        .act .arm { color: var(--khachkar); font-size:1.4rem; display:block; margin:.3rem 0 .6rem; }
+        @media(min-width:720px){ .acts{ grid-template-columns: 1fr 1fr; } }
+
+        /* HERITAGE cards */
+        .cards { display:grid; gap:1.4rem; margin-top:2rem; }
+        @media(min-width:720px){ .cards{ grid-template-columns: repeat(3,1fr);} }
+        .card { border:1px solid var(--border); padding:1.6rem; background: rgba(17,22,29,.5); border-radius:2px;
+                transition: border-color .3s, transform .3s; }
+        .card:hover { border-color: var(--border-hot); transform: translateY(-3px); }
+        .card .big { font-family:'Noto Serif Armenian',serif; font-size:2.6rem; color: var(--gantegh);
+            text-shadow:0 0 20px rgba(255,179,71,.3); line-height:1; margin-bottom:.6rem; }
+        .card small { font-family:'Space Mono',monospace; color: var(--tx-dim); letter-spacing:.08em; font-size:.7rem; }
+
+        /* feature rows */
+        .row { display:grid; gap:1.2rem; margin-top:1.5rem; }
+        @media(min-width:720px){ .row.two{grid-template-columns:1fr 1fr;} .row.three{grid-template-columns:repeat(3,1fr);} }
+        .pill { font-family:'Space Mono',monospace; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+            color: var(--steel); border:1px solid rgba(0,229,255,.25); padding:.25rem .6rem; border-radius:2px; display:inline-block; }
+
+        /* MESH nodes */
+        .mesh { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.5rem; font-family:'Space Mono',monospace; font-size:.8rem; }
+        .node { padding:.4rem .9rem; border:1px solid var(--border); border-radius:2px; letter-spacing:.1em; }
+        .node.g{ color:var(--tuff); border-color:rgba(255,42,95,.3);} .node.m{ color:var(--steel); border-color:rgba(0,229,255,.3);}
+        .node.k{ color:var(--khachkar);} .node.a{ color:var(--gantegh); border-color:var(--border-hot);}
+
+        /* TEAM */
+        .people { display:grid; gap:.4rem 2rem; margin-top:1rem; font-size:.92rem; }
+        @media(min-width:600px){ .people{grid-template-columns:1fr 1fr;} }
+        .people .role { color: var(--tx-dim); font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.06em; }
+        .partners { display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; margin-top:1rem; font-size:.86rem; }
+        .partners a, .people a { text-decoration:none; border-bottom:1px solid transparent; transition:.2s; }
+        .partners a:hover, .people a:hover { color:var(--gantegh); border-color:var(--gantegh); }
+        .host-badge { color: var(--gantegh); border:1px solid var(--border-hot); padding:.2rem .6rem; border-radius:2px;
+            font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.1em; }
+
+        /* FOOTER */
+        footer { position:relative; z-index:10; border-top:1px solid var(--border); padding:3rem 1.6rem; text-align:center;
+            font-family:'Space Mono',monospace; font-size:.74rem; letter-spacing:.1em; color:var(--tx-dim); }
+        footer a { text-decoration:none; transition:.2s; } footer a:hover{ color:var(--gantegh); }
+        footer .links { display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-bottom:1.2rem; }
+
+        .reveal { opacity:0; transform: translateY(24px); transition: opacity .9s ease, transform .9s ease; }
+        .reveal.in { opacity:1; transform:none; }
+    </style>
+</head>
+<body>
+    <canvas id="scene"></canvas>
+    <div id="scene-veil"></div>
+
+    <div class="topbar mono">
+        <span><b>br_id_ge</b> &nbsp;·&nbsp; v.0000</span>
+        <span><span class="dot">●</span> tele-symbiotic rite &nbsp;·&nbsp; lat 121–228ms</span>
+        <nav>
+            <a href="#rite">rite</a>
+            <a href="#heritage">heritage</a>
+            <a href="#notations">notations #2</a>
+            <a href="https://di-studio.xyz/br_id_ge">enter ↗</a>
+        </nav>
+    </div>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <div class="glyphline arm">Ա Բ Գ Դ Ե · Ո՞ Վ  Ե Ս  Դ Ո Ւ · Ք Ա Մ Ո Ւ Ր Ջ</div>
+            <h1>A bridge you<br>cross by becoming.
+                <span class="arm">կամուրջ — a digital rite of transmission</span>
+            </h1>
+            <p class="lead" style="margin-top:1.8rem; max-width:54ch;">
+                <strong>br_id_ge</strong> is a tele-symbiotic WebXR rite. In complete darkness, lit only by a virtual
+                <em>gantegh</em>, you cross a bridge of glowing Armenian letters — your pace synced to a duduk drone —
+                toward an AI that has been waiting to ask you one thing.
+            </p>
+            <div class="question mono">
+                “Who are you, and what do you carry across the bridge?”
+                <span class="arm">Ո՞վ ես դու, և ի՞նչ ես տանում կամրջի վրայով։</span>
+            </div>
+            <div class="scrollcue">scroll to cross ↓</div>
+        </section>
+
+        <!-- THE RITE -->
+        <section id="rite" class="reveal">
+            <div class="eyebrow">the rite · 6–8 min</div>
+            <h2>Four thresholds of transmission</h2>
+            <p class="dim">A single-user passage. No audience — only you, the lamp, and the letters.</p>
+            <div class="acts">
+                <div class="act">
+                    <span class="n">ACT 01 — ԴՌՆԵՐ</span>
+                    <span class="arm">Threshold</span>
+                    <p>Complete darkness. A single virtual <strong>gantegh</strong> (church lamp) ignites. Your eyes —
+                    and the AI's — adjust to the void.</p>
+                </div>
+                <div class="act">
+                    <span class="n">ACT 02 — ԱՆՑՈՒՄ</span>
+                    <span class="arm">Crossing</span>
+                    <p>You step onto a bridge of glowing Armenian letters. Your physical speed is throttled and
+                    synced to a continuous musical drone — the <strong>dam</strong> of the duduk paces your body.</p>
+                </div>
+                <div class="act">
+                    <span class="n">ACT 03 — ՎԿԱ</span>
+                    <span class="arm">Witness</span>
+                    <p>An AI <strong>“Keeper of Memory”</strong> meets you mid-span and asks:
+                    <em>who are you, and what do you carry across the bridge?</em></p>
+                </div>
+                <div class="act">
+                    <span class="n">ACT 04 — ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ</span>
+                    <span class="arm">Inscription &amp; Continuity</span>
+                    <p>You write your name and a chosen word. They crystallise into a permanent 3D
+                    <strong>khachkar</strong> that joins a glowing, shared field — the digital diaspora.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HERITAGE -->
+        <section id="heritage" class="reveal">
+            <div class="eyebrow">the assets · Armenian secular heritage, digitised for WebXR</div>
+            <h2>Carved from 405 AD, rendered at 90fps</h2>
+            <div class="cards">
+                <div class="card">
+                    <div class="big">Ա ա</div>
+                    <h3>Aybuben — the alphabet</h3>
+                    <p>Invented in <strong>405 AD by Mesrop Mashtots</strong>. The monumental
+                    <strong>Erkatagir</strong> (ironclad) script carries your name — the ancestral anchor.
+                    The calligraphic <strong>Trchnagir</strong> (bird letters) carries your chosen word.</p>
+                    <small>RENDER: MSDF · multi-channel signed distance fields · 90fps in 3D</small>
+                </div>
+                <div class="card">
+                    <div class="big">☩</div>
+                    <h3>Khachkar — the cross-stele</h3>
+                    <p>The traditional stone-carved cross-stele. Here it becomes the interactive peak of the
+                    rite — <strong>permanently anchoring your identity</strong> in the digital world.</p>
+                    <small>ROLE: identity anchor · the field of the digital diaspora</small>
+                </div>
+                <div class="card">
+                    <div class="big">♪</div>
+                    <h3>Duduk — tsiranapogh</h3>
+                    <p>The 1,500+ year-old double-reed instrument of <strong>apricot wood</strong>. Its
+                    continuous circular-breathing drone — the <strong>dam</strong> — physiologically
+                    paces your movement across the bridge.</p>
+                    <small>FUNCTION: somatic metronome · breath as tempo</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEASURABLE SHADOW -->
+        <section class="reveal">
+            <div class="eyebrow">the measurable shadow · live biometrics</div>
+            <h2>Poetry, proven by your pulse</h2>
+            <p>Non-invasive, live data turns the metaphor into measurement — no wearables, just a standard webcam.</p>
+            <div class="row two">
+                <div>
+                    <span class="pill">rPPG + EVM</span>
+                    <h3 style="margin-top:.8rem;">Reading the body at a distance</h3>
+                    <p><strong>Remote photoplethysmography</strong> and <strong>Eulerian Video Magnification</strong>
+                    track heart rate and emotional state from micro-vascular blood flow in your face.</p>
+                </div>
+                <div>
+                    <span class="pill">the lighting hack</span>
+                    <h3 style="margin-top:.8rem;">The poem is the instrument</h3>
+                    <p>The glowing virtual letters and the <em>gantegh</em> lamp <strong>are</strong> the controlled
+                    illumination source required to read that blood flow accurately. The ritual lights itself.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHODOLOGY -->
+        <section class="reveal">
+            <div class="eyebrow">epistemology · why this holds up</div>
+            <h2>Validated as rite, not just artwork</h2>
+            <div class="row three">
+                <div>
+                    <h3>Autoethnography in HCI</h3>
+                    <p class="dim">The insider position of the Armenian diaspora is treated not as bias but as valid,
+                    generative data — the <em>ethno-designer</em> analysing their own experience.</p>
+                </div>
+                <div>
+                    <h3>Evolutionary ritualization</h3>
+                    <p class="dim">From chimpanzee “shrine trees” and elephant mourning to human somatic practice —
+                    rituals fused with AI and networks must evolve into the digital realm.</p>
+                </div>
+                <div>
+                    <h3>Digital proto-rituals</h3>
+                    <p class="dim">The “kinetic refresh,” the mindless scroll — unconscious comfort habits, elevated
+                    here into conscious cultural transmission.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOTATIONS #2 -->
+        <section id="notations" class="reveal">
+            <div class="eyebrow">curatorial framework · July 20 – Aug 2, 2026</div>
+            <h2>Notations #2 — a laboratory of Rituals</h2>
+            <p class="lead">The lab is centred entirely on <strong>ritual</strong> as a method: to strip away the
+            alienation of modern life and reach <strong>Communitas</strong> — a profoundly shared human connection.</p>
+            <div class="row two" style="margin-top:2rem;">
+                <div>
+                    <h3>The Video Art department</h3>
+                    <p>Curating filmmakers, animators, VJs and CGI artists. The goal: be the human <strong>br_id_ge</strong>,
+                    leading an <strong>open visual jam</strong> that takes artists off flat screens and into the physical
+                    architecture of the <strong>State Philharmonia</strong> — generative art, projection mapping, live code.</p>
+                </div>
+                <div>
+                    <h3>From short films to a shared rite</h3>
+                    <p>A horizontal, live jam where participants merge code, archives, moving images, live music and
+                    movement. The Lead Curator is the <strong>Stitch</strong> — translating incoming streams into one
+                    collective ritual.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MESH -->
+        <section class="reveal">
+            <div class="eyebrow">the mesh · latency as choreography</div>
+            <h2>An N-Node tele-symbiotic bridge</h2>
+            <p>Network latency (121–228ms) is not a bug to hide but an active <strong>choreographic agent</strong>.
+            The bridge spans, phase by phase, across the diaspora:</p>
+            <div class="mesh">
+                <span class="node g">GYUMRI</span>
+                <span class="node k">YEREVAN</span>
+                <span class="node a">⇄ AI · THE STITCH ⇄</span>
+                <span class="node k">LEIPZIG</span>
+                <span class="node m">MUNICH</span>
+                <span class="node k">SPAIN</span>
+            </div>
+            <div class="row three" style="margin-top:2rem;">
+                <div><span class="pill">phase 0</span><p class="dim" style="margin-top:.6rem;">Gyumri ── Yerevan · intra-country stress test, sub-50ms.</p></div>
+                <div><span class="pill">phase 1</span><p class="dim" style="margin-top:.6rem;">Yerevan ── Leipzig ── Gyumri · first triangular network.</p></div>
+                <div><span class="pill">phase 2</span><p class="dim" style="margin-top:.6rem;">Munich ── Spain · cross-continental, sub-120ms target.</p></div>
+            </div>
+        </section>
+
+        <!-- TEAM & PARTNERS -->
+        <section class="reveal">
+            <div class="eyebrow">core team &amp; partners</div>
+            <h2>Who carries it</h2>
+            <div class="people">
+                <div><a href="https://github.com/dob-0">Gevorg Aram Grigoryan</a><div class="role">Head of di.ii · technical, software &amp; concept</div></div>
+                <div><a href="https://github.com/emilyanikoghosyan">Emilya Nikoghosyan</a><div class="role">Co-founder &amp; multimedia artist</div></div>
+                <div><a href="https://www.instagram.com/ginosyansuzy/">Syuzanna Ginosyan</a><div class="role">Primary curator · German partnership liaison</div></div>
+                <div><a href="https://www.instagram.com/ritagrechen/">Hannes Köpke</a><div class="role">Directing / storytelling</div></div>
+                <div><a href="https://www.instagram.com/fansplusvzhaowo/">Fe</a><div class="role">Sound design / sonic architecture</div></div>
+                <div><a href="https://www.instagram.com/ani___khachikyan/">Ani Khachikyan</a> · <a href="https://www.instagram.com/arsentrampmiqayelyan/">Arsen Miqayelyan</a><div class="role">Gyumri anchor performers</div></div>
+            </div>
+            <h3 style="margin-top:2.4rem;">Partners &amp; hosting</h3>
+            <div class="partners">
+                <span class="host-badge">HOST · hosq.co ↗</span>
+                <a href="https://hosq.co/">hosq.co — artistic &amp; technical partner</a>
+                <a href="https://xrhub-bavaria.de/">XR Hub Bavaria</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mono">
+        <div class="links">
+            <a href="https://di-studio.xyz/br_id_ge">live space ↗</a>
+            <a href="https://dob-0.github.io/br_id_ge/">github pages ↗</a>
+            <a href="https://github.com/dob-0/br_id_ge">repo ↗</a>
+            <a href="https://github.com/dob-0/di.iiii">di.iiii platform ↗</a>
+            <a href="https://www.thedi.studio">di.ii studio ↗</a>
+            <a href="https://hosq.co/">hosq.co ↗</a>
+        </div>
+        <div>br_id_ge · v.0000 · a node of the di.iiii platform v0.2.0 — hosted by hosq.co · <span class="arm">կամուրջ</span></div>
+    </footer>
+
+    <script>
+    // ── The bridge of letters across the void ──────────────────────────────
+    (function () {
+        const canvas = document.getElementById('scene');
+        if (!window.THREE) return;
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050608, 0.055);
+
+        const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200);
+        camera.position.set(0, 1.6, 14);
+
+        // gantegh — the lamp glow at the threshold
+        const lamp = new THREE.PointLight(0xffb347, 2.4, 40);
+        lamp.position.set(0, 3.2, 6);
+        scene.add(lamp);
+        scene.add(new THREE.AmbientLight(0x223044, 0.4));
+
+        // Armenian glyphs rendered to sprite textures
+        const GLYPHS = 'ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ'.split('');
+        const texCache = {};
+        function glyphTexture(ch) {
+            if (texCache[ch]) return texCache[ch];
+            const s = 128, c = document.createElement('canvas'); c.width = c.height = s;
+            const x = c.getContext('2d');
+            x.clearRect(0, 0, s, s);
+            x.font = '600 86px "Noto Serif Armenian", serif';
+            x.textAlign = 'center'; x.textBaseline = 'middle';
+            x.shadowColor = 'rgba(255,179,71,0.9)'; x.shadowBlur = 22;
+            x.fillStyle = '#ffd9a0';
+            x.fillText(ch, s / 2, s / 2 + 4);
+            const t = new THREE.CanvasTexture(c); t.needsUpdate = true;
+            texCache[ch] = t; return t;
+        }
+
+        // build an arc — the bridge — and scatter glyph sprites along it
+        const group = new THREE.Group();
+        scene.add(group);
+        const N = 120, span = 46, height = 5.5;
+        const sprites = [];
+        for (let i = 0; i < N; i++) {
+            const t = i / (N - 1);
+            const ch = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+            const mat = new THREE.SpriteMaterial({
+                map: glyphTexture(ch), color: 0xffffff,
+                transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false
+            });
+            const sp = new THREE.Sprite(mat);
+            const x = (t - 0.5) * span;
+            const arc = Math.sin(t * Math.PI) * height;           // bridge curvature
+            const jitter = (Math.random() - 0.5);
+            sp.position.set(x, arc - 2.4 + jitter * 0.8, jitter * 3.0 - 1);
+            const sc = 0.6 + Math.random() * 0.7;
+            sp.scale.set(sc, sc, sc);
+            sp.userData = { base: sp.position.y, phase: Math.random() * Math.PI * 2, speed: 0.4 + Math.random() * 0.7, t };
+            group.add(sp); sprites.push(sp);
+        }
+
+        // faint dust of the diaspora field below the bridge
+        const dustGeo = new THREE.BufferGeometry();
+        const DUST = 900, dp = new Float32Array(DUST * 3);
+        for (let i = 0; i < DUST; i++) {
+            dp[i*3] = (Math.random() - 0.5) * 80;
+            dp[i*3+1] = -6 - Math.random() * 10;
+            dp[i*3+2] = (Math.random() - 0.5) * 40 - 5;
+        }
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dp, 3));
+        const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+            color: 0xcdb98f, size: 0.06, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false
+        }));
+        scene.add(dust);
+
+        // interaction
+        const mouse = { x: 0, y: 0 };
+        addEventListener('mousemove', e => { mouse.x = (e.clientX / innerWidth - 0.5); mouse.y = (e.clientY / innerHeight - 0.5); });
+        let scroll = 0;
+        addEventListener('scroll', () => { scroll = window.scrollY / (document.body.scrollHeight - innerHeight || 1); }, { passive: true });
+
+        const clock = new THREE.Clock();
+        function loop() {
+            const tm = clock.getElapsedTime();
+            // glyphs fade in from the threshold outward, then shimmer
+            sprites.forEach(sp => {
+                const u = sp.userData;
+                const appear = THREE.MathUtils.clamp((tm * 0.35) - u.t * 2.2, 0, 1);
+                u && (sp.material.opacity = appear * (0.45 + 0.35 * Math.sin(tm * u.speed + u.phase)));
+                sp.position.y = u.base + Math.sin(tm * u.speed + u.phase) * 0.18;
+            });
+            group.rotation.y = Math.sin(tm * 0.05) * 0.06 + mouse.x * 0.25;
+            lamp.intensity = 2.1 + Math.sin(tm * 1.7) * 0.4;
+            dust.rotation.y = tm * 0.01;
+
+            // camera travels across the bridge as you scroll
+            camera.position.x = THREE.MathUtils.lerp(camera.position.x, -mouse.x * 3 + (scroll - 0.5) * 10, 0.04);
+            camera.position.y = THREE.MathUtils.lerp(camera.position.y, 1.6 - mouse.y * 1.5 + scroll * 1.5, 0.04);
+            camera.lookAt(0, 0.6, -1);
+            renderer.render(scene, camera);
+            requestAnimationFrame(loop);
+        }
+        function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+        addEventListener('resize', resize); resize(); loop();
+    })();
+
+    // reveal-on-scroll
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    </script>
+</body>
+</html>
