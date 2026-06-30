@@ -1,371 +1,177 @@
-# di.i
-
-## Web XR Node-Based Reality Creation Language
-
-`di.i` is a web-based XR authoring platform for building spaces, projects, media, and node-driven behaviors on the web. This repo, `dob-0/di.iiii`, is the active public working and deployment source of truth. The old mirror repo, `dob-0/di.i`, is currently hidden/inactive and not part of the active workflow.
-
-## Start Here
-
-- main authoring lane: `Studio`
-- experimental node-first lane: `Beta`
-- compatibility lane: `V1`
-- backend authority: `serverXR`
-- public unit: `space`
-- editable document inside a space: `project`
-- live public route for a space: `publishedProjectId`
-- normal branch flow: `dev -> staging -> main`
-- runtime baseline: Node `22.x`, npm `10.x`
-
-Project links:
-
-- live site: [di-studio.xyz](https://di-studio.xyz)
-- primary public repo: [dob-0/di.iiii](https://github.com/dob-0/di.iiii)
-- legacy mirror (currently hidden): [dob-0/di.i](https://github.com/dob-0/di.i)
-- latest checkpoint: [Checkpoint 2026-04-21](docs/checkpoints/2026-04-21.md)
-- AI quick context: [AGENTS.md](AGENTS.md)
-- AI knowledge base: [docs/ai/index.md](docs/ai/index.md)
-- public-context materials: [docs/deck](docs/deck/)
-- repo visibility and mirror status: [Private Dev And Public Showcase Workflow](docs/ops/PRIVATE_DEV_PUBLIC_SHOWCASE.md)
-- deploy runbook: [Live Deploy Runbook](docs/deploy/LIVE_DEPLOY.md)
-
-## Current Truth
-
-This is the shipped, working reality of the repo today.
-
-- `Studio` is the stable main editor.
-- `Beta` is the experimental recursive node-first editor lane.
-- `V1` remains for compatibility, fallback behavior, and migration-sensitive work.
-- `serverXR` is authoritative for spaces, projects, assets, ops, SSE, presence, and edit enforcement.
-- public routes use `/<space>` for the live published view, with `/<space>/studio`, `/<space>/beta`, and `/admin?space=<space>` for editing and ops surfaces
-- persistence is still single-host filesystem storage
-- writes are protected by session/token-based auth, not a full multi-user identity and audit model yet
-
-## Direction
-
-This is where the project is going, but not all of it is fully shipped yet.
-
-- move toward recursive node-first project documents and node ops
-- prefer shared project logic over expanding older one-off editor paths
-- keep the web as the universal authoring and runtime substrate
-- support broader spatial, physical-world, and hardware-linked reality creation over time
-
-## Space + Project Workflow
-
-Use this as the default path for new work in a space:
-
-1. Create or open a space from the admin surface or the spaces panel. Space creation provisions the server record and a blank scene.
-2. Open `/<space>/studio` for the main development lane. Create new projects there, import legacy scenes, and keep the long-term working copy.
-3. Use `/<space>/beta` for experimental or node-first work when the project needs research-style iteration.
-4. Publish the chosen project to the public route by setting `publishedProjectId` for the space; `/<space>` then shows the live project viewer.
-
-Important distinction:
-
-- `Current Truth` = what is real in the repo now
-- `Direction` = where new work should lean
-- bridge code = necessary, active, but not always canonical
-
-## Mental Model
-
-- `space`
-  - the public and management unit
-  - owns routes like `/<space>`, `/<space>/studio`, and `/<space>/beta`
-- `project`
-  - the editable document inside a space
-  - stored independently from the public route
-- `publishedProjectId`
-  - the project currently shown on the public route for that space
-- long-term document shape
-  - `rootNodeId`
-  - `nodes[]`
-  - `edges[]`
-  - `assets[]`
-  - `templates[]`
-  - `workspaceState`
-
-## Repo Map
-
-| Path | Role | Use It For |
-| --- | --- | --- |
-| `src/studio/` | stable main editor lane | main user-facing product work |
-| `src/beta/` | experimental node-first lane | research, editor-v2, recursive-node work |
-| `src/project/` | shared project logic center | document state, sync, presence, asset flow, shared editor/viewer logic |
-| `src/shared/` and `shared/` | cross-runtime schema and contracts | canonical schema/runtime definitions |
-| `serverXR/` | backend runtime | auth, persistence, assets, presence, SSE, publish state |
-| `docs/architecture/` | deeper architecture docs | repo intent, direction, and system explanations |
-| `src/components/` and `src/hooks/` | older orchestration surfaces that still matter | active behavior, but not always best home for new permanent logic |
-
-## For Humans And AI Agents
-
-Use these defaults unless the task clearly says otherwise.
-
-- default to `Studio` for main product work
-- default to `src/project/` for shared document or collaboration logic
-- use `Beta` only when the task is intentionally experimental or node-first
-- prefer node-first behavior over growing legacy object/window systems
-- treat `worldState`, `windowLayout`, and older entity structures as compatibility bridges
-- treat `V1` work as compatibility work unless the task is explicitly about migration or legacy support
-- do not treat `di.i` as active source of truth; use `di.iiii` for development and deploy flow
-
-Common mistakes to avoid:
-
-- do not describe `Beta` as the main shipped lane
-- do not describe physical sync or hardware-linked workflows as fully productized repo capability
-- do not assume older orchestration files are the right long-term home for new canonical behavior
-- do not push private ops material, raw staging details, `.env` files, or host-specific deployment secrets into the public repo
-
-### Task Request Template (Use This For AI Work)
-
-Use this structure when assigning AI tasks to avoid extra edits, extra tool usage, or wrong priority:
-
-- goal: one exact outcome
-- priority: 1, 2, 3 (highest to lowest)
-- scope: allowed files/folders only
-- non-goals: explicit exclusions
-- constraints: performance, security, style, or API rules
-- output: expected response format/length
-- done criteria: objective checks (tests, behavior, lint)
-
-Strict add-ons (recommended):
-
-- clarify limit: ask max 2 questions, then proceed safely
-- scope lock: do not edit outside listed files/folders
-- output contract: summary + changed files + validation + risks only
-- progress bar: `status | phase X/Y | XX% | current | next`
-
-Example:
+# br_id_ge (Beta Version) 🌉
 
-- goal: fix project restore bug for missing assets
-- priority: correctness first, then minimal diff, then tests
-- scope: `src/project/`, `serverXR/src/assetRoutes.js`
-- non-goals: no UI refactor, no schema changes
-- constraints: keep current API shape and auth behavior
-- output: short summary + changed files + validation result
-- done criteria: missing assets no longer crash restore, tests pass
+**Interactive Spatial Node Editor & Tele-Symbiotic XR Performance Prototype**
 
-Copy-paste strict template:
-
-- goal: ...
-- priority: 1) ... 2) ... 3) ...
-- scope: ...
-- non-goals: ...
-- constraints: ...
-- clarify limit: ask max 2 questions
-- scope lock: do not edit outside scope
-- output contract: summary + changed files + validation + risks
-- progress bar: status | phase X/Y | XX% | current | next
-- done criteria: ...
+`br_id_ge` is a **prototype node editor** showcasing the core concepts of the **di.iiii Spatial Platform** ecosystem. It demonstrates tele-symbiotic performance methodology—a performative framework where the machine acts as the Shared Body, translating **Armenian emotion into German light** and **physical movement into digital architecture**.
 
-## Quick Start
+This project is part of the larger **di.iiii** ecosystem (React/Vite/Three.js platform for collaborative spatial editing). br_id_ge focuses specifically on the **Munich-Gyumri connection**, a bi-directional XR performance exploring network latency, AI-mediated presence, and algorithmic choreography.
 
-Local setup:
+---
 
-```bash
-nvm use
-npm install
-npm --prefix serverXR install
-```
+## Quick Links
 
-Normal start-of-session flow:
+**Live Deployments:**
+- **GitHub Pages (stable):** [https://dob-0.github.io/br_id_ge/](https://dob-0.github.io/br_id_ge/)
+- **Production (di-studio.xyz):** [https://di-studio.xyz/br_id_ge/](https://di-studio.xyz/br_id_ge/)
+- **Staging (preview & night builds):** [https://staging.di-studio.xyz/br_id_ge/](https://staging.di-studio.xyz/br_id_ge/)
 
-```bash
-git switch dev
-git pull --ff-only origin dev
-npm run dev
-```
+**Resources:**
+- [di.iiii Platform (GitHub)](https://github.com/dob-0/di.iiii) | [Creator @dob-0](https://github.com/dob-0) | [di-studio.xyz](https://di-studio.xyz/)
+- [DEVELOPMENT.md](DEVELOPMENT.md) | [docs/PROJECT.md](docs/PROJECT.md)
 
-Core commands:
+---
 
-```bash
-npm run dev
-npm run lint
-npm run build
-npm run test
-npm run test:server-contracts
-```
+## 📖 Table of Contents
 
-Useful local routes:
+1. [Ecosystem Context](#ecosystem-context)
+2. [What is br_id_ge?](#what-is-br_id_ge)
+3. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
+4. [Hardware & Technical Stack](#2-hardware--technical-stack)
+5. [Production Environments](#3-active-production-environments)
+6. [Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
+7. [Core Team](#5-core-team--partners)
 
-- `http://localhost:5173/`
-- `http://localhost:5173/main`
-- `http://localhost:5173/main/studio`
-- `http://localhost:5173/main/beta`
-- `http://localhost:5173/admin?space=main`
-- `http://localhost:4000/serverXR/api/health`
+---
 
-## Release Flow
+## � Ecosystem Context
 
-Normal promotion path:
+**br_id_ge** is one instantiation within the **di.iiii** spatial platform family:
 
-1. work on `dev`
-2. validate locally
-3. promote to `staging`
-4. verify staging
-5. promote to `main`
+- **di.iiii Platform** ([GitHub](https://github.com/dob-0/di.iiii)): Main production spatial editor (React/Vite/Three.js + Node.js backend, v0.2.0)
+  - Multi-surface: Studio, Beta, Public Viewer, Admin, V1 Legacy
+  - Space-based architecture: create/manage/publish collaborative spatial projects
+  - **Environments:** [Production](https://di-studio.xyz) | [Staging](https://staging.di-studio.xyz)
 
-From the repo root:
+- **br_id_ge** (this repo): Focused prototype for the Munich-Gyumri tele-symbiotic performance
+  - **Multi-deployment:**
+    - [Production (GH Pages)](https://dob-0.github.io/br_id_ge/) – Standalone static site
+    - [Production (Platform)](https://di-studio.xyz/br_id_ge/) – Integrated spatial instance
+    - [Staging Preview](https://staging.di-studio.xyz/br_id_ge/) – Experimental/night builds
+  - Interactive node editor with embedded Markdown documentation
+  - Demonstrates core performance concepts: AI translation, latent space visualization, network choreography
 
-```bash
-npm run deploy:staging
-npm run deploy:production
-```
+- **Sibling Projects:** pe.portal_engine (portal engine), wcc (WebXR Creative Canvas), azd (experimental)
 
-Rules:
+All projects share the same **creative vision**: using digital infrastructure as an active choreographic agent.
 
-- normal work starts on `dev`
-- do not start routine feature work on `main`
-- use `main` directly only for emergency production hotfixes
+---
 
-## Public Mirror
+## 🎭 What is br_id_ge?
 
-Use this when you want `di.iiii` to publish public context into the `br_id_ge` checkout:
+**br_id_ge** ("bridge") is an interactive documentation and performance system that visualizes the Munich-Gyumri connection:
 
-```bash
-npm run sync:public:br_id_ge -- --dest /path/to/br_id_ge
-```
+1. **Node Editor**: Drag-and-drop spatial nodes representing performers (Gyumri, Munich), systems (AI, Hardware, Environment), and processes
+2. **Live Markdown Sync**: Fetches project documentation from `docs/PROJECT.md`, rendered with keyword highlighting and collapsible sections
+3. **Particle Background**: Three.js latent space visualization (1500 particles, motion-preference aware)
+4. **System Log**: Real-time event stream showing performance state, AI decisions, and network metrics
+5. **Terminal-Art Styling**: ASCII-inspired borders and visual separators for readability across devices
 
-- Mirrors the public docs/shell info pack into a cloned `br_id_ge` repo.
-- Good for shared public context, not for secrets or private ops material.
-- Keep using `br_id_ge`'s own repo sync if you want to push changes back from that side.
+---
 
-## Extended Experience Deploy (Manual + Branch)
+## �🎭 1. Thematic Core: Tele-Symbiosis & The AI Gaze
 
-For single-page teaser updates, use the in-app presentation tools.
-For larger experiences (multiple assets/files), prefer branch/versioned deploys over ZIP handoffs.
+### The Trialogue
+The piece is structured as an interactive trialogue between a performer in Munich (Node: "Steel"), a performer in Gyumri (Node: "Tuff-Stone"), and the AI itself.
 
-### Visual quality checklist (public teaser pages)
+### The AI's Role ("Stitch")
+The AI acts as the Third Lead Actor, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
 
-Before publishing a teaser page on `/<space>`:
+* **The AI Gaze (Latent Vectors):** The AI does not perceive human performers as physical objects, but as shifting clouds of probability. It visualizes human emotions within the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
+* **The Reciprocal Trap:** At the climax of the performance, the AI intervenes. It records the Gyumri actor's dance and forces a physical robotic surrogate to perform it back—effectively "stealing" the human movement and turning the performers into the audience of their own data.
 
-1. Fill the full viewport (`100vh`) and avoid empty black regions.
-2. Keep one strong headline, one core concept line, and one platform relation block.
-3. Ensure mobile readability (single-column fallback below ~920px).
-4. Keep contrast high and type large enough for projection/screen capture.
-5. Include explicit relation text:
-  - `di.ii` = open-source XR platform
-  - `br_id_ge` = project built on di.ii
-6. Verify on staging before promotion.
+### The Latent Handshake (A Critique of Infrastructure)
+Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, elevating algorithmic latency to a structural narrative component. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
 
-### Option A: Manual in-app update (fast teaser changes)
+---
 
-Use this when updating copy, layout, or quick visual HTML for a live public route.
+## ⚙️ 2. Hardware & Technical Stack
 
-1. Open `/<space>/studio/projects/<projectId>`.
-2. Open `Present`.
-3. Set `Public entry view` to `Code view` (or `Fixed camera` / `3D scene` as needed).
-4. Update `Code preview HTML` and verify the result on `/<space>`.
+The core development utilizes a custom **Spatial-Sync** backend, actively targeting **sub-120ms latency** between digital nodes and physical hardware. 
 
-Notes:
+The framework is inherently open-source and hardware-agnostic. Any specific commercial software, cameras, or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
 
-- This is best for rapid content iteration.
-- Keep this path for lightweight updates, not full application deployments.
+### The Omnisensory Capture Pipeline (The Eyes)
+While the spatial baseline utilizes the studio's on-hand depth cameras (RealSense D435if optimized for IR lighting, RealSense D405 for macro/gestural precision, Azure Kinect, Astra, and LiDAR) alongside MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from an exhaustive taxonomy of open sensor arrays:
+* **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, ToF, Radar (mmWave), and PIR arrays.
+* **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
+* **Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
 
-### Option B: Branch + URL source workflow (recommended for multi-file content)
+### AI Bridge & Interpretation (The Brain)
+* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the emotional meaning of the movement and sensory data.
+* **3D Generation & Processing:** Utilizing **Meshy 6** alongside **Spline** (powered by Nano Banana 2 / Hana AI) for real-time visual generation, remixing, and refinement.
+* **Data Transport:** Bidirectional data flow is managed via a decentralized Node.js server pipeline and WebSockets.
 
-Use this when the experience has multiple files, custom scripts/styles, or needs repeatable updates.
+### Visual & Physical Output (The Canvas & Hands)
+The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to handle visual and physical rendering.
+* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner is included in the studio's collected resources for rapid visual prototyping, the ecosystem remains structurally independent of it).*
+* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific inventory items, such as collected ROSMASTER omnidirectional robots, are utilized simply as on-hand physical canvases).*
 
-1. Build and host the experience from a versioned branch/release path.
-2. In Studio `Present`, keep `Public entry view` as `Code view` and set the source to the hosted URL (or embed a stable iframe wrapper).
-3. Validate on `staging` and then promote through normal branch deploy flow.
+---
 
-Notes:
+## 🔗 3. Deployment Environments
 
-- This gives better rollback, diffs, and CI checks than manual ZIP transfer.
-- Treat the public route as a stable shell that points to versioned content.
+**br_id_ge Multi-Instance Architecture:**
 
-### Option C: ZIP package workflow (fallback only)
+| Tier | Environment | URL | Status |
+|---|---|---|---|
+| **PRODUCTION** | GitHub Pages | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) | 🟢 Stable |
+| **PRODUCTION** | di.iiii Platform | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) | 🟢 Stable |
+| **STAGING** | Preview Lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) | 🟡 Experimental |
+| **DEV** | Source Repository | [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) | 🟢 Active |
 
-Use ZIP only when branch-based hosting is not available.
+**Broader di.iiii Platform Services (v0.2.0):**
 
-1. Export a project package from Studio (`Export project`).
-2. Re-import via Studio Hub `Import legacy scene` (supports `.zip` / `.json`).
-3. Validate in `staging` and publish the project to the target space route.
+| Service | Production | Staging | Purpose |
+|---|---|---|---|
+| **Main Platform** | [di-studio.xyz](https://di-studio.xyz) | [staging.di-studio.xyz](https://staging.di-studio.xyz) | Spatial editor: Studio/Beta/Public/Admin |
+| **WCC** | [di-studio.xyz/wcc](https://di-studio.xyz/wcc) | [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc) | WebXR Creative Canvas |
+| **Backend Health** | [api health](https://di-studio.xyz/serverXR/api/health) | [api health](https://staging.di-studio.xyz/serverXR/api/health) | System status |
 
-Notes:
+The di.iiii platform is currently undergoing security hardening (secret-scanning, deployment isolation) in preparation for full open-sourcing.
 
-- The ZIP flow is for project packages, not arbitrary web app bundles.
-- Imported assets are normalized into project document + asset storage.
+---
 
-### Option D: Full code deploy (extended runtime/application changes)
+## 🌍 4. Modular Expansion & Upcoming Milestones
 
-Use this when the change requires runtime code, component behavior, or platform-level updates.
+The core Munich-Gyumri connection is a modular prototype. Conceptually, the network is an ever-expanding mixed reality series, designed so that new cities, actors, and stages can continuously join.
 
-1. Implement and validate in `dev`.
-2. Promote via `npm run deploy:staging`.
-3. Verify staging.
-4. Promote via `npm run deploy:production`.
+**Upcoming 2026 Project Milestones:**
+* **Imminent:** di.iiii platform v0.2.0 API specs, ROS-Mapping protocols, and hardware calibration guides for public release
+* **April 30:** Culture Moves Europe (CME) Individual Mobility Grant submission (final)
+* **May 15:** "New Realities Award" submission for Festival of the Future (XR HUB Bavaria)
+* **Ongoing:** Open Call for visual, digital, 3D printing, and performative artists to join the network
+* **Ongoing:** Integration of br_id_ge prototypes into di.iiii Studio as reusable spatial templates
 
-Notes:
+---
 
-- This is the correct path for long-term, multi-file, versioned behavior.
-- Prefer branch-based deploys over ad-hoc host edits for reliability and rollback.
+## 👥 5. Core Team & Partners
 
-## cPanel Safety Rules
+**Core Project Leadership:**
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([Instagram](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Lead Technical & Conceptual Development. Creator of br_id_ge and di.iiii Platform.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan) ([Instagram](https://www.instagram.com/emilya_nikogosyan/)): Co-founder & Multimedia Artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
 
-If you deploy to cPanel (`cpanel-staging` / `cpanel-production`), follow these rules to avoid backend outages.
+**Creative & Technical Team:**
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing & Storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design & Sonic Architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/), [**Yeva**](https://www.instagram.com/6addreams.art/): Developers & Artists.
+* **Ani Khachikyan & Arsen Miqayelyan:** Lead Performers (Gyumri Node).
 
-- Do not add native Node dependencies in `serverXR` (for example `better-sqlite3`) on cPanel deploy branches.
-- cPanel hosts may not have compatible `glibc`/Python toolchains for native addon install/rebuild.
-- The cPanel publish workflow now enforces this with `scripts/check-cpanel-compat.mjs`.
+**Institutional Partners:**
+* di.ii studio_network (Armenia)
+* Festival of the Future / XR HUB Bavaria (Munich)
+* Culture Moves Europe (CME)
 
-Safe cPanel update flow:
+**Institutional Partners & Affiliates:**
+* **hosq.co** — Host · Artistic & Technical Partner
+* **XR Hub Bavaria** (Germany)
 
-```bash
-cd ~/repositories/di.iiii-staging
-git fetch --prune origin
-git checkout cpanel-staging
-git pull --ff-only origin cpanel-staging
-bash scripts/cpanel-apply-prebuilt-release.sh staging
-curl -sS -i --max-time 20 https://staging.di-studio.xyz/serverXR/api/health | head -n 30
-```
+---
 
-Notes:
+## Contributing
 
-- `scripts/cpanel-poll-deploy.sh staging` only applies when the tracked commit changes.
-- If it says `already up to date`, run `bash scripts/cpanel-apply-prebuilt-release.sh staging` to force re-apply.
-- You can opt into forced apply behavior by setting `CPANEL_APPLY_WHEN_UPTODATE=1` before running poll.
+For inquiries, collaboration, or to join the network, contact **Gevorg Aram Grigoryan (dob-0)**. See [DEVELOPMENT.md](DEVELOPMENT.md) for contributor setup.
 
-## Repo And Hosting Topology
+## Update
 
-```mermaid
-flowchart LR
-    work["Daily work"] --> dev["dob-0/di.iiii<br/>primary public repo"]
-    dev --> branchDev["dev"]
-    branchDev --> branchStaging["staging"]
-    branchStaging --> branchMain["main"]
-    branchMain --> release["cpanel-* release branches"]
-    release --> hosting["di-studio.xyz<br/>live hosting"]
-    branchMain --> legacy["dob-0/di.i<br/>legacy hidden mirror"]
-```
-
-Working rule:
-
-- active work, staging truth, deployment automation, and production flow live in `di.iiii`
-- `di.i` is a legacy hidden mirror and is not the active collaboration/deploy lane
-- production hosting deploys from `di.iiii` and its generated release branches
-
-## Read Next
-
-By task:
-
-- AI knowledge base: [docs/ai/index.md](docs/ai/index.md)
-- shared project logic: [src/project/AGENTS.md](src/project/AGENTS.md)
-- backend/runtime: [serverXR README](serverXR/README.md)
-- project architecture: [Project Surfaces](docs/architecture/PROJECT_SURFACES.md)
-- node model direction: [Recursive Node Core](docs/architecture/RECURSIVE_NODE_CORE.md)
-- audit and growth plan: [Project Audit And Growth Plan](docs/architecture/PROJECT_AUDIT_2026-04-17.md)
-- latest checkpoint: [Checkpoint 2026-04-21](docs/checkpoints/2026-04-21.md)
-- development framework: [Project Development And Optimization Framework](docs/roadmaps/PROJECT_DEVELOPMENT_FRAMEWORK.md)
-- deploy/release: [Live Deploy Runbook](docs/deploy/LIVE_DEPLOY.md)
-- repo visibility and mirror status: [Private Dev And Public Showcase Workflow](docs/ops/PRIVATE_DEV_PUBLIC_SHOWCASE.md)
-- public/context materials: [docs/deck](docs/deck/)
-
-## Evergreen Rule
-
-Keep this README focused on durable repo truth:
-
-- what the project is
-- how the repo is structured
-- what is shipped now
-- where new work should go
-
-Put dated milestones, application-specific notes, and time-sensitive movement into supporting docs instead of this root entrypoint.
+* main page design index.html

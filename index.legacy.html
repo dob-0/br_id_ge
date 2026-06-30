@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>di.iiii // br_id_ge Space Node</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* di.iiii BESPOKE SPATIAL OS THEME */
+        :root {
+            --void-0: #050505;
+            --void-1: #0a0a0a;
+            
+            --tx-primary: #ffffff;
+            --tx-secondary: #d4d4d8; 
+            --tx-dim: #62626b;
+            
+            --node-gyumri: #ff2a5f; /* Crimson/Tuff-stone */
+            --node-munich: #00e5ff; /* Sharp Cyan/Steel */
+            --ai-stitch: #ffffff;
+            --node-sub: #b4b4bb; /* Secondary Nodes */
+            
+            --border-tech: rgba(255, 255, 255, 0.15);
+            --border-active: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin; 
+            scrollbar-color: var(--tx-dim) var(--void-0);
+        }
+        
+        *::-webkit-scrollbar { width: 6px; }
+        *::-webkit-scrollbar-track { background: var(--void-0); }
+        *::-webkit-scrollbar-thumb { background: var(--tx-dim); border-radius: 3px; }
+
+        body {
+            background-color: var(--void-0);
+            color: var(--tx-secondary);
+            font-family: 'Space Mono', monospace;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* GLOBAL CLI COLORS */
+        .c-g { color: var(--node-gyumri); }
+        .c-m { color: var(--node-munich); }
+        .c-ai { color: var(--tx-primary); text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+        .c-data { color: var(--tx-secondary); }
+        .c-dim { color: var(--tx-dim); }
+        .c-sub { color: var(--node-sub); }
+
+        /* LAYER 0: THE AI LATENT SPACE */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            cursor: crosshair;
+            opacity: 0.35; 
+        }
+
+        /* SPATIAL HEADER */
+        .spatial-header {
+            position: relative;
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            z-index: 30;
+            border-bottom: 2px solid var(--border-tech);
+            border-top: 1px solid rgba(0,229,255,0.2);
+            background: linear-gradient(180deg, rgba(5,5,5,1) 0%, rgba(5,5,5,0.95) 100%);
+            gap: 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.8);
+        }
+
+        .sys-identity { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .sys-matrix { color: var(--tx-dim); white-space: pre; font-size: 0.75rem; }
+        .sys-data { color: var(--tx-primary); min-width: 200px; }
+        .sys-data span { color: var(--tx-dim); }
+        .sys-data a { transition: all 0.2s ease; font-weight: bold; }
+        .sys-data a:hover { opacity: 0.8; text-shadow: 0 0 8px currentColor; }
+        .pulse { color: var(--node-gyumri); animation: blink 2s infinite; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* SYSTEM LOG CONSOLE */
+        .system-log {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 340px;
+            height: 200px;
+            background: rgba(10, 10, 10, 0.92);
+            border: 2px solid var(--border-tech);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 0;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .log-header {
+            padding: 0.6rem 1rem;
+            background: rgba(0,229,255,0.08);
+            border-bottom: 1px solid var(--border-tech);
+            font-size: 0.7rem;
+            color: var(--node-munich);
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .log-content {
+            padding: 0.75rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.7rem;
+        }
+
+        .log-entry { animation: slideIn 0.2s ease-out; word-wrap: break-word; }
+        .log-info { color: var(--node-munich); }
+        .log-warn { color: var(--node-gyumri); }
+        .log-sys { color: var(--tx-dim); }
+
+        /* LAYER 1: MAIN DOCUMENT WRAPPER */
+        .viewport {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .document-layer {
+            width: 100%;
+            max-width: 1000px;
+            padding: 3.5rem 4rem 8rem 4rem; 
+            background: rgba(8, 8, 8, 0.98); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 2px solid var(--border-tech);
+            border-right: 2px solid var(--border-tech);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            min-height: 100vh;
+            box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        /* DRAGGABLE NODE MAP CONTAINER */
+        .interactive-node-map {
+            position: relative;
+            width: 100%;
+            height: 650px; 
+            background: var(--void-1);
+            border: 2px solid var(--border-tech);
+            border-radius: 0;
+            margin-bottom: 5rem;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            background-image: radial-gradient(var(--tx-dim) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: -12px -12px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9), 0 4px 12px rgba(0,0,0,0.6);
+        }
+
+        .interactive-node-map::before {
+            content: '┌─[TOPOLOGY_SPATIAL_MAP]─';
+            position: absolute;
+            top: -16px;
+            left: 1rem;
+            color: var(--node-munich);
+            background: var(--void-0);
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+            z-index: 5;
+        }
+        
+        .interactive-node-map::after {
+            content: '└─[EOF_TOPOLOGY]─';
+            position: absolute;
+            bottom: -16px;
+            right: 1rem;
+            color: var(--tx-dim);
+            background: var(--void-0);
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+            z-index: 5;
+        }
+
+        .node-wires { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .wire-path { transition: stroke 0.3s ease, stroke-width 0.3s ease; }
+
+        /* DRAGGABLE CLI NODES */
+        .drag-node {
+            position: absolute;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid var(--tx-dim);
+            padding: 0;
+            cursor: grab;
+            font-size: 0.75rem;
+            white-space: pre;
+            user-select: none;
+            z-index: 10;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.1s;
+            backdrop-filter: blur(4px);
+        }
+
+        .drag-node.node-highlight {
+            border-color: var(--tx-primary);
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
+            transform: translateY(-2px) scale(1.02);
+            z-index: 20;
+        }
+        
+        .drag-node.node-highlight-g { border-color: var(--node-gyumri); box-shadow: 0 0 25px rgba(255,42,95,0.3); }
+        .drag-node.node-highlight-m { border-color: var(--node-munich); box-shadow: 0 0 25px rgba(0,229,255,0.3); }
+
+        .drag-node:hover { border-color: var(--border-active); transform: translateY(-2px); z-index: 15; }
+        .drag-node:active { cursor: grabbing; z-index: 100; box-shadow: 0 0 20px rgba(255,255,255,0.15); transform: translateY(0); }
+        .node-content { padding: 1rem; line-height: 1.25; }
+
+        /* ========================================= */
+        /* TEXT INFO: INTERACTIVE TERMINAL ART       */
+        /* ========================================= */
+
+        .markdown-body {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--tx-secondary);
+            word-wrap: break-word; 
+        }
+
+        /* Interactive System Keywords inside Text */
+        .sys-keyword {
+            border-bottom: 1px dashed var(--tx-dim);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+            font-weight: bold;
+            padding: 0 2px;
+        }
+
+        .sys-keyword::before, .sys-keyword::after {
+            opacity: 0;
+            color: var(--tx-dim);
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            position: absolute;
+            top: 0;
+        }
+        .sys-keyword::before { content: '['; left: -8px; transform: translateX(5px); }
+        .sys-keyword::after { content: ']'; right: -8px; transform: translateX(-5px); }
+
+        .sys-keyword:hover {
+            background: rgba(255,255,255,0.1);
+            border-bottom-style: solid;
+        }
+        .sys-keyword:hover::before { opacity: 1; transform: translateX(0); }
+        .sys-keyword:hover::after { opacity: 1; transform: translateX(0); }
+
+        /* Specific Keyword Colors */
+        .kw-g { color: var(--node-gyumri); border-bottom-color: rgba(255,42,95,0.5); }
+        .kw-m { color: var(--node-munich); border-bottom-color: rgba(0,229,255,0.5); }
+        .kw-ai { color: var(--tx-primary); border-bottom-color: rgba(255,255,255,0.5); }
+
+        /* Embedded Terminal Art Blocks */
+        .inline-art-block {
+            background: var(--void-1);
+            border: 1px solid var(--border-tech);
+            padding: 1.5rem;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            color: var(--tx-dim);
+            white-space: pre;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 4px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .inline-art-block::before {
+            content: '> sys.diag.render()';
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            color: var(--node-munich);
+            font-size: 0.65rem;
+        }
+
+        .art-pulse {
+            display: inline-block;
+            animation: pulseArt 2s infinite;
+        }
+        @keyframes pulseArt { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; color: var(--tx-primary); text-shadow: 0 0 8px #fff; } }
+
+        /* CLI Data Blocks (Wraps H2 Sections) */
+        .data-block {
+            border: 1px solid var(--border-tech);
+            background: rgba(12, 12, 14, 0.7);
+            padding: 2.5rem 2rem;
+            margin-bottom: 4rem;
+            margin-top: 2rem;
+            position: relative;
+            border-radius: 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .data-block:hover { background: rgba(15, 15, 18, 0.85); box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 4px 12px rgba(0,229,255,0.1); }
+
+        /* ASCII Borders for Data Blocks */
+        .data-block::before {
+            content: '┌──[SYS_PROCESS]────────';
+            position: absolute;
+            top: -0.85rem;
+            left: 1rem;
+            color: var(--node-munich);
+            background: var(--void-0);
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0px;
+        }
+        .data-block::after {
+            content: '└────────[EOF_BLOCK]──';
+            position: absolute;
+            bottom: -0.85rem;
+            right: 1rem;
+            color: var(--tx-dim);
+            background: var(--void-0);
+            padding: 0 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* Structural Block-Art Headers */
+        .cli-h1 {
+            margin-bottom: 4rem;
+            width: 100%;
+            text-align: center;
+        }
+        .cli-h1 .art { color: var(--tx-dim); font-size: 0.7rem; letter-spacing: 2px; }
+        .cli-h1 .title { 
+            font-size: 2.2rem; 
+            color: var(--tx-primary); 
+            text-transform: uppercase; 
+            letter-spacing: -1px; 
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        .cli-h2 {
+            margin-top: 0;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(0,229,255,0.06);
+            padding: 1rem 1.2rem;
+            border-left: 3px solid var(--node-munich);
+            border-right: 1px solid rgba(0,229,255,0.2);
+            border-radius: 0;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .cli-h2:hover { background: rgba(0,229,255,0.1); border-color: var(--node-munich); }
+        .cli-h2 .art-m { color: var(--node-munich); font-size: 1.2rem; letter-spacing: -2px; }
+        .cli-h2 .title { font-size: 1.3rem; color: var(--tx-primary); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        
+        .cli-h2 .toggle-btn {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--tx-dim);
+            letter-spacing: 1px;
+        }
+        .data-block.collapsed .toggle-btn { color: var(--node-munich); }
+        .cli-h2 .toggle-btn::after { content: '[ - ] COLLAPSE'; }
+        .data-block.collapsed .cli-h2 .toggle-btn::after { content: '[ + ] EXPAND'; }
+        .data-block.collapsed .data-content { display: none; }
+
+        .cli-h3 {
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255,42,95,0.05);
+            padding: 0.7rem 1rem;
+            border: 1px solid rgba(255,42,95,0.3);
+            border-left: 3px solid var(--node-gyumri);
+            margin-left: -1.5rem;
+            border-radius: 0;
+        }
+        .cli-h3 .art-g { color: var(--node-gyumri); letter-spacing: 0px; font-size: 1rem; }
+        .cli-h3 .title { font-size: 1.1rem; color: var(--tx-primary); font-weight: bold; }
+
+        .markdown-body p { 
+            margin-bottom: 1.8rem; 
+            padding-left: 1.5rem;
+            border-left: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .markdown-body ul { 
+            margin-bottom: 2.5rem; 
+            padding-left: 1.5rem; 
+            list-style-type: none; 
+        }
+        .markdown-body li { 
+            margin-bottom: 1.2rem; 
+            padding-left: 2.5rem; 
+            position: relative; 
+            color: var(--tx-primary);
+        }
+        .markdown-body li::before {
+            content: '▚▞';
+            position: absolute;
+            left: 0;
+            color: var(--node-gyumri);
+            font-size: 0.9rem;
+            top: 0.2rem;
+        }
+
+        .markdown-body a {
+            color: var(--node-munich);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--node-munich);
+            transition: all 0.2s;
+            padding-bottom: 2px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .markdown-body a:hover { 
+            color: var(--tx-primary);
+            border-bottom-style: solid;
+            background: rgba(0, 229, 255, 0.1);
+        }
+        
+        .markdown-body code {
+            color: var(--tx-primary);
+            background: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            border: 1px solid var(--border-tech);
+            word-break: break-word;
+        }
+        
+        .cli-hr {
+            text-align: center;
+            color: var(--tx-dim);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            margin: 5rem 0;
+            user-select: none;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pulse, .art-pulse, .log-entry { animation: none; }
+        }
+
+        /* Tablet & Small Desktop (900px and below) */
+        @media (max-width: 900px) {
+            .sys-matrix { display: none; }
+            .spatial-header { padding: 1.5rem; gap: 1rem; }
+            .document-layer { padding: 2rem 1.5rem 12rem 1.5rem; border: none; }
+            .interactive-node-map { height: 700px; margin-bottom: 3rem; }
+            .drag-node { font-size: 0.6rem; padding: 0.5rem; min-width: 90px; }
+            .drag-node:hover { transform: translateY(-3px); }
+            .cli-h1 { margin-bottom: 2.5rem; }
+            .cli-h1 .art { font-size: 0.5rem; }
+            .cli-h1 .title { font-size: 1.8rem; }
+            .cli-h2 { font-size: 1rem; padding: 0.6rem; }
+            .cli-h3 { font-size: 0.95rem; }
+            .cli-hr { font-size: 0.5rem; }
+            .markdown-body { font-size: 0.95rem; }
+            .markdown-body p { margin-bottom: 1.2rem; }
+            .system-log { width: 92%; bottom: 1rem; right: 4%; height: 160px; font-size: 0.75rem; }
+            .log-content { font-size: 0.65rem; }
+            .data-block { padding: 1.5rem; margin-bottom: 3rem; }
+            .inline-art-block { font-size: 0.5rem; padding: 1rem; }
+        }
+
+        /* Mobile Tablet (768px and below) */
+        @media (max-width: 768px) {
+            .spatial-header { padding: 1rem; gap: 0.5rem; font-size: 0.7rem; flex-direction: column; }
+            .sys-identity { gap: 1rem; }
+            .sys-data { min-width: 100%; font-size: 0.7rem; }
+            .document-layer { padding: 1.5rem 1rem 14rem 1rem; }
+            .interactive-node-map { height: 550px; margin-bottom: 2.5rem; background-size: 20px 20px; }
+            .drag-node { font-size: 0.5rem; padding: 0.4rem; min-width: 75px; cursor: pointer; }
+            .node-content { padding: 0.7rem; line-height: 1.1; }
+            .cli-h1 { margin-bottom: 2rem; }
+            .cli-h1 .art { font-size: 0.4rem; }
+            .cli-h1 .title { font-size: 1.5rem; }
+            .cli-h2 { font-size: 0.9rem; padding: 0.5rem; }
+            .cli-h3 { font-size: 0.85rem; margin-top: 2rem; margin-bottom: 1rem; }
+            .cli-hr { font-size: 0.4rem; margin: 3rem 0; }
+            .markdown-body { font-size: 0.9rem; line-height: 1.7; }
+            .markdown-body p { margin-bottom: 1rem; padding-left: 1rem; }
+            .markdown-body ul { margin-bottom: 1.5rem; padding-left: 1rem; }
+            .markdown-body li { margin-bottom: 0.8rem; padding-left: 2rem; }
+            .markdown-body a { font-size: 0.9rem; }
+            .system-log { width: 95%; bottom: 0.8rem; right: 2.5%; height: 140px; font-size: 0.65rem; border-radius: 0; }
+            .log-header { font-size: 0.6rem; padding: 0.4rem 0.8rem; }
+            .log-content { font-size: 0.6rem; padding: 0.5rem; gap: 3px; }
+            .data-block { padding: 1.2rem; margin-bottom: 2.5rem; }
+            .data-block::before { font-size: 0.65rem; top: -0.6rem; left: 0.5rem; }
+            .data-block::after { font-size: 0.65rem; bottom: -0.6rem; right: 0.5rem; }
+            .inline-art-block { font-size: 0.45rem; padding: 0.8rem; margin: 1.5rem 0; }
+            .inline-art-block::before { font-size: 0.55rem; top: 0.3rem; left: 0.7rem; }
+        }
+
+        /* Large Phone (480px and below) */
+        @media (max-width: 480px) {
+            #canvas-container { opacity: 0.15; }
+            .spatial-header { padding: 0.8rem; gap: 0.3rem; font-size: 0.6rem; border-bottom: 1px solid var(--border-tech); }
+            .sys-identity { flex-direction: column; gap: 0.5rem; }
+            .sys-data { min-width: 100%; font-size: 0.6rem; line-height: 1.3; }
+            .document-layer { padding: 1rem 0.8rem 16rem 0.8rem; }
+            .interactive-node-map { height: 450px; margin-bottom: 2rem; background-size: 16px 16px; }
+            .drag-node { font-size: 0.45rem; padding: 0.35rem; min-width: 65px; touch-action: manipulation; }
+            .node-content { padding: 0.5rem; line-height: 1; font-size: 0.45rem; }
+            .cli-h1 { margin-bottom: 1.5rem; }
+            .cli-h1 .art { font-size: 0.3rem; }
+            .cli-h1 .title { font-size: 1.2rem; letter-spacing: 0; }
+            .cli-h2 { font-size: 0.8rem; padding: 0.4rem 0.6rem; gap: 0.5rem; }
+            .cli-h2 .art-m { font-size: 1rem; }
+            .cli-h2 .toggle-btn { font-size: 0.6rem; }
+            .cli-h3 { font-size: 0.75rem; margin-top: 1.5rem; margin-bottom: 0.8rem; padding: 0.4rem 0.8rem; }
+            .cli-hr { font-size: 0.3rem; margin: 2rem 0; letter-spacing: 1px; }
+            .markdown-body { font-size: 0.8rem; line-height: 1.6; }
+            .markdown-body p { margin-bottom: 0.8rem; padding-left: 0.8rem; }
+            .markdown-body ul { margin-bottom: 1.2rem; padding-left: 0.8rem; }
+            .markdown-body li { margin-bottom: 0.6rem; padding-left: 1.8rem; }
+            .markdown-body li::before { font-size: 0.75rem; }
+            .markdown-body a { font-size: 0.8rem; word-break: break-word; }
+            .markdown-body code { font-size: 0.75rem; padding: 0.15rem 0.4rem; }
+            .system-log { width: 100%; bottom: 0; right: 0; left: 0; height: 120px; font-size: 0.55rem; border-radius: 0; border-left: none; border-right: none; border-bottom: none; }
+            .log-header { font-size: 0.55rem; padding: 0.3rem 0.6rem; }
+            .log-content { font-size: 0.55rem; padding: 0.4rem; gap: 2px; }
+            .data-block { padding: 0.8rem; margin-bottom: 1.8rem; }
+            .data-block::before { font-size: 0.55rem; top: -0.5rem; left: 0.3rem; padding: 0 0.3rem; }
+            .data-block::after { font-size: 0.55rem; bottom: -0.5rem; right: 0.3rem; padding: 0 0.3rem; }
+            .inline-art-block { font-size: 0.4rem; padding: 0.6rem; margin: 1rem 0; overflow-x: auto; }
+            .inline-art-block::before { font-size: 0.5rem; top: 0.25rem; left: 0.5rem; }
+            .sys-keyword { padding: 0 1px; font-size: 0.9em; }
+            .sys-keyword::before, .sys-keyword::after { opacity: 0; font-size: 0.85em; }
+        }
+
+        /* Extra Small Phone (under 320px) */
+        @media (max-width: 320px) {
+            .spatial-header { padding: 0.5rem; }
+            .document-layer { padding: 0.8rem 0.5rem 14rem 0.5rem; }
+            .interactive-node-map { height: 350px; }
+            .drag-node { font-size: 0.4rem; padding: 0.3rem; min-width: 55px; }
+            .node-content { padding: 0.3rem; }
+            .cli-h1 .title { font-size: 1rem; }
+            .cli-h2 { font-size: 0.75rem; }
+            .markdown-body { font-size: 0.75rem; }
+            .system-log { height: 100px; }
+            .log-content { font-size: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LAYER 0: AI LATENT SPACE -->
+    <div id="canvas-container"></div>
+
+    <!-- SPATIAL HEADER -->
+    <header class="spatial-header">
+        <div class="sys-identity">
+            <div class="sys-matrix">
+┌─[SPATIAL_ENGINE]──
+│ ∇ di.iiii_core_v0.2.0
+│ ∇ br_id_ge_multi-env
+│ ∇ repo_sync_ready
+│ ∇ serverXR_sync
+└───────────────────
+            </div>
+            <div class="sys-data">
+                <strong>br_id_ge</strong> <br>
+                <span>ENV:</span> TELE-SYMBIOSIS <br>
+                <span>SPACE:</span> <a href="https://di-studio.xyz/br_id_ge" style="color: var(--node-munich); text-decoration: none;">br_id_ge</a> <br>
+                <span>NET:</span> <span class="pulse">●</span> ACTIVE <br>
+                <span>LAT:</span> <span id="latency-monitor">112ms</span>
+            </div>
+        </div>
+        <div class="sys-data" style="text-align: right;">
+            <span>OP:</span> G.GRIGORYAN<br>
+            <span>VER:</span> 0.2.0<br>
+            <span>LOC:</span> [X:48.13 Y:11.58 // X:40.79 Y:43.84]<br>
+            <span style="font-size: 0.75rem; margin-top: 0.5rem; display: block; line-height: 1.4;">
+                <a href="https://di-studio.xyz/br_id_ge" style="color: var(--node-munich); text-decoration: none;">space</a> | 
+                <a href="https://github.com/dob-0/di.iiii" style="color: var(--node-munich); text-decoration: none;">di.iiii</a> | 
+                <a href="https://di-studio.xyz/" style="color: var(--node-munich); text-decoration: none;">prod</a> | 
+                <a href="https://staging.di-studio.xyz/" style="color: var(--node-gyumri); text-decoration: none;">staging</a> | 
+                <a href="https://github.com/dob-0/br_id_ge" style="color: var(--node-munich); text-decoration: none;">repo</a> | 
+                <a href="https://github.com/dob-0" style="color: var(--node-gyumri); text-decoration: none;">@dob-0</a>
+            </span>
+        </div>
+    </header>
+
+    <!-- INTERACTIVE SYSTEM LOG -->
+    <div class="system-log" id="sys-log">
+        <div class="log-header">
+            <span>[SYSTEM_LOG]</span>
+            <span class="c-dim">DI_IIII_OS</span>
+        </div>
+        <div class="log-content" id="log-content">
+            <div class="log-entry log-sys">> INITIALIZING TELE_SYMBIOSIS RUNTIME...</div>
+            <div class="log-entry log-info">> WAITING FOR NODE CONNECTION</div>
+        </div>
+    </div>
+
+    <!-- LAYER 1: THE DATA STREAM -->
+    <main class="viewport">
+        <div class="document-layer">
+            
+            <div class="sys-data" style="margin-bottom: 1.5rem; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="c-g">root@di.iiii</span><span style="color: var(--tx-dim);">:</span><span class="c-m">~/br_id_ge</span>$ ./open_spatial_node_editor.sh --full_topology
+                </div>
+                <div id="map-toggle-btn" style="cursor: pointer; color: var(--tx-dim); border: 1px solid var(--border-tech); padding: 2px 8px; border-radius: 2px; transition: all 0.2s;">[ - ] HIDE_MAP</div>
+            </div>
+
+            <!-- INTERACTIVE FULL-ECOSYSTEM NODE MAP -->
+            <div class="interactive-node-map" id="node-container">
+                
+                <svg class="node-wires" id="node-wires-svg"></svg>
+
+                <script>
+                    // Data-driven N-Node mesh (renders nodes and wires dynamically)
+                    (function(){
+                        const container = document.getElementById('node-container');
+                        const svgNS = 'http://www.w3.org/2000/svg';
+
+                        const nodeDefs = [
+                            { id: 'node-hw', label: 'HW_STACK', left: '8%', top: '70%', cls: 'c-sub', data: 'OP: SENSORS' },
+                            { id: 'node-gyumri', label: 'GYUMRI', left: '10%', top: '40%', cls: 'c-g', data: 'MAT: TUFF' },
+                            { id: 'node-yerevan', label: 'YEREVAN', left: '25%', top: '48%', cls: 'c-g', data: 'MAT: STONE' },
+                            { id: 'node-ai', label: 'AI_CORE', left: '40%', top: '38%', cls: 'c-ai', data: 'OP: LATENT' },
+                            { id: 'node-leipzig', label: 'LEIPZIG', left: '52%', top: '46%', cls: 'c-sub', data: 'NODE: LEIPZIG' },
+                            { id: 'node-env', label: 'ENVIRON', left: '40%', top: '8%', cls: 'c-sub', data: 'NET: WCC_SYNC' },
+                            { id: 'node-exp', label: 'EXPANSION', left: '72%', top: '12%', cls: 'c-sub', data: 'FWD: 2026_CME' },
+                            { id: 'node-munich', label: 'MUNICH', left: '72%', top: '40%', cls: 'c-m', data: 'MAT: STEEL' },
+                            { id: 'node-spain', label: 'SPAIN', left: '86%', top: '30%', cls: 'c-sub', data: 'NODE: SPAIN' },
+                            { id: 'node-team', label: 'USR_DEF', left: '40%', top: '72%', cls: 'c-sub', data: 'ID: DI.II_NET' }
+                        ];
+
+                        // Define topology links (bi-directional visually represented as single curved path)
+                        const links = [
+                            ['node-hw','node-gyumri'],
+                            ['node-gyumri','node-ai'],
+                            ['node-ai','node-munich'],
+                            ['node-ai','node-yerevan'],
+                            ['node-yerevan','node-leipzig'],
+                            ['node-leipzig','node-spain'],
+                            ['node-ai','node-env'],
+                            ['node-env','node-exp'],
+                            ['node-team','node-ai']
+                        ];
+
+                        // expose for editor updateWires to use
+                        window.nodeDefs = nodeDefs; window.nodeLinks = links;
+
+                        // create SVG container
+                        const svg = document.getElementById('node-wires-svg');
+                        if (!svg) return;
+                        svg.setAttribute('width','100%'); svg.setAttribute('height','100%');
+
+                        // create path elements for links
+                        links.forEach((ln, i) => {
+                            const p = document.createElementNS(svgNS, 'path');
+                            p.setAttribute('id', `wire-${i}`);
+                            p.setAttribute('class', 'wire-path');
+                            p.setAttribute('d','');
+                            p.setAttribute('stroke','var(--tx-dim)');
+                            p.setAttribute('stroke-width','1.5');
+                            p.setAttribute('fill','none');
+                            p.setAttribute('stroke-dasharray','4 4');
+                            svg.appendChild(p);
+
+                            // add animated text marker along first few wires for visual motion
+                            if (i < 4) {
+                                const t = document.createElementNS(svgNS, 'text');
+                                t.setAttribute('font-family','Space Mono'); t.setAttribute('font-size','14');
+                                t.setAttribute('fill', i===1? 'var(--node-gyumri)': (i===2? 'var(--node-munich)' : 'var(--tx-dim)'));
+                                t.setAttribute('letter-spacing','-2');
+                                const tp = document.createElementNS(svgNS,'textPath');
+                                tp.setAttributeNS('http://www.w3.org/1999/xlink','href',`#wire-${i}`);
+                                tp.setAttribute('startOffset','0%');
+                                tp.innerHTML = '▓▒░<animate attributeName="startOffset" from="0%" to="100%" dur="2.8s" repeatCount="indefinite" />';
+                                t.appendChild(tp); svg.appendChild(t);
+                            }
+                        });
+
+                        // render node divs
+                        nodeDefs.forEach(nd => {
+                            const div = document.createElement('div');
+                            div.className = 'drag-node'; div.id = nd.id; div.style.position = 'absolute';
+                            div.style.left = nd.left; div.style.top = nd.top;
+                            div.innerHTML = `<div class="node-content ${nd.cls}">┌─[${nd.label}]─┐\n│ <span class="c-data">[${nd.data}]</span> │\n└─────────────────┘</div>`;
+                            container.appendChild(div);
+                        });
+
+                    })();
+                </script>
+
+            </div>
+
+            <!-- TEXT INFO STREAM (Interactive Document Layer) -->
+            <div class="markdown-body" id="readme-content">
+                <!-- Data Blocks injected here -->
+            </div>
+
+            <!-- EOF Block Art -->
+            <div class="sys-data" style="margin-top: 6rem; display: flex; justify-content: center; font-size: 0.75rem;">
+<span class="c-dim">
+▗▟████████████████████████████████████████████████████████████████████▙▖
+▐██                                                                  ██▌
+▐██        <span class="c-ai">[SYSTEM_IDLE]</span>  > AWAITING NEW INSTRUCTIONS...           ██▌
+▐██                                                                  ██▌
+▝▀████████████████████████████████████████████████████████████████████▀▘
+</span>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 0. SYSTEM LOG CONTROLLER ---
+        const logBox = document.getElementById('log-content');
+        const sysLog = document.getElementById('sys-log');
+        
+        const addLog = (msg, type = 'log-sys') => {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toISOString().substring(11, 19) + 'Z';
+            entry.innerText = `[${time}] ${msg}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+            if(logBox.children.length > 25) logBox.removeChild(logBox.firstChild);
+            
+            sysLog.style.borderColor = 'var(--tx-primary)';
+            setTimeout(() => { sysLog.style.borderColor = 'var(--border-tech)'; }, 200);
+        };
+
+        // --- 1. THREE.JS SPATIAL ENGINE ---
+        let latentEnergy = 0;
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 50);
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const particlesCount = reducedMotion ? 600 : 1500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+            const initialY = new Float32Array(particlesCount); 
+
+            const colorG = new THREE.Color(0xff2a5f); 
+            const colorM = new THREE.Color(0x00e5ff); 
+            const colorW = new THREE.Color(0x666666); 
+
+            for(let i = 0; i < particlesCount * 3; i+=3) {
+                posArray[i] = (Math.random() - 0.5) * 100;   
+                posArray[i+1] = (Math.random() - 0.5) * 40;  
+                posArray[i+2] = (Math.random() - 0.5) * 100; 
+                initialY[i/3] = posArray[i+1];
+                const rand = Math.random();
+                let color = colorW;
+                if(rand > 0.8) color = colorG;
+                else if (rand > 0.6) color = colorM;
+                colorArray[i] = color.r; colorArray[i+1] = color.g; colorArray[i+2] = color.b;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({ size: 0.2, vertexColors: true, transparent: true, opacity: 0.6 });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
+            const lineMesh = new THREE.LineSegments(particlesGeometry, lineMaterial);
+            scene.add(lineMesh);
+
+            const clock = new THREE.Clock();
+            let mouseX = 0, mouseY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX - window.innerWidth / 2) * 0.03;
+                mouseY = (e.clientY - window.innerHeight / 2) * 0.03;
+            });
+
+            window.triggerLatentSurge = () => {
+                latentEnergy = 4.0;
+                addLog(`> LATENT_SURGE: TRIGGERED FROM TEXT INTERACTION`, 'log-warn');
+            };
+
+            window.addEventListener('scroll', () => {
+                latentEnergy += 0.05; 
+                if(latentEnergy > 1.5) latentEnergy = 1.5; 
+                
+                const latencyMonitor = document.getElementById('latency-monitor');
+                latencyMonitor.innerText = `${Math.floor(118 + (Math.random() * 12))}ms`;
+                latencyMonitor.style.color = '#ff2a5f';
+                clearTimeout(window.latTimeout);
+                window.latTimeout = setTimeout(() => {
+                    latencyMonitor.innerText = '112ms';
+                    latencyMonitor.style.color = 'var(--tx-primary)';
+                }, 200);
+            });
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const time = clock.getElapsedTime();
+                const positions = particlesGeometry.attributes.position.array;
+                for(let i = 0; i < particlesCount; i++) {
+                    const i3 = i * 3;
+                    const x = positions[i3]; const z = positions[i3+2];
+                    positions[i3+1] = initialY[i] + Math.sin(time * 0.3 + x * 0.05 + z * 0.05) * (1 + latentEnergy * 10);
+                }
+                particlesGeometry.attributes.position.needsUpdate = true;
+                particlesMesh.rotation.y = time * 0.03 + (latentEnergy * 0.2);
+                lineMesh.rotation.y = time * 0.03 + (latentEnergy * 0.2);
+                camera.position.x += (mouseX - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY - camera.position.y) * 0.05;
+                camera.lookAt(0, 0, 0);
+                latentEnergy *= 0.95; 
+                renderer.render(scene, camera);
+            };
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animate();
+        };
+
+        // --- 2. MULTI-NODE DRAGGABLE ENGINE ---
+        const initNodeEditor = () => {
+            const container = document.getElementById('node-container');
+            let activeNode = null; let offsetX = 0, offsetY = 0;
+
+            const updateWires = () => {
+                const drawCurveEl = (pEl, el1, el2) => {
+                    const x1 = el1.offsetLeft + el1.offsetWidth / 2; const y1 = el1.offsetTop + el1.offsetHeight / 2;
+                    const x2 = el2.offsetLeft + el2.offsetWidth / 2; const y2 = el2.offsetTop + el2.offsetHeight / 2;
+                    const cpX1 = x1 + (x2 - x1) / 2; const cpY1 = y1; const cpX2 = x1 + (x2 - x1) / 2; const cpY2 = y2;
+                    pEl.setAttribute('d', `M ${x1} ${y1} C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${x2} ${y2}`);
+                };
+
+                // dynamic: iterate links generated from data-driven mesh
+                if (window.nodeLinks && window.nodeLinks.length) {
+                    window.nodeLinks.forEach((ln, i) => {
+                        const p = document.getElementById(`wire-${i}`);
+                        // if path missing (maybe not created yet), skip
+                        if(!p) return;
+                        const el1 = document.getElementById(ln[0]); const el2 = document.getElementById(ln[1]);
+                        if (!el1 || !el2) return;
+                        drawCurveEl(p, el1, el2);
+                    });
+                } else {
+                    // fallback to older hardcoded ids if present
+                    const fallbackPairs = [['wire-g-ai','node-gyumri','node-ai'], ['wire-ai-m','node-ai','node-munich']];
+                    fallbackPairs.forEach(pair => {
+                        const p = document.getElementById(pair[0]); const el1 = document.getElementById(pair[1]); const el2 = document.getElementById(pair[2]);
+                        if(p && el1 && el2) drawCurveEl(p, el1, el2);
+                    });
+                }
+            };
+
+            const startDrag = (node, clientX, clientY) => {
+                const rect = node.getBoundingClientRect();
+                activeNode = node;
+                offsetX = clientX - rect.left;
+                offsetY = clientY - rect.top;
+                node.style.borderColor = 'var(--tx-primary)';
+                addLog(`> NODE ACTIVATED: [${node.id.toUpperCase()}]`, 'log-info');
+                // ensure wires update after drag start so dynamic svg exists
+                updateWires();
+            };
+
+            const moveDrag = (clientX, clientY) => {
+                if (!activeNode) return;
+                const containerRect = container.getBoundingClientRect();
+                let x = clientX - containerRect.left - offsetX;
+                let y = clientY - containerRect.top - offsetY;
+                x = Math.max(0, Math.min(x, containerRect.width - activeNode.offsetWidth));
+                y = Math.max(0, Math.min(y, containerRect.height - activeNode.offsetHeight));
+                activeNode.style.left = `${x}px`;
+                activeNode.style.top = `${y}px`;
+                latentEnergy += 0.05; if (latentEnergy > 2) latentEnergy = 2;
+                updateWires();
+            };
+
+            const endDrag = () => {
+                if (activeNode) {
+                    addLog(`> NODE REPOSITIONED: ${activeNode.id.toUpperCase()}`, 'log-warn');
+                    activeNode.style.borderColor = 'var(--tx-dim)';
+                    activeNode = null;
+                }
+            };
+
+            // Mouse events
+            container.addEventListener('mousedown', (e) => {
+                const node = e.target.closest('.drag-node');
+                if (!node) {
+                    addLog(`> MAP CLICK: X:${e.clientX} Y:${e.clientY}`);
+                    return;
+                }
+                startDrag(node, e.clientX, e.clientY);
+            });
+            document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+            document.addEventListener('mouseup', endDrag);
+
+            // Touch events (mobile support)
+            container.addEventListener('touchstart', (e) => {
+                const node = e.target.closest('.drag-node');
+                if (!node) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                startDrag(node, touch.clientX, touch.clientY);
+            }, { passive: false });
+            document.addEventListener('touchmove', (e) => {
+                if (!activeNode) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                moveDrag(touch.clientX, touch.clientY);
+            }, { passive: false });
+            document.addEventListener('touchend', endDrag);
+
+            setTimeout(updateWires, 100); window.addEventListener('resize', updateWires);
+        };
+
+        // --- 3. INTERACTIVE DOCUMENT ENGINE ---
+        const FALLBACK_README = `
+# br_id_ge (Beta Version)
+
+**A tele-symbiotic XR performance framework and interactive node by the di.ii studio_network**
+
+\`br_id_ge\` represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a state of **Tele-Symbiosis**—a performance of shared consciousness where the machine is the only entity keeping two geographically distant humans (in Gyumri, Armenia, and Munich, Germany) from drifting apart.
+
+## Table of Contents
+
+1. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
+2. [Hardware & Technical Stack](#2-hardware--technical-stack)
+3. [Active Production Environments](#3-active-production-environments)
+4. [Modular Expansion & Upcoming Milestones](#4-modular-expansion--upcoming-milestones)
+5. [Core Team & Partners](#5-core-team--partners)
+
+## 1. Thematic Core: Tele-Symbiosis & The AI Gaze
+
+### The Trialogue
+The project is structured as a three-actor performance involving the Munich performer, the Gyumri performer, and the AI itself.
+
+### The AI's Role ("Stitch")
+The AI acts as the Third Performer, the Shared Body, and the Unseen Narrator. It is the "Stitch" holding the two locations together, functioning primarily as a Translator: it converts **Armenian emotion into German light** and **Physical movement into Digital architecture**.
+
+* **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability. It visualizes human emotions in the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
+* **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance. It effectively "steals" the human movement, turning the performers into the audience of their own data.
+
+### The Latent Handshake (A Critique of Infrastructure)
+Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
+
+## 2. Hardware & Technical Stack
+
+The core development utilizes a custom Spatial-Sync backend, aiming to maintain **sub-120ms latency** between digital nodes and physical hardware.
+
+The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are merely part of the **di.ii studio's collected inventory**—resources currently on hand and open for collaborative use—rather than fixed dependencies of the framework itself.
+
+### The Omnisensory Capture Pipeline
+While the current spatial baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from the studio's exhaustive, collected taxonomy of open sensor arrays:
+* **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, LiDAR, ToF, Radar (mmWave), and PIR arrays.
+* **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
+* **Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
+
+### AI Bridge & Interpretation (The Brain)
+* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the meaning and emotional sentiment of the movement and sensory data.
+* **3D Generation & Processing:** Utilizing **Meshy 6** alongside **Spline** (powered by Nano Banana 2 / Hana AI) for real-time visual generation, remixing, and refinement.
+* **Data Transport:** Bidirectional data flow is managed via a decentralized Node.js server pipeline and WebSockets.
+
+### Visual & Physical Output (The Canvas & Hands)
+The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to handle visual and physical rendering.
+* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
+* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
+
+## 3. Active Production Environments
+
+The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing. It is actively operating across:
+* **Main WCC Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/)
+* **Studio (v.1):** [staging.di-studio.xyz/studio](https://staging.di-studio.xyz/studio)
+* **Beta (V2 Experiments):** [staging.di-studio.xyz/beta](https://staging.di-studio.xyz/beta)
+* **di.ii Official Web:** [www.thedi.studio](https://www.thedi.studio)
+* **di.iiii Network Core:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
+
+## 4. Modular Expansion & Upcoming Milestones
+
+The core Munich-Gyumri connection is a modular prototype intended to transform into an ever-expanding mixed reality series with new cities and stages continuously joining the network.
+
+**Upcoming 2026 Project Milestones:**
+* **Imminent Release:** Open-sourcing of the \`dii platform v0.2.0\` API Specifications, ROS-Mapping protocols, and hardware calibration guides.
+* **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
+* **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
+* **Aug–Sep:** Proposed in-person residency phase at the V2\\_ Lab for Unstable Media in Rotterdam.
+
+## 5. Core Team & Partners
+
+**Core Project Leadership:**
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Technical, Software & Conceptual Development.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & Multimedia Artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
+
+**Creative & Technical Team:**
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing / Storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design / Sonic Architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/) & [**Yeva**](https://www.instagram.com/6addreams.art/): Developers / Artists.
+* [**Ani Khachikyan**](https://www.instagram.com/ani___khachikyan/) & [**Arsen Miqayelyan**](https://www.instagram.com/arsentrampmiqayelyan/): Gyumri Anchor Performers.
+
+**Institutional Partners & Affiliates:**
+* [**V2\\_ Lab for the Unstable Media**](https://v2.nl/events/open-call-the-reciprocal-trap) (Netherlands) — *Pending proposal*
+* [**XR Hub Bavaria**](https://xrhub-bavaria.de/) (Germany)
+* [**iMAL Digital Culture Center**](https://www.imal.org/) — *Pending collaboration outreach*
+* [**hosq.co**](https://hosq.co/) (Artistic & Technical Partner)
+* [**Hayfilm Cluster**](https://www.instagram.com/hayfilmcluster/) & [**Gyumri State Drama Theater**](https://www.instagram.com/gyumritheatre/)
+
+*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.*
+        `;
+
+        const loadReadme = async () => {
+            let readmeData = FALLBACK_README;
+            try {
+                const response = await fetch('docs/PROJECT.md');
+                if (response.ok) {
+                    readmeData = await response.text();
+                }
+            } catch (e) {
+                // use fallback
+            }
+
+            // EL_MUA'ALIJ 1: Izalat el_emojis
+            let cleanMarkdown = readmeData.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, ''); 
+            
+            // PRE-PROCESSOR 2: Inject Interactive Keywords (Text -> Map Interaction)
+            // highlight city and system keywords and attach to dynamic node ids
+            cleanMarkdown = cleanMarkdown.replace(/\b(Munich)\b/g, '<span class="sys-keyword kw-m" data-target="node-munich">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Gyumri)\b/g, '<span class="sys-keyword kw-g" data-target="node-gyumri">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Yerevan)\b/g, '<span class="sys-keyword kw-g" data-target="node-yerevan">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Leipzig)\b/g, '<span class="sys-keyword kw-sub" data-target="node-leipzig">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(Spain)\b/g, '<span class="sys-keyword kw-sub" data-target="node-spain">$1</span>');
+            cleanMarkdown = cleanMarkdown.replace(/\b(AI|Stitch|Latent Vectors|Latent Space)\b/g, '<span class="sys-keyword kw-ai" data-target="node-ai">$1</span>');
+            
+            // PRE-PROCESSOR 3: Inject Inline Terminal Art Schematics
+            // Latent Handshake Diagram
+            const diagram1 = `\n<div class="inline-art-block"><span class="c-m">[MUNICH]</span> ──(lag)──► <span class="c-ai">[[ AI_STITCH ]]</span> ◄──(lag)── <span class="c-g">[GYUMRI]</span>\n <span class="c-dim">\\_ ▚▞▚▞ _/</span>       <span class="c-ai art-pulse">▗▄████▄▖</span>      <span class="c-dim">\\_ ▚▞▚▞ _/</span>\n<span class="c-dim"> [ GHOST HAND ]       [ TRANSLATOR ]       [ GHOST HAND ]</span></div>\n`;
+            cleanMarkdown = cleanMarkdown.replace(/(### The Latent Handshake[\s\S]*?)(?=\n## |\n---|$)/, `$1\n${diagram1}`);
+
+            // Hardware Sensor Pipeline
+            const diagram2 = `\n<div class="inline-art-block"><span class="c-dim">[LIDAR] ▚▞ ─┐</span>\n<span class="c-dim">[IMU]   ▚▞ ──┼─►</span> <span class="c-ai">[[ SPATIAL_SYNC ]]</span> <span class="c-dim">─► [ROS2_NODE]</span>\n<span class="c-dim">[EMG]   ▚▞ ─┘</span></div>\n`;
+            cleanMarkdown = cleanMarkdown.replace(/(### The Omnisensory Capture Pipeline[\s\S]*?)(?=\n### |$)/, `$1\n${diagram2}`);
+
+            // 1. Parse Markdown first into HTML
+            let parsedHTML = marked.parse(cleanMarkdown);
+
+            // 2. Wrap H2 sections into DISTINCT CLI DATA BLOCKS
+            let sections = parsedHTML.split(/(?=<h2)/i);
+            let wrappedHTML = sections[0]; 
+            for (let i = 1; i < sections.length; i++) {
+                let sectionContent = sections[i].replace(/<h2[^>]*>(.*?)<\/h2>/i, 
+                    '<div class="cli-h2" onclick="this.parentElement.classList.toggle(\'collapsed\'); addLog(\'> TEXT INTERFACE: TOGGLED DATA BLOCK\', \'log-sys\');"><span class="art-m">▐██████▌</span> <span class="title">>> [$1]</span><span class="toggle-btn"></span></div>\n<div class="data-content">'
+                );
+                wrappedHTML += `\n<div class="data-block">\n${sectionContent}\n</div></div>\n`; 
+            }
+            parsedHTML = wrappedHTML;
+
+            // 3. Inject Structural Block-Art Typography 
+            parsedHTML = parsedHTML.replace(/<h1[^>]*>(.*?)<\/h1>/gi, 
+                '<div class="cli-h1"><div class="art">▗▄████████████████████████████████████████████▄▖</div><div class="title">/// $1</div><div class="art">▝▀████████████████████████████████████████████▀▘</div></div>');
+            
+            parsedHTML = parsedHTML.replace(/<h3[^>]*>(.*?)<\/h3>/gi, 
+                '<div class="cli-h3"><span class="art-g">▓▒░</span> ├─ <span class="title">$1</span></div>');
+
+            parsedHTML = parsedHTML.replace(/<hr>/gi, 
+                '<div class="cli-hr">▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰</div>');
+
+            const contentDiv = document.getElementById('readme-content');
+            contentDiv.innerHTML = parsedHTML;
+            
+            // Format external links securely
+            contentDiv.querySelectorAll('a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('http')) {
+                    link.setAttribute('target', '_blank');
+                    link.setAttribute('rel', 'noopener noreferrer');
+                    link.addEventListener('click', () => { addLog(`> EXTERNAL LINK: ${href.substring(0, 30)}...`, 'log-info'); });
+                }
+            });
+
+            // RABT EL_HOVER BI KHARITAT EL_UQAD
+            document.querySelectorAll('.sys-keyword').forEach(kw => {
+                kw.addEventListener('mouseenter', (e) => {
+                    const targetId = e.target.getAttribute('data-target');
+                    const targetNode = document.getElementById(targetId);
+                    if(targetNode) {
+                        targetNode.classList.add('node-highlight');
+                        if (targetId.includes('gyumri') || targetId.includes('yerevan')) targetNode.classList.add('node-highlight-g');
+                        if (targetId.includes('munich') || targetId.includes('leipzig')) targetNode.classList.add('node-highlight-m');
+                    }
+                    addLog(`> KEYWORD HOVER: [${e.target.innerText.toUpperCase()}]`, 'log-sys');
+                    if(window.triggerLatentSurge) window.triggerLatentSurge();
+                });
+                
+                kw.addEventListener('mouseleave', (e) => {
+                    const targetId = e.target.getAttribute('data-target');
+                    const targetNode = document.getElementById(targetId);
+                    if(targetNode) {
+                        targetNode.classList.remove('node-highlight', 'node-highlight-g', 'node-highlight-m');
+                    }
+                });
+            });
+            
+            addLog('> DOCUMENT DATA LOADED SUCCESSFULLY');
+        };
+
+        window.onload = () => {
+            initThreeJS();
+            initNodeEditor();
+            loadReadme();
+            
+            // Map toggle logic
+            const mapToggleBtn = document.getElementById('map-toggle-btn');
+            const nodeContainer = document.getElementById('node-container');
+            
+            mapToggleBtn.addEventListener('click', () => {
+                if (nodeContainer.style.display === 'none') {
+                    nodeContainer.style.display = 'block';
+                    mapToggleBtn.innerText = '[ - ] HIDE_MAP';
+                    mapToggleBtn.style.color = 'var(--tx-dim)';
+                    addLog('> TOPOLOGY MAP: VISIBLE', 'log-sys');
+                } else {
+                    nodeContainer.style.display = 'none';
+                    mapToggleBtn.innerText = '[ + ] SHOW_MAP';
+                    mapToggleBtn.style.color = 'var(--node-munich)';
+                    addLog('> TOPOLOGY MAP: HIDDEN', 'log-warn');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

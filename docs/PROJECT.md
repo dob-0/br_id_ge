@@ -126,7 +126,6 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
 * **Imminent Release:** Open-sourcing of the `dii platform v0.2.0` API Specifications, ROS-Mapping protocols, and hardware calibration guides.
 * **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
 * **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
-* **Aug–Sep:** Proposed in-person residency phase at the V2\_ Lab for Unstable Media in Rotterdam.
 
 ## 5. Core Team & Partners
 
@@ -142,11 +141,8 @@ The core Munich-Gyumri connection is a modular prototype intended to transform i
 * [**Ani Khachikyan**](https://www.instagram.com/ani___khachikyan/) & [**Arsen Miqayelyan**](https://www.instagram.com/arsentrampmiqayelyan/): Gyumri Anchor Performers.
 
 **Institutional Partners & Affiliates:**
-* [**V2\_ Lab for the Unstable Media**](https://v2.nl/events/open-call-the-reciprocal-trap) (Netherlands) — *Pending proposal*
+* [**hosq.co**](https://hosq.co/) — Host · Artistic & Technical Partner
 * [**XR Hub Bavaria**](https://xrhub-bavaria.de/) (Germany)
-* [**iMAL Digital Culture Center**](https://www.imal.org/) — *Pending collaboration outreach*
-* [**hosq.co**](https://hosq.co/) (Artistic & Technical Partner)
-* [**Hayfilm Cluster**](https://www.instagram.com/hayfilmcluster/) & [**Gyumri State Drama Theater**](https://www.instagram.com/gyumritheatre/)
 
 *For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.
 

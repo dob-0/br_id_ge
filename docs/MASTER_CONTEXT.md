@@ -41,7 +41,7 @@ Phase 2: Munich ── Spain
 
 - Key Dates: Notations #2 (July 20 – August 2, 2026), Festival of the Future / XR HUB Bavaria (May 15, 2026).
 - Repositories: br_id_ge, di.iiii (v0.2.0), pe.portal_engine.
-- Core Team: Gevorg Aram Grigoryan (dob-0), Emilya Nikoghosyan, Ani Khachikyan, Arsen Miqayelyan, Syuzanna Ginosyan, Hannes Köpke, Hayfilm Cluster, Gyumri State Drama Theater.
+- Core Team: Gevorg Aram Grigoryan (dob-0), Emilya Nikoghosyan, Ani Khachikyan, Arsen Miqayelyan, Syuzanna Ginosyan, Hannes Köpke.
 
 Notes
 

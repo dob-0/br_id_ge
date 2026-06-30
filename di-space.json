@@ -1,0 +1,12 @@
+{
+  "$schema": "https://di-studio.xyz/schemas/di-space.schema.json",
+  "spaceId": "br_id_ge",
+  "projectId": "newww",
+  "label": "br_id_ge",
+  "mode": "code",
+  "entry": "index.html",
+  "include": [],
+  "assets": ["references/*.mp4"],
+  "publish": true,
+  "live": "https://di-studio.xyz/serverXR"
+}
