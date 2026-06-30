@@ -216,12 +216,26 @@ const keeperRing=[];
 for(let i=0;i<14;i++){const m=new THREE.SpriteMaterial({map:glyphTex(GLYPHS[(Math.random()*GLYPHS.length)|0]),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0x9fe4ff});
   const s=new THREE.Sprite(m);s.scale.set(1.3,1.3,1.3);s.userData={a:i/14*6.283};scene.add(s);keeperRing.push(s);}
 
+// the mesh — other nodes crossing the bridge (latency-jittered, the N-node concept)
+const CITIES=['gyumri','yerevan','leipzig','munich','spain'];
+const ghosts=[];
+for(let i=0;i<5;i++){const m=new THREE.SpriteMaterial({map:lampTex,color:i%2?0x9fe4ff:0xffce8c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+  const s=new THREE.Sprite(m);s.scale.set(3.0,3.0,3.0);scene.add(s);
+  ghosts.push({s,t:Math.random(),speed:0.010+Math.random()*0.02,jit:Math.random()*6.28,city:CITIES[i]});}
+
 // the khachkar + diaspora field
 const end=pathAt(1.0);
 function mark(pos,bright){const m=new THREE.SpriteMaterial({map:glyphTex('☩'),color:0xffd9a0,transparent:true,opacity:bright?0:.3,blending:THREE.AdditiveBlending,depthWrite:false});
   const s=new THREE.Sprite(m);const sc=bright?9:2.4+Math.random()*1.6;s.scale.set(sc,sc*1.3,1);s.position.copy(pos);scene.add(s);return s;}
 let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]');}catch(e){field=[];}
-field.forEach((w,i)=>{const a=i*2.399,r=8+i*1.2;mark(new THREE.Vector3(end.x+Math.cos(a)*r,end.y+Math.sin(a)*r*0.5,end.z-10-i*1.6),false);});
+const fieldGroup=new THREE.Group();scene.add(fieldGroup);
+function placeInscription(entry,i){const a=i*2.399,r=9+i*1.1;
+  const pos=new THREE.Vector3(end.x+Math.cos(a)*r, end.y+Math.sin(a)*r*0.5, end.z-12-i*1.8);
+  mark(pos,false);
+  const w=(String(entry).split('·').pop()||'').trim();
+  [...w].slice(0,7).forEach((ch,j,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
+    const s=new THREE.Sprite(m);s.position.set(pos.x+(j-(ar.length-1)/2)*1.0,pos.y-2.6,pos.z);s.scale.set(0.85,0.85,0.85);fieldGroup.add(s);});}
+field.forEach(placeInscription);
 const myKh=mark(new THREE.Vector3(end.x,end.y+2,end.z-6),true);
 document.getElementById('fieldn').textContent=field.length;
 
@@ -242,17 +256,35 @@ function startDrone(){try{const AC=window.AudioContext||window.webkitAudioContex
   o.type='sine';o.frequency.value=110;o2.type='sine';o2.frequency.value=110.5;g.gain.value=0;
   o.connect(g);o2.connect(g);g.connect(ctx.destination);o.start();o2.start();
   g.gain.linearRampToValueAtTime(0.05,ctx.currentTime+4);drone={ctx,g};}catch(e){}}
+const SCALE=[330,371,440,495,557,660];                                  // a luminous pentatonic
+function chime(){if(!drone)return;try{const c=drone.ctx,o=c.createOscillator(),g=c.createGain();
+  o.type='triangle';o.frequency.value=SCALE[(Math.random()*SCALE.length)|0];o.connect(g);g.connect(c.destination);
+  g.gain.value=0;o.start();g.gain.linearRampToValueAtTime(0.09,c.currentTime+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+0.9);o.stop(c.currentTime+1);}catch(e){}}
+function chord(){if(!drone)return;try{const c=drone.ctx;[220,277,330,440].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();
+  o.type='sine';o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.value=0;o.start();
+  g.gain.linearRampToValueAtTime(0.05,c.currentTime+0.1+i*0.09);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+3.4);o.stop(c.currentTime+3.6);});}catch(e){}}
 
 function awaken(){ if(!started)return;
   ray.setFromCamera({x:(mouse.px/innerWidth)*2-1,y:-(mouse.py/innerHeight)*2+1},camera);
   const hits=ray.intersectObjects(sprites);
-  if(hits.length){const sp=hits[0].object;if(!sp.userData.awoken){sp.userData.awoken=1;carried++;document.getElementById('carried').textContent=carried;}sp.userData.flare=1;}
+  if(hits.length){const sp=hits[0].object;if(!sp.userData.awoken){sp.userData.awoken=1;carried++;document.getElementById('carried').textContent=carried;chime();}sp.userData.flare=1;}
 }
 addEventListener('click',()=>{if(started)awaken();});
 
+// touch — steer with a finger, tap letters to awaken, hold to cross faster
+let touchHold=false;
+function touchAt(t){mouse.x=t.clientX/innerWidth-0.5;mouse.y=t.clientY/innerHeight-0.5;mouse.px=t.clientX;mouse.py=t.clientY;reticle.style.left=t.clientX+'px';reticle.style.top=t.clientY+'px';}
+addEventListener('touchstart',e=>{if(e.touches[0])touchAt(e.touches[0]);touchHold=true;
+  if(started){midhint.textContent='drag to look · tap letters · hold to cross';}},{passive:true});
+addEventListener('touchmove',e=>{if(e.touches[0])touchAt(e.touches[0]);},{passive:true});
+addEventListener('touchend',()=>{touchHold=false;if(started)awaken();},{passive:true});
+
 const intro=document.getElementById('intro');
-intro.addEventListener('click',()=>{if(started)return;started=true;intro.classList.add('gone');target=0.02;startDrone();
-  document.getElementById('hero').classList.add('in');setTimeout(()=>document.getElementById('hero').classList.remove('in'),2400);});
+function begin(){if(started)return;started=true;intro.classList.add('gone');target=0.02;startDrone();
+  heroEl.classList.add('in');setTimeout(()=>heroEl.classList.remove('in'),2400);}
+intro.addEventListener('click',begin);
+intro.addEventListener('touchstart',e=>{e.preventDefault();begin();});
 
 // act cards
 const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — into the dark',at:0.0},
@@ -270,15 +302,19 @@ const keeperEl=document.getElementById('keeper'),nameIn=document.getElementById(
 function openKeeper(){keeperShown=true;dialogOpen=true;hideActNow();
   keeperQ.innerHTML=(carried>0?('You carry '+carried+' letter'+(carried>1?'s':'')+' into the dark.<br>Who are you?'):'Who are you?')+'<span class="arm">Ո՞վ ես դու։</span>';
   keeperEl.classList.add('show');setTimeout(()=>nameIn.focus(),400);}
-nameIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const v=(nameIn.value||'').trim();if(!v)return;name=v;keeperEl.classList.remove('show');dialogOpen=false;}});
+nameIn.addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=(nameIn.value||'').trim();if(!v||name)return;
+  nameIn.style.display='none';keeperEl.querySelector('.hint').style.display='none';chord();
+  keeperQ.innerHTML='<span class="arm" style="color:var(--stitch);font-size:1.25em">'+v+'</span><br>the bridge remembers your name.<span class="arm">անցի՛ր · carry it across.</span>';
+  setTimeout(()=>{name=v;keeperEl.classList.remove('show');dialogOpen=false;},2800);});
 
 // inscription
 const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById('wordIn'),
   enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint');
 let inscShown=false;
 function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
-function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;
+function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
+  placeInscription(tag,field.length-1);                 // your word joins the drifting field
   document.getElementById('fieldn').textContent=field.length;
   // build name (amber) + word (calligraphic) glyphs rising from the khachkar
   [...name].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
@@ -304,6 +340,7 @@ function frame(){
   const gate = name?1:0.50;
   if(started){let v=0.0016*(0.72+0.28*Math.sin(tm*0.8)); // dam pacing
     if(prog<0.14)v+=0.0030;                              // onboarding glide — step you onto the lit bridge
+    if(touchHold)v+=0.0026;
     if(keys['w']||keys['arrowup'])v+=0.0030; if(keys['s']||keys['arrowdown'])v-=0.0034;
     target=M.clamp(target+v,0,gate);}
   target=M.clamp(target,0,gate);
@@ -343,6 +380,13 @@ function frame(){
   stitch.scale.setScalar(11+Math.sin(tm*1.6)*1.8);
   keeperRing.forEach(s=>{const a=s.userData.a+tm*0.5;s.position.set(stitchPos.x+Math.cos(a)*5,stitchPos.y+Math.sin(a*1.3)*3,stitchPos.z+Math.sin(a)*5);
     s.material.opacity=stitch.material.opacity*0.8;});
+
+  // the mesh — ghost nodes crossing at their own latency-jittered pace
+  ghosts.forEach(g=>{g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
+    const c=pathAt(g.t);g.s.position.set(c.x+Math.sin(tm*1.3+g.jit)*1.6,c.y+1.3,c.z);
+    const dz=Math.abs(g.s.position.z-camera.position.z);
+    g.s.material.opacity=M.clamp(1-dz/130,0,1)*0.5*(0.6+0.4*Math.sin(tm*3+g.jit));});
+  fieldGroup.rotation.y=Math.sin(tm*0.1)*0.08;fieldGroup.position.y=Math.sin(tm*0.4)*0.3;
 
   // khachkar ignites at the end / after inscription
   const arrive=M.clamp((p-0.82)/0.16,0,1);
