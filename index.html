@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>br_id_ge · v.0000 — the rite</title>
-<meta name="description" content="br_id_ge (կամուրջ) — a playable tele-symbiotic rite in four acts. Cross a bridge of Armenian letters, answer the Keeper, inscribe what you carry into the digital diaspora. A node of the di.iiii platform.">
+<meta name="description" content="br_id_ge (կամուրջ) — a playable tele-symbiotic rite in five acts. Cross a bridge of Armenian letters, answer the Keeper, inscribe what you carry, and meet those crossing with you. A node of the di.iiii platform.">
+<!-- Live co-presence: set the mesh endpoint to light up act v across visitors. Empty = solo rite.
+<meta name="mesh-url" content="wss://your-host/mesh"> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,11 +118,11 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 <div class="hud mono">
   <span>carried <span class="k" id="carried">0</span></span>
   <span class="mid" id="midhint">move to reveal · click letters to carry them</span>
-  <span>the field · <span class="s" id="fieldn">0</span> khachkars</span>
+  <span>the field · <span class="s" id="fieldn">0</span> khachkars · <span class="s" id="present">solo</span></span>
 </div>
 <div id="prog"></div>
 
-<div id="hero"><div class="g arm">կամուրջ</div><div class="s">a digital rite of transmission · in four acts</div></div>
+<div id="hero"><div class="g arm">կամուրջ</div><div class="s">a digital rite of transmission · in five acts</div></div>
 
 <div id="act"><div class="a arm"></div><div class="e"></div><div class="n"></div></div>
 
@@ -169,6 +171,12 @@ function glyphTex(ch){if(glyphCache[ch])return glyphCache[ch];
   x.font='600 86px "Noto Serif Armenian",serif';x.textAlign='center';x.textBaseline='middle';
   x.shadowColor='rgba(255,179,71,.95)';x.shadowBlur=20;x.fillStyle='#ffe0b0';x.fillText(ch,s/2,s/2+4);
   const t=new THREE.CanvasTexture(c);glyphCache[ch]=t;return t;}
+const labelCache={};
+function labelTex(text){const key=(String(text||'')||'…').slice(0,18);if(labelCache[key])return labelCache[key];
+  const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');
+  x.font='600 30px "Space Mono",monospace';x.textAlign='center';x.textBaseline='middle';
+  x.shadowColor='rgba(95,208,255,.9)';x.shadowBlur=12;x.fillStyle='#cfeaff';x.fillText(key,128,34);
+  const t=new THREE.CanvasTexture(c);labelCache[key]=t;return t;}
 
 // ── threshold gate (Act 0): an arch of letters you pass through ──
 const gateGroup=new THREE.Group();scene.add(gateGroup);
@@ -223,6 +231,54 @@ for(let i=0;i<5;i++){const m=new THREE.SpriteMaterial({map:lampTex,color:i%2?0x9
   const s=new THREE.Sprite(m);s.scale.set(3.0,3.0,3.0);scene.add(s);
   ghosts.push({s,t:Math.random(),speed:0.010+Math.random()*0.02,jit:Math.random()*6.28,city:CITIES[i]});}
 
+// ── live co-presence (real mesh) — degrades to the simulated ghosts above when no server ──
+// Endpoint comes from ?mesh=wss://host, <meta name="mesh-url">, or window.BR_MESH_URL.
+// With none set (the default deploy) the rite stays solo and nothing changes.
+const MESH_URL=(new URLSearchParams(location.search).get('mesh'))||(document.querySelector('meta[name="mesh-url"]')||{}).content||window.BR_MESH_URL||'';
+const ROOM_SECRET=(new URLSearchParams(location.search).get('s'))||window.BR_ROOM_SECRET||'';
+const myNode='n'+Math.random().toString(36).slice(2,8);
+const Mesh={ws:null,live:false,lat:0,peers:new Map(),lastSend:0,lastPing:0,
+  connect(){if(!MESH_URL)return;let u;try{u=new URL(MESH_URL);}catch(e){return;}
+    u.searchParams.set('room','bridge');u.searchParams.set('node',myNode);if(ROOM_SECRET)u.searchParams.set('secret',ROOM_SECRET);
+    let ws;try{ws=new WebSocket(u.toString());}catch(e){return;}this.ws=ws;
+    ws.onopen=()=>{this.live=true;};
+    ws.onclose=()=>{this.live=false;this.clearPeers();};
+    ws.onerror=()=>{};
+    ws.onmessage=(ev)=>{let m;try{m=JSON.parse(ev.data);}catch(e){return;}this.handle(m);};},
+  handle(m){
+    if(m.type==='control:pong'){this.lat=m.roundTrip;return;}
+    if(m.type==='peer:leave'){this.drop(m.nodeId);return;}
+    if(m.type==='mesh:event'&&m.channel==='motion'){
+      let pr=this.peers.get(m.from);if(!pr){pr=this.makePeer();this.peers.set(m.from,pr);}
+      const pos=(m.meta&&m.meta.predicted)||m.payload||{};            // server's latency-compensated ghost-hand
+      if(typeof pos.x==='number')pr.target.set(pos.x,pos.y,pos.z);
+      const nm=m.payload&&m.payload.name;
+      if(nm&&nm!==pr.name){pr.name=nm;pr.label.material.map=labelTex(nm);pr.label.material.needsUpdate=true;}
+      pr.seen=performance.now();}},
+  makePeer(){const lamp=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0x9fe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+    lamp.scale.set(3.4,3.4,3.4);scene.add(lamp);
+    const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('…'),transparent:true,opacity:0,depthWrite:false}));
+    label.scale.set(6,1.5,1);scene.add(label);
+    return{lamp,label,target:new THREE.Vector3(0,0,-260),name:'',seen:performance.now()};},
+  drop(id){const pr=this.peers.get(id);if(!pr)return;scene.remove(pr.lamp);scene.remove(pr.label);this.peers.delete(id);},
+  clearPeers(){for(const id of[...this.peers.keys()])this.drop(id);},
+  send(p){if(!(this.ws&&this.live&&this.ws.readyState===1))return;const now=performance.now();
+    if(now-this.lastSend>90){this.lastSend=now;const c=pathAt(M.clamp(p,0,1));
+      this.ws.send(JSON.stringify({type:'publish',channel:'motion',pingTs:Date.now(),payload:{x:c.x,y:c.y+1.3,z:c.z,name:(name||'').slice(0,18),p}}));}
+    if(now-this.lastPing>2000){this.lastPing=now;this.ws.send(JSON.stringify({type:'control',cmd:'ping',sentAt:Date.now()}));}},
+  update(tm,camZ,gather){
+    for(const[id,pr]of this.peers){
+      if(performance.now()-pr.seen>9000){this.drop(id);continue;}
+      const tp=gather?new THREE.Vector3(end.x+Math.cos(id.length+tm*0.3)*8,end.y+2,end.z-8+Math.sin(id.length)*4):pr.target;
+      pr.lamp.position.lerp(tp,0.12);
+      const dz=Math.abs(pr.lamp.position.z-camZ),vis=M.clamp(1-dz/150,0,1);
+      pr.lamp.material.opacity=vis*0.85*(0.7+0.3*Math.sin(tm*3+id.length));
+      pr.label.position.set(pr.lamp.position.x,pr.lamp.position.y+2.6,pr.lamp.position.z);
+      pr.label.material.opacity=vis*0.7;}
+    return this.peers.size;}
+};
+Mesh.connect();
+
 // the khachkar + diaspora field
 const end=pathAt(1.0);
 function mark(pos,bright){const m=new THREE.SpriteMaterial({map:glyphTex('☩'),color:0xffd9a0,transparent:true,opacity:bright?0:.3,blending:THREE.AdditiveBlending,depthWrite:false});
@@ -242,6 +298,7 @@ document.getElementById('fieldn').textContent=field.length;
 // ── state ──
 let prog=0,target=0,started=false,carried=0,dialogOpen=false;
 let name='',word='',keeperShown=false,inscribed=false;
+let communion=false,simGhost=1;   // act v — Echo: world gathers after inscription; simGhost fades when live peers connect
 const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
 const ray=new THREE.Raycaster();
 const reticle=document.getElementById('reticle');
@@ -322,15 +379,22 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
   [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
     const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.2,end.y-1.6,end.z-6);s.scale.set(1.2,1.2,1.2);scene.add(s);});
   wordIn.style.display='none';inscHint.style.display='none';
-  closing.textContent='Communitas — your khachkar joins '+ (field.length-1) +' before you. You are no longer alone on the bridge.';
+  // ── act v — ԱՐՁԱԳԱՆՔ (Echo): the bridge answers; the field and those present gather ──
+  inscEl.querySelector('.lbl').innerHTML='ԱՐՁԱԳԱՆՔ · echo · act v';
+  const others=field.length-1;
+  closing.textContent = Mesh.live
+    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your khachkar joins '+others+' before you. You are not alone.')
+    : ('Communitas — your khachkar joins '+others+' before you. You are no longer alone on the bridge.');
   enterBtn.style.display='inline-block';
+  communion=true;
+  if(drone){try{drone.g.gain.linearRampToValueAtTime(0.09,drone.ctx.currentTime+3);}catch(e){}}   // a swell into the echo
 }
 wordIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doInscribe();}});
 enterBtn.addEventListener('click',e=>{e.preventDefault();location.reload();});
 
 // hud refs
 const midhint=document.getElementById('midhint'),latEl=document.getElementById('lat'),bpmEl=document.getElementById('bpm'),
-  progEl=document.getElementById('prog'),pulse=document.getElementById('pulse');
+  progEl=document.getElementById('prog'),pulse=document.getElementById('pulse'),presentEl=document.getElementById('present');
 let latT=0,bpm=72,nextBeat=0,pulseV=0;
 
 const clock=new THREE.Clock();
@@ -381,11 +445,18 @@ function frame(){
   keeperRing.forEach(s=>{const a=s.userData.a+tm*0.5;s.position.set(stitchPos.x+Math.cos(a)*5,stitchPos.y+Math.sin(a*1.3)*3,stitchPos.z+Math.sin(a)*5);
     s.material.opacity=stitch.material.opacity*0.8;});
 
-  // the mesh — ghost nodes crossing at their own latency-jittered pace
-  ghosts.forEach(g=>{g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
+  // the mesh — live peers if a server is set, else simulated ghost nodes (graceful fallback)
+  Mesh.send(p);
+  simGhost+=((Mesh.live?0:1)-simGhost)*0.05;                 // fade the simulated nodes out once real peers are live
+  ghosts.forEach((g,gi)=>{
+    if(communion){const a=tm*0.32+gi*1.256;                  // act v — gather around the khachkar
+      g.s.position.set(end.x+Math.cos(a)*8,end.y+2+Math.sin(a*1.2)*2.2,end.z-8+Math.sin(a)*4);
+      g.s.material.opacity=simGhost*0.6*(0.6+0.4*Math.sin(tm*2.2+gi));return;}
+    g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
     const c=pathAt(g.t);g.s.position.set(c.x+Math.sin(tm*1.3+g.jit)*1.6,c.y+1.3,c.z);
     const dz=Math.abs(g.s.position.z-camera.position.z);
-    g.s.material.opacity=M.clamp(1-dz/130,0,1)*0.5*(0.6+0.4*Math.sin(tm*3+g.jit));});
+    g.s.material.opacity=simGhost*M.clamp(1-dz/130,0,1)*0.5*(0.6+0.4*Math.sin(tm*3+g.jit));});
+  const present=Mesh.update(tm,camera.position.z,communion);
   fieldGroup.rotation.y=Math.sin(tm*0.1)*0.08;fieldGroup.position.y=Math.sin(tm*0.4)*0.3;
 
   // khachkar ignites at the end / after inscription
@@ -403,8 +474,10 @@ function frame(){
   // hud
   midhint.classList.toggle('show',started&&p<0.42&&carried<3);
   progEl.style.width=(p*100)+'%';
-  if(tm-latT>0.5){latT=tm;latEl.textContent='lat '+(121+Math.floor(Math.random()*108))+'ms';
-    bpm=M.clamp(bpm+(Math.random()-0.5)*4,62,92);bpmEl.textContent=Math.round(bpm);}
+  if(tm-latT>0.5){latT=tm;
+    latEl.textContent='lat '+((Mesh.live&&Mesh.lat>0)?Mesh.lat:(121+Math.floor(Math.random()*108)))+'ms';
+    bpm=M.clamp(bpm+(Math.random()-0.5)*4,62,92);bpmEl.textContent=Math.round(bpm);
+    presentEl.textContent=Mesh.live?(present>0?(present+' present'):'alone here'):'solo';}
   // heartbeat → screen pulse (the measurable shadow)
   if(started&&tm>=nextBeat){nextBeat=tm+60/bpm;pulseV=0.7;}
   pulseV*=0.86;pulse.style.opacity=(pulseV*0.18).toFixed(3);
