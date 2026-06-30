@@ -18,23 +18,47 @@ const WebSocket = require('ws');
 const url = require('url');
 
 const PORT = process.env.PORT || 8080;
+const ROOM_SECRET = process.env.ROOM_SECRET || '';
+
 const wss = new WebSocket.Server({ port: PORT });
 
 // rooms: Map<roomId, Map<nodeId, ws>>
 const rooms = new Map();
 // latencySamples: Map<roomId, Map<pairKey, number[]>>
 const latencySamples = new Map();
+// nodeMotionState: Map<nodeId, {x,y,z,vx,vy,vz,t}> — EMA velocity per sender
+const nodeMotionState = new Map();
 
 console.log(`ws-mesh starting on ws://0.0.0.0:${PORT}`);
 
-function predictGhostHand(latencyMs, currentVec) {
-  // simple linear prediction: advance position proportionally to latency
-  // Replace with TensorFlow.js model for v.0000 AI Stitch predictions
-  const t = Math.max(0, latencyMs) / 1000; // seconds
+// EMA smoothing factor: 0.65 balances reactivity vs. jitter rejection.
+// Raise toward 1.0 for snappier tracking; lower toward 0 for smoother but laggier.
+const MOTION_ALPHA = 0.65;
+
+function updateNodeMotion(nodeId, vec, now) {
+  const prev = nodeMotionState.get(nodeId);
+  if (!prev) {
+    nodeMotionState.set(nodeId, { x: vec.x, y: vec.y, z: vec.z || 0, vx: 0, vy: 0, vz: 0, t: now });
+    return;
+  }
+  const dt = Math.max(1, now - prev.t) / 1000; // seconds, clamp to avoid division by zero
+  nodeMotionState.set(nodeId, {
+    x: vec.x, y: vec.y, z: vec.z || 0,
+    vx: MOTION_ALPHA * ((vec.x - prev.x) / dt) + (1 - MOTION_ALPHA) * prev.vx,
+    vy: MOTION_ALPHA * ((vec.y - prev.y) / dt) + (1 - MOTION_ALPHA) * prev.vy,
+    vz: MOTION_ALPHA * (((vec.z || 0) - prev.z) / dt) + (1 - MOTION_ALPHA) * prev.vz,
+    t: now,
+  });
+}
+
+function predictGhostHand(latencyMs, nodeId) {
+  const state = nodeMotionState.get(nodeId);
+  if (!state) return null;
+  const t = Math.max(0, latencyMs) / 1000;
   return {
-    x: currentVec.x + (currentVec.vx || 0) * t,
-    y: currentVec.y + (currentVec.vy || 0) * t,
-    z: (currentVec.z || 0) + (currentVec.vz || 0) * t,
+    x: state.x + state.vx * t,
+    y: state.y + state.vy * t,
+    z: state.z + state.vz * t,
     predictedAt: Date.now() + latencyMs,
   };
 }
@@ -66,6 +90,12 @@ function average(values) {
 
 wss.on('connection', function connection(ws, req) {
   const qs = url.parse(req.url, true).query;
+
+  if (ROOM_SECRET && qs.secret !== ROOM_SECRET) {
+    ws.close(4401, 'Unauthorized');
+    return;
+  }
+
   const roomId = qs.room || 'default';
   const nodeId = qs.node || `node-${Math.random().toString(36).slice(2,8)}`;
 
@@ -93,6 +123,11 @@ wss.on('connection', function connection(ws, req) {
       const clientPing = msg.pingTs ? (Date.now() - msg.pingTs) : 0;
 
       // forward to other nodes with per-target metadata
+      // Update EMA motion state before fan-out so each target gets the same prediction base
+      if (msg.channel === 'motion' && msg.payload && typeof msg.payload === 'object') {
+        updateNodeMotion(nodeId, msg.payload, Date.now());
+      }
+
       const members = Array.from(room.entries());
       for (const [targetId, targetWs] of members) {
         if (targetId === nodeId) continue;
@@ -100,9 +135,9 @@ wss.on('connection', function connection(ws, req) {
         recordLatencySample(roomId, nodeId, targetId, perTargetLatency);
         const extra = { perTargetLatency };
 
-        // If channel is motion, include a predicted vector for the target using its latency
-        if (msg.channel === 'motion' && msg.payload && typeof msg.payload === 'object') {
-          extra.predicted = predictGhostHand(perTargetLatency, msg.payload);
+        if (msg.channel === 'motion') {
+          const predicted = predictGhostHand(perTargetLatency, nodeId);
+          if (predicted) extra.predicted = predicted;
         }
 
         safeSend(targetWs, { type: `mesh:event`, channel: msg.channel, from: nodeId, payload: msg.payload, meta: extra, ts: data.ts });
@@ -136,6 +171,7 @@ wss.on('connection', function connection(ws, req) {
         latencySamples.delete(roomId);
       }
     }
+    nodeMotionState.delete(nodeId);
     console.info(`disconnect: ${nodeId} from ${roomId}`);
   });
 });

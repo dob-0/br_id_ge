@@ -13,7 +13,9 @@
     "start": "vite preview --port 8080",
     "sync:readme": "bash scripts/auto-push-readme.sh",
     "sync:space": "bash scripts/auto-push-space.sh",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "vite": "^5.4.21"

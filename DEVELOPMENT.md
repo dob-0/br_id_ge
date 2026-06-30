@@ -73,14 +73,18 @@ br_id_ge/
 ├── README.md                    # Project overview & getting started
 ├── DEVELOPMENT.md               # This file (dev workflow & setup)
 ├── docs/
-│   └── PROJECT.md              # Full project documentation
+│   ├── PROJECT.md               # Full project documentation
+│   └── MASTER_CONTEXT.md        # Curatorial framework & N-Node rollout plan
 ├── scripts/
 │   ├── auto-push-readme.sh      # README-only auto-push watcher
 │   └── auto-push-space.sh       # Multi-file repo sync watcher
-├── hardware/                    # Hardware specifications & assets
-├── node_bridge/                 # Node.js backend & middleware
-├── touchdesigner/               # TouchDesigner projects & assets
-├── index.html                   # Live project interface
+├── serverXR/
+│   └── wsMesh.js                # Node.js WebSocket N-Node mesh server (draft)
+├── src/
+│   └── components/
+│       └── NodeCanvas.jsx       # Draft React node canvas (not yet active)
+├── references/                  # Reference media assets
+├── index.html                   # Live project interface (main SPA)
 └── .vscode/
     └── tasks.json               # VS Code workflow tasks
 ```

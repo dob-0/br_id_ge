@@ -1,0 +1,47 @@
+name: Sync di.iiii Space
+
+# Pushes the repo's landing page into the linked di.iiii space (di-studio.xyz/br_id_ge)
+# on every change to the content. The binding lives in di-space.json; the engine is
+# scripts/sync-space.mjs. Requires repo secret DI_SPACE_TOKEN (a di.iiii editor token
+# scoped to this space). Runs alongside pages.yml (GitHub Pages) — both stay in sync.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'di-space.json'
+      - 'references/**'
+      - 'assets/**'
+      - 'scripts/sync-space.mjs'
+      - '.github/workflows/sync-space.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-space
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Guard — token must be present
+        env:
+          DI_SPACE_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
+        run: |
+          if [ -z "$DI_SPACE_TOKEN" ]; then
+            echo "::error::Missing secret DI_SPACE_TOKEN (a di.iiii editor token scoped to this space)."
+            echo "Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Sync to di.iiii space
+        env:
+          LIVE_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
+        run: node scripts/sync-space.mjs --repo .
