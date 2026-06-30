@@ -71,7 +71,8 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 
 /* dialogue panels (keeper + inscription) */
 .panel{position:fixed; z-index:25; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:1.5rem; opacity:0; pointer-events:none; transition:opacity .8s}
+  text-align:center; padding:1.5rem; opacity:0; pointer-events:none; transition:opacity .8s;
+  background:radial-gradient(60% 50% at 50% 48%, rgba(5,6,8,.85) 0%, rgba(5,6,8,.55) 52%, transparent 82%)}
 .panel.show{opacity:1; pointer-events:auto}
 .panel .lbl{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.42em; text-transform:uppercase; margin-bottom:1.3rem}
 .panel.keeper .lbl{color:var(--stitch)} .panel.insc .lbl{color:var(--gantegh)}
@@ -91,7 +92,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   max-width:34ch; margin-top:1.6rem; min-height:1.4em}
 
 #intro{position:fixed; z-index:40; inset:0; background:#000; display:flex; align-items:center; justify-content:center;
-  text-align:center; transition:opacity 1.2s; cursor:pointer}
+  text-align:center; transition:opacity .7s; cursor:pointer}
 #intro .t{font-family:'Space Mono',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); font-size:.76rem}
 #intro .t b{display:block; font-family:'Outfit',sans-serif; font-weight:200; letter-spacing:.34em; color:var(--tx);
   font-size:clamp(1.4rem,5vw,2.4rem); margin-bottom:1.4rem; text-transform:none}
@@ -109,7 +110,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 <div class="chrome mono">
   <span><b>br_id_ge</b> &nbsp;·&nbsp; v.0000</span>
   <span><span class="dot">●</span>&nbsp;<span id="lat">lat 174ms</span> &nbsp;·&nbsp; <span class="hb">♥ <span id="bpm">72</span></span></span>
-  <a href="https://di-studio.xyz/br_id_ge">enter ↗</a>
+  <a href="https://di-studio.xyz">di.iiii ↗</a>
 </div>
 
 <div class="hud mono">
@@ -136,7 +137,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
   <div class="hint" id="inscHint">press enter to inscribe it into the khachkar</div>
   <div id="closing"></div>
-  <a id="enterBtn" href="https://di-studio.xyz/br_id_ge">enter the rite ↗</a>
+  <a id="enterBtn" href="#">↻ cross again</a>
 </div>
 
 <div id="intro"><div class="t mono">
@@ -225,7 +226,7 @@ const myKh=mark(new THREE.Vector3(end.x,end.y+2,end.z-6),true);
 document.getElementById('fieldn').textContent=field.length;
 
 // ── state ──
-let prog=0,target=0,started=false,carried=0;
+let prog=0,target=0,started=false,carried=0,dialogOpen=false;
 let name='',word='',keeperShown=false,inscribed=false;
 const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
 const ray=new THREE.Raycaster();
@@ -251,29 +252,31 @@ addEventListener('click',()=>{if(started)awaken();});
 
 const intro=document.getElementById('intro');
 intro.addEventListener('click',()=>{if(started)return;started=true;intro.classList.add('gone');target=0.02;startDrone();
-  document.getElementById('hero').classList.add('in');setTimeout(()=>document.getElementById('hero').classList.remove('in'),3400);});
+  document.getElementById('hero').classList.add('in');setTimeout(()=>document.getElementById('hero').classList.remove('in'),2400);});
 
 // act cards
 const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — into the dark',at:0.0},
   {a:'ԱՆՑՈՒՄ',e:'The Crossing',n:'act ii — paced by the dam',at:0.12},
   {a:'ՎԿԱ',e:'The Witness',n:'act iii — the keeper of memory',at:0.50},
   {a:'ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ',e:'Inscription',n:'act iv — continuity',at:0.80}];
-let actIdx=-1;const actEl=document.getElementById('act');
-function showAct(o){actEl.querySelector('.a').textContent=o.a;actEl.querySelector('.e').textContent=o.e;actEl.querySelector('.n').textContent=o.n;
+let actIdx=0;const actEl=document.getElementById('act');const heroEl=document.getElementById('hero');
+function showAct(o){actEl.style.transition='';actEl.style.opacity='';
+  actEl.querySelector('.a').textContent=o.a;actEl.querySelector('.e').textContent=o.e;actEl.querySelector('.n').textContent=o.n;
   actEl.classList.add('in');clearTimeout(showAct._t);showAct._t=setTimeout(()=>actEl.classList.remove('in'),2800);}
+function hideActNow(){clearTimeout(showAct._t);actEl.classList.remove('in');actEl.style.transition='none';actEl.style.opacity='0';}
 
 // keeper dialogue
 const keeperEl=document.getElementById('keeper'),nameIn=document.getElementById('nameIn'),keeperQ=document.getElementById('keeperQ');
-function openKeeper(){keeperShown=true;
-  keeperQ.innerHTML=(carried>0?('You carry '+carried+' letters into the dark.<br>Who are you?'):'Who are you?')+'<span class="arm">Ո՞վ ես դու։</span>';
+function openKeeper(){keeperShown=true;dialogOpen=true;hideActNow();
+  keeperQ.innerHTML=(carried>0?('You carry '+carried+' letter'+(carried>1?'s':'')+' into the dark.<br>Who are you?'):'Who are you?')+'<span class="arm">Ո՞վ ես դու։</span>';
   keeperEl.classList.add('show');setTimeout(()=>nameIn.focus(),400);}
-nameIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const v=(nameIn.value||'').trim();if(!v)return;name=v;keeperEl.classList.remove('show');}});
+nameIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const v=(nameIn.value||'').trim();if(!v)return;name=v;keeperEl.classList.remove('show');dialogOpen=false;}});
 
 // inscription
 const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById('wordIn'),
   enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint');
 let inscShown=false;
-function openInscribe(){inscShown=true;inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
+function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
 function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
   document.getElementById('fieldn').textContent=field.length;
@@ -287,6 +290,7 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
   enterBtn.style.display='inline-block';
 }
 wordIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doInscribe();}});
+enterBtn.addEventListener('click',e=>{e.preventDefault();location.reload();});
 
 // hud refs
 const midhint=document.getElementById('midhint'),latEl=document.getElementById('lat'),bpmEl=document.getElementById('bpm'),
@@ -299,6 +303,7 @@ function frame(){
   // movement gate: Keeper blocks until you give your name
   const gate = name?1:0.50;
   if(started){let v=0.0016*(0.72+0.28*Math.sin(tm*0.8)); // dam pacing
+    if(prog<0.14)v+=0.0030;                              // onboarding glide — step you onto the lit bridge
     if(keys['w']||keys['arrowup'])v+=0.0030; if(keys['s']||keys['arrowdown'])v-=0.0034;
     target=M.clamp(target+v,0,gate);}
   target=M.clamp(target,0,gate);
@@ -345,7 +350,7 @@ function frame(){
 
   // act cards
   let ai=0;for(let i=0;i<ACTS.length;i++)if(p>=ACTS[i].at)ai=i;
-  if(started&&ai!==actIdx){actIdx=ai;showAct(ACTS[ai]);}
+  if(started&&ai>actIdx&&ai>0&&!dialogOpen&&!heroEl.classList.contains('in')){actIdx=ai;showAct(ACTS[ai]);}
 
   // dialogue triggers
   if(started&&!name&&!keeperShown&&p>=0.47)openKeeper();
