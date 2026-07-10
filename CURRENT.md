@@ -3,25 +3,26 @@
 Read first. Updated at end of each session. Replace, don't append.
 
 active_branch: main · live: https://dob-0.github.io/br_id_ge/ · space: https://di-studio.xyz/br_id_ge
-near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, Communitas; **hosq.co HOST**) · ~10 days out as of 2026-07-10
+near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, Communitas; **hosq.co HOST**) · ~9 days out as of 2026-07-11
 
 **versions (canonical names, same everywhere):** `v.oooooo` = legacy Space Node (`v.oooooo.html` → space project `v-oooooo`, space-only) · `v.oooooo 2` = the current five-act rite (`index.html` = Pages entry → space project `newww`). Repo is master; space syncs from it. See README "Versions".
 
 ## Last commit
 
-`ef29aff` (origin/main) — act v "Echo" + live co-presence client (graceful solo fallback). Local `c305a1e` (CURRENT.md) is 1 ahead, unpushed. No br_id_ge code changed this session — the co-presence *backend* was built in di.iiii.
+`86a397d` (origin/main) — align on-screen version text `v.0000 → v.oooooo 2` (tab title + badge). Working tree clean; `docs/ops/` fellowship files untracked (external, left alone).
 
-## Last session (2026-07-10)
+## Last session (2026-07-10/11)
 
-- Built the **co-presence WebSocket mesh backend** the deployed client was waiting for — in **di.iiii** serverXR, not this repo: `serverXR/src/meshHub.js`, a raw-ws hub attached to the same HTTP server as Socket.IO, path-routed to `${basePath}/mesh` so both coexist. On di.iiii `dev`, commit `466066b3`, with `meshHub.test.js` regression guard.
-- **Verified end-to-end on STAGING** (`wss://staging.di-studio.xyz/serverXR/mesh`): 101 upgrade through the LiteSpeed proxy, motion fan-out, ghost-hand prediction, ping/pong RTT, peer:leave — 5/5. Socket.IO still upgrades on the same server (no regression).
-- Discovered LiteSpeed proxies native WS **only under `/serverXR/*`** (root `/socket.io` = SPA 200) — recorded in di.iiii `docs/ai/known-fixes.md`.
-- **This repo's client is unchanged** and already speaks the protocol via `?mesh=` / `<meta name="mesh-url">`. Try it: open `https://dob-0.github.io/br_id_ge/?mesh=wss://staging.di-studio.xyz/serverXR/mesh` in two windows → you meet as named lamps with live RTT.
+- **Names unified everywhere** — `v.oooooo` (legacy, `v.oooooo.html`→`v-oooooo`) and `v.oooooo 2` (the rite, `index.html`→`newww`) across repo, space, README, and the artwork's on-screen text; renamed `index.legacy.html → v.oooooo.html`.
+- **Repo is now single source of truth for BOTH projects** — CI (`sync-space.yml`) syncs both (`di-space.json` + new `di-space.v1.json`, legacy `publish:false` so it can't steal the landing); verified green on prod, `publishedProjectId` stays `newww`.
+- **Backup of both projects** pulled + committed + pushed to `dob-0/di-spaces` (`79ddec4`); nothing stranded — confirmed both space projects are byte-identical to the repo files.
+- **Co-presence mesh backend** built in **di.iiii** serverXR (`serverXR/src/meshHub.js`, raw-ws hub coexisting with Socket.IO at `/serverXR/mesh`), on di.iiii `dev` `466066b3` + `meshHub.test.js`; **verified 5/5 on STAGING**, NOT on prod. LiteSpeed proxies native WS only under `/serverXR/*` (in di.iiii `known-fixes.md`).
+- Client unchanged; try co-presence now: open `https://dob-0.github.io/br_id_ge/?mesh=wss://staging.di-studio.xyz/serverXR/mesh` in two windows.
 
 ## What works
 
 - Playable rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html`.
-- Two sync paths to the di.iiii space: GitHub **App webhook** (auto, prod, entry file) + **token CI** (`sync-space.yml`, also `references/**`).
+- Repo = master of both projects; CI syncs both to the space + GitHub **App webhook** + Pages.
 - Co-presence proven on staging; the client just needs a prod endpoint.
 
 ## Open / deferred (for the show)
@@ -31,6 +32,7 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, Co
 - **Keeper dialogue** depth; **sound** (duduk dam-drone), khachkar craft, Armenian-letter legibility — polish, high felt-impact.
 - **Show logistics undecided** — screen vs projection vs personal devices — changes what co-presence/biometrics mean physically.
 - **SECURITY (pending):** rotate the GitHub App private key + webhook secret (both passed through chat).
+- **External `v.0000` wording** — fellowship application (`docs/ops/creative-innovation-fellowship-2026.md`) + lookbook still say "v.0000"; left untouched (submission materials), not yet aligned to "v.oooooo 2".
 - `wsMesh.js` in this repo is now superseded by di.iiii `meshHub.js` for hosting; keep for local/offline runs. `src/components/NodeCanvas.jsx` unused.
 
 ## Deploy
