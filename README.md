@@ -21,6 +21,19 @@ This project is part of the larger **di.iiii** ecosystem (React/Vite/Three.js pl
 
 ---
 
+## Versions — same names everywhere
+
+The project ships **two versions**. These names are canonical and identical across the repo, the di.iiii space, and the docs:
+
+| Name | What it is | Repo file | Space project | Live |
+|------|-----------|-----------|---------------|------|
+| **`v.oooooo`** | the original "Space Node" (legacy) | `v.oooooo.html` | `v-oooooo` | space only |
+| **`v.oooooo 2`** | the current five-act rite (Threshold → Crossing → Witness → Inscription → Echo) | `index.html` *(Pages entry)* | `newww` | Pages + space |
+
+Source of truth is **this repo**; the space syncs from it (`index.html` → `v.oooooo 2`). `index.html` stays the entry because GitHub Pages serves it as the site root.
+
+---
+
 ## 📖 Table of Contents
 
 1. [Ecosystem Context](#ecosystem-context)
