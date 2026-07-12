@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>br_id_ge · կամուրջ — cross the bridge</title>
+<meta name="description" content="br_id_ge (կամուրջ) is a bridge between the real world and a shared digital one. Cross a bridge of glowing Armenian letters — who are you, and what do you carry? Your answer stays forever.">
+<meta property="og:title" content="br_id_ge · կամուրջ">
+<meta property="og:description" content="A bridge between the real world and a shared digital one. Cross, answer one question, and your answer stays there forever — with everyone who crossed before you.">
+<meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-bridge.jpg">
+<meta property="og:url" content="https://dob-0.github.io/br_id_ge/bridge.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* the br_id_ge language — one palette across all surfaces:
+       cyan = di.iiii/live · crimson = the real/notation · amber = the lamp/attention · stone = memory/letterforms */
+    --bg:#05080d; --bg2:#0a1018; --line:#1b2634; --txt:#c3d0dc; --acc:#00e5ff;
+    --amber:#ffb347; --dim:#5f6b7a; --real:#ff2a5f; --stone:#cdb98f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bg)}
+  body{font-family:'Outfit',sans-serif;color:var(--txt);font-weight:300;min-height:100svh;
+       display:flex;flex-direction:column;overflow-x:hidden}
+  .mono{font-family:'Space Mono',monospace}
+  .label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:lowercase;color:var(--dim)}
+  .label b{color:var(--amber);font-weight:400}
+  .label a{color:inherit;text-decoration:none}
+
+  /* floating letterforms — the bridge, dimly present behind everything */
+  #letters{position:fixed;inset:0;pointer-events:none;z-index:0}
+  #letters span{position:absolute;font-family:'Space Mono',monospace;color:var(--stone);
+    animation:drift var(--t) ease-in-out infinite alternate;will-change:opacity,transform}
+  @keyframes drift{
+    from{opacity:.04;transform:translateY(0)}
+    to{opacity:.16;transform:translateY(-14px)}
+  }
+  @media (prefers-reduced-motion: reduce){ #letters span{animation:none;opacity:.08} }
+
+  main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;
+       max-width:640px;width:100%;margin:0 auto;padding:28px 24px 40px}
+  .chrome{display:flex;justify-content:space-between;gap:12px;position:relative;z-index:1;
+          max-width:640px;width:100%;margin:0 auto;padding:22px 24px 0}
+
+  h1{font-weight:200;font-size:clamp(44px,11vw,72px);letter-spacing:0.12em;color:#eaf3fb;line-height:1.05}
+  h1 span{color:var(--amber)}
+  .arm{font-family:'Space Mono',monospace;color:var(--stone);letter-spacing:0.5em;font-size:clamp(13px,3.4vw,18px);margin-top:10px}
+
+  .lede{margin-top:34px;font-size:clamp(17px,4.4vw,20px);line-height:1.7;color:var(--txt)}
+  .lede b{color:#e8f2fa;font-weight:400}
+  .lede .a{color:var(--amber)}
+  .lede .q{color:var(--acc)}
+  a.di{color:inherit;text-decoration:underline;text-decoration-color:var(--acc);text-underline-offset:3px}
+
+  .cross{display:inline-block;text-align:center;margin-top:42px;padding:16px 34px;border:1px solid var(--acc);
+         font-family:'Space Mono',monospace;font-size:14px;letter-spacing:0.28em;text-transform:lowercase;
+         color:var(--acc);text-decoration:none;background:transparent;transition:background .25s,color .25s}
+  .cross:hover,.cross:focus-visible{background:var(--acc);color:var(--bg)}
+
+  .facts{margin-top:52px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (min-width:560px){.facts{grid-template-columns:repeat(4,1fr)}}
+  .fact{border-top:2px solid var(--line);padding-top:8px}
+  .fact:first-child{border-top-color:var(--amber)}
+  .fact .k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--dim)}
+  .fact:first-child .k{color:var(--amber)}
+  .fact p{font-size:13px;line-height:1.5;margin-top:5px}
+
+  footer{position:relative;z-index:1;max-width:640px;width:100%;margin:0 auto;padding:0 24px 26px;
+         display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div id="letters" aria-hidden="true"></div>
+
+<div class="chrome">
+  <span class="label">gevorg aram grigoryan · <a href="https://di-studio.xyz">di.ii</a></span>
+  <span class="label">notations #2 · rituals · <b>hosq</b></span>
+</div>
+
+<main>
+  <h1>br<span>_</span>id<span>_</span>ge</h1>
+  <div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div>
+
+  <p class="lede">
+    <b>br_id_ge</b> (կամուրջ) is a bridge between the real world and a shared
+    digital one. You cross a bridge of glowing Armenian letters, you're asked one
+    question — <span class="q">who are you, and what do you carry?</span> — and
+    your answer stays there, forever, with everyone who crossed before you.
+    It lives at <a class="di" href="https://di-studio.xyz"><b>di-studio.xyz</b></a> — and at <span class="a">Notations&nbsp;#2</span>,
+    the bridge opens.
+  </p>
+
+  <a class="cross" href="https://dob-0.github.io/br_id_ge/">cross the bridge →</a>
+
+  <div class="facts">
+    <div class="fact"><div class="k">notations #2</div><p>jul 20 – aug 2 2026 · state philharmonia of armenia · hosted by hosq</p></div>
+    <div class="fact"><div class="k">the rite</div><p>five acts · threshold → crossing → witness → inscription → echo</p></div>
+    <div class="fact"><div class="k">takes</div><p>~6–10 minutes · sound on · works on your phone</p></div>
+    <div class="fact"><div class="k">medium</div><p>open web · nothing to install · part of <a class="di" href="https://di-studio.xyz">di.iiii</a></p></div>
+  </div>
+</main>
+
+<footer>
+  <span class="label"><a href="https://di-studio.xyz/br_id_ge">di-studio.xyz/br_id_ge</a></span>
+  <span class="label"><a href="https://hosq.co">hosq.co</a> · @dob______</span>
+</footer>
+
+<script>
+  const AY = 'ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ';
+  const layer = document.getElementById('letters');
+  for (let i = 0; i < 26; i++) {
+    const s = document.createElement('span');
+    s.textContent = AY[Math.floor(Math.random() * AY.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = Math.random() * 100 + 'vh';
+    s.style.fontSize = (12 + Math.random() * 30) + 'px';
+    s.style.setProperty('--t', (4 + Math.random() * 8) + 's');
+    s.style.animationDelay = (-Math.random() * 8) + 's';
+    layer.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
