@@ -5,10 +5,24 @@
 `br_id_ge` (կամուրջ, "bridge") is the portal of the **di.iiii Spatial Platform**:
 the process, framed by notation, by which the real enters the platform and becomes
 shared space — places as scans, people through the rite's questions, artists
-through curation. Its demonstration piece is a playable rite: cross a bridge of
-glowing Armenian letters, answer the Keeper of Memory, inscribe a khachkar with
-your name and a chosen word, and arrive in a shared field of everyone who crossed
-before you. Built on the open web — single-file Three.js/WebGL.
+through curation. Built on the open web — Three.js/WebGL, no install, no engine.
+
+It is no longer one page but a connected system:
+
+- **vi.ritual** — the five-act rite (`index.html`): cross a bridge of glowing
+  Armenian letters, answer the Keeper of Memory, inscribe a khachkar with your
+  name and a carried word.
+- **the field** — every crossing appends a permanent stone into a di.iiii space
+  (`vi-ritual`): anonymous, append-only, never erased. Ritual in br_id_ge →
+  result in di.iiii — the recursion is literal.
+- **live co-presence** — a WebSocket mesh; visitors crossing at the same moment
+  appear to one another.
+- **the open visual jam** — the portal held open for artists at Notations #2;
+  their notations are bridged into the same field.
+- **the constellation** — the lab's private node-graph map, where all of this is
+  seen and managed as one space.
+
+Full anatomy: [docs/PROJECT.md](docs/PROJECT.md) · concept: [docs/MASTER_CONTEXT.md](docs/MASTER_CONTEXT.md) §0.
 
 Now in preparation for **Notations #2** (July 20 – Aug 2, 2026, State Philharmonia
 of Armenia), a laboratory-festival hosted by [**hosq**](https://hosq.co/) under the

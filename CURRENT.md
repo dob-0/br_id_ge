@@ -11,21 +11,31 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, ho
 
 **The hosq collaboration only.** Everything else (fellowship, grants, N-Node phases, biometrics) is parked. Curatorial ground truth: `docs/MASTER_CONTEXT.md` — rebuilt 2026-07-12 from the NotebookLM briefing (collaboration facts, festival program, notation concept incl. Khaz, canonical vocabulary, research→practice).
 
-## Last session (2026-07-12)
+## Last session (2026-07-13)
 
-- **Docs cleared of odd data, recentered on hosq/Notations #2:** rewrote `docs/MASTER_CONTEXT.md` (hosq team, program, "Rituals"/Communitas theme, notation concept, core vocabulary, research→practice, parked directions), `docs/PROJECT.md` (now describes the actual rite; legacy node renders this live), `README.md`; updated `AGENTS.md`, `DEVELOPMENT.md`, copilot-instructions. Old N-Node/Munich-Gyumri/ROS/Ghost-Hand framing removed — recoverable from git history.
-- **Deleted dead files:** `README.md.backup`, `index.content.html`, `src/components/NodeCanvas.jsx`.
-- **Mesh status corrected:** the co-presence backend **IS live on prod** — di.iiii `466066b3` is on `origin/main`, `wss://di-studio.xyz/serverXR/mesh` accepts connections (verified 2026-07-12). Deployed rite is solo only because `<meta name="mesh-url">` in `index.html` is still commented out.
+- **The point is canonical** (`docs/MASTER_CONTEXT.md` §0): br_id_ge = di.iiii's portal &
+  collaborative process lab, framed by notation; reality → scan → notation → space →
+  connection; the loop is recursive. All docs lead with it.
+- **vi.ritual → di.iiii is BUILT:** finishing the rite writes the inscription into di.iiii
+  space `vi-ritual` as a permanent object (append-only "open inscriptions" API on di.iiii
+  `dev`). Client wiring in `index.html`, gated by `<meta name="field-url">` (commented) /
+  `?field=`. The rite also READS the shared field into Act V. Live locally end-to-end.
+- **One design language** across all surrounding surfaces (void #05080d · cyan=di.iiii/live ·
+  crimson=the real/drafts · amber=lamp/⚠ · stone=memory/letterforms); the rite itself untouched.
+- Docs now describe br_id_ge as a system (rite · field · mesh · jam · constellation · scanners).
 
 ## What works
 
 - Playable rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html`; synthesized duduk drone.
 - Repo = master of both space projects; CI syncs both + Pages.
 - Co-presence mesh live on staging AND prod backends; client speaks it via `?mesh=`.
+- Field writes live locally + backend on staging; ops constellation space `br-id-ge-ops` (local).
 
 ## Open (hosq track)
 
-- **Co-presence go-live:** uncomment/set `<meta name="mesh-url" content="wss://di-studio.xyz/serverXR/mesh">` in `index.html`, push. That's the whole step.
+- **Go-live pair:** uncomment `<meta name="mesh-url">` AND `<meta name="field-url">` in
+  `index.html` + push — after di.iiii dev→main promotion and creating prod spaces
+  `vi-ritual` (public + openInscriptions) and `br-id-ge-ops` (private) while signed in.
 - **Staging format** (projection / devices / spatial tracking) — decided during the lab; determines what co-presence means in the hall.
 - **Notation reading of the piece:** whether the Khaz/score framing of the letter bridge becomes explicit in the artwork.
 - **Felt-impact polish:** Keeper dialogue depth, sound (real duduk vs synth), khachkar craft, letter legibility.

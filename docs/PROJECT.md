@@ -14,6 +14,25 @@ letters (Erkatagir / Trchnagir, MSDF-rendered), answer the Keeper of Memory —
 your name and a chosen word, and arrive in a shared field of everyone who crossed
 before you. The rite is the portal performing itself; the field is its memory.
 
+## The system — br_id_ge is no longer one page
+
+What began as a single-file artwork is now a small organism of connected parts,
+all speaking one design language (void `#05080d` · cyan = di.iiii/live · crimson =
+the real/notation · amber = the gantegh lamp/attention · stone = memory/letterforms):
+
+| organ | what it does | where |
+|---|---|---|
+| **vi.ritual** — the rite | the five-act crossing, the portal performing itself | `index.html` → [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · di-studio.xyz/br_id_ge |
+| **the field** | every crossing appends a permanent khachkar into a di.iiii space — anonymous, append-only by construction, never erased | di.iiii space `vi-ritual` (open-inscriptions API) |
+| **live co-presence** | visitors crossing at the same moment appear to one another (Communitas) | WebSocket mesh in di.iiii serverXR |
+| **the open visual jam** | the portal held open for artists — their notations bridged into the same field; curation happens via br_id_ge | Notations #2, then ongoing |
+| **the constellation** | the lab's own map: every organ and audience as a node graph, managed from one private space | di.iiii space `br-id-ge-ops` |
+| **the scanner array** | how places enter — depth cameras and LiDAR feeding XR space | physical kit, staged per show |
+
+The loop through all of it is recursive: **reality → scan → notation → space →
+connection** — perform the ritual in br_id_ge and the result lives in di.iiii;
+build in di.iiii and carry it back across the bridge.
+
 ## 1. The Rite — five acts
 
 1. **Threshold** — the UI strips away; a dark void lit by a single *gantegh* lamp.
