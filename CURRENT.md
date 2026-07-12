@@ -35,7 +35,7 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, ho
 ## Parked (not now)
 
 - Biometrics (rPPG + EVM, "the measurable shadow") — researched, not built.
-- Fellowship/grant materials (`docs/ops/` untracked, left alone).
+- Fellowship/grant materials — moved to the private ops repo `dob-0/br_id_ge-ops` (2026-07-12); see `docs/ops/README.md`.
 - N-Node multi-city phases, ROS actuation — git history.
 
 ## Deploy
