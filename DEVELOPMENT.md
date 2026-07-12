@@ -74,15 +74,12 @@ br_id_ge/
 ├── DEVELOPMENT.md               # This file (dev workflow & setup)
 ├── docs/
 │   ├── PROJECT.md               # Full project documentation
-│   └── MASTER_CONTEXT.md        # Curatorial framework & N-Node rollout plan
+│   └── MASTER_CONTEXT.md        # Curatorial ground truth — hosq / Notations #2
 ├── scripts/
 │   ├── auto-push-readme.sh      # README-only auto-push watcher
 │   └── auto-push-space.sh       # Multi-file repo sync watcher
 ├── serverXR/
-│   └── wsMesh.js                # Node.js WebSocket N-Node mesh server (draft)
-├── src/
-│   └── components/
-│       └── NodeCanvas.jsx       # Draft React node canvas (not yet active)
+│   └── wsMesh.js                # Local/offline WebSocket mesh server (draft)
 ├── references/                  # Reference media assets
 ├── index.html                   # Live project interface (main SPA)
 └── .vscode/

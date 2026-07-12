@@ -32,7 +32,7 @@ Copilot instructions for br_id_ge
 
 2) High-level architecture (big picture)
 
-- Frontend: single static SPA (index.html) using CDN Three.js (r128) + marked.js and space-mono font. Lightweight React components (src/) are draft/migration artifacts (NodeCanvas.jsx).
+- Frontend: single static SPA (index.html) using CDN Three.js (r128) + marked.js and space-mono font.
 - Realtime mesh: serverXR/wsMesh.js — a small Node.js WebSocket mesh implementing room-based pub/sub. Clients connect as ws://host?room=ROOM&node=NODEID. Server attaches timestamps, per-target latency and predicted ghost-hand vectors for motion messages.
 - Docs & content: docs/PROJECT.md and README.md are canonical docs; live markdown is rendered client-side (marked.js).
 - Deploy: GitHub Pages via workflow (.github/workflows/pages.yml). Static artifact path is repository root.
@@ -45,7 +45,6 @@ Copilot instructions for br_id_ge
   - { type: 'publish', channel: 'motion'|'bio'|'env', payload: {...}, pingTs? }
   - { type: 'nodes:add', node: {...} }
   - server emits: 'peer:join', 'peer:leave', 'nodes:update', and 'mesh:event' (with meta.perTargetLatency and meta.predicted for motion)
-- Client conventions (NodeCanvas.jsx): sends motion updates as { type: 'motion:publish', nodeId, x, y, timestamp } and expects 'nodes:update' and motion event payloads.
 - Latency handling: server includes perTargetLatency estimates and simple predictGhostHand() output (x,y,z,predictedAt). Keep message handlers resilient to missing fields.
 - Security: scripts/auto-push-readme.sh includes forbidden-pattern checks (api_key, password, secret, token, credentials, private_key, aws_secret, DATABASE_URL, STRIPE_, GITHUB_TOKEN). Do not commit secrets; copy .env.example -> .env for local secrets.
 - Files used as single-sources:
@@ -58,7 +57,6 @@ Copilot instructions for br_id_ge
 
 - serverXR/wsMesh.js — realtime message shapes, room logic, predictGhostHand
 - index.html — overall UI, assets, CSS variables, CDN libraries (Three.js r128, marked.js)
-- src/components/NodeCanvas.jsx — example React node editor (draft)
 - docs/PROJECT.md and DEVELOPMENT.md — design, deployment and workflow notes
 - scripts/auto-push-readme.sh and .vscode/tasks.json — auto-push workflow and secret scanning
 - .github/workflows/pages.yml — GitHub Pages deployment

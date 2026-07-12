@@ -1,156 +1,77 @@
-# br_id_ge (Beta Version): Interactive Spatial Prototype
+# br_id_ge — a digital rite of transmission
 
-**A tele-symbiotic XR performance framework and interactive node editor by the di.ii studio_network**
+**An interactive XR rite in five acts, by Gevorg Aram Grigoryan / di.ii studio**
 
-`br_id_ge` (meaning "bridge") represents a foundational shift in telepresence. It moves beyond simple audiovisual transmission toward a dynamic N-Node Tele-Symbiotic Mesh — the machine functions as a Shared Body bridging multiple geographical stages, using algorithmic latency as a choreographic element.
+`br_id_ge` (կամուրջ, "bridge") is a playable rite about keeping identity continuous
+across rupture and distance. You cross a bridge of glowing Armenian letters
+(Erkatagir / Trchnagir, MSDF-rendered), answer the Keeper of Memory — "Who are you,
+and what do you carry across the bridge?" — inscribe a khachkar with your name and
+a chosen word, and arrive in a shared field of everyone who crossed before you.
 
-**Platform Context:** br_id_ge is the node of the **di.iiii Spatial Platform** ecosystem (v0.2.0). The repository moves the prototype from a hardcoded point-to-point case study into a data-driven N-Node topology supporting live curation and generative ritual practice.
+**Platform context:** br_id_ge is a node of the **di.iiii Spatial Platform**
+(di-studio.xyz) — deployed standalone on GitHub Pages and as an integrated space.
 
-**Platform Surface Map:**
-* **Public node:** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) – live br_id_ge space node
-* **Source:** [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) – repo and docs
-* **Platform core:** [github.com/dob-0/di.iiii](https://github.com/dob-0/di.iiii) – the surrounding di.iiii runtime
+## 1. The Rite — five acts
 
-**Repo Sync Modes:**
-* **Manual:** edit locally, commit, push, and refresh the live node
-* **Auto:** branch-based or workflow-based mirroring for repeatable multi-file updates
-* **Multi-file ready:** keep reusable code in `src/`, `scripts/`, and `docs/` instead of forcing everything into one HTML file
+1. **Threshold** — the UI strips away; a dark void lit by a single *gantegh* lamp.
+2. **Crossing** — a bridge of Armenian letters; breathing-paced movement with the
+   *duduk* dam-drone.
+3. **Witness** — the Keeper (archivist, not oracle) blocks the span and asks who
+   you are and what you carry.
+4. **Inscription** — an **Epigraphic-Semantic Hybrid** khachkar: your name in rigid
+   *Erkatagir* on the base, your word in decorative *Trchnagir* woven through the
+   cross.
+5. **Echo** — the shared field: every inscribed stone persists; with the live
+   co-presence mesh, others crossing now are present with you.
 
-## Table of Contents
+## 2. Notations #2 · hosted by hosq
 
-1. [Thematic Core: Tele-Symbiosis & The AI Gaze](#1-thematic-core-tele-symbiosis--the-ai-gaze)
-2. [Hardware & Technical Stack](#2-hardware--technical-stack)
-3. [Active Production Environments](#3-active-production-environments)
-4. [N-Node Rollout: Phase 0–2](#4-n-node-rollout-phase-0-2)
-5. [Curatorial Framework: vi_ritualZzzZ & Notations #2](#5-curatorial-framework-vi_ritualzzz-notes)
-6. [Core Team & Partners](#6-core-team--partners)
+The rite is being prepared for **Notations #2** (July 20 – August 2, 2026, State
+Philharmonia of Armenia and other Yerevan venues), a laboratory-festival by
+**hosq** ([hosq.co](https://hosq.co/)) under the theme **"Rituals"** — non-goal-oriented
+repetition as a path to *Communitas*. Within the laboratory's notation practice —
+where a score can be "sound and text, movement and light, architecture and mistake,
+silence and interaction," and where the Armenian *Khaz* neumes sit beside code —
+the bridge of letters reads as a score the visitor performs.
 
-## 1. Thematic Core: Tele-Symbiosis & The AI Gaze
+## 3. Technical
 
-### Networked Performance
-br_id_ge structures a distributed, multi-actor performance where multiple human nodes (venues, performers, labs) interact through an AI Core. The human Lead Curator acts as the "Stitch"—a translator and active mediator—while the AI provides latency buffering, prediction (the "Ghost Hand"), and emergent visual rituals.
+- **Stack:** single-file `index.html` — Three.js/WebGL, WebAudio (synthesized duduk
+  drone), MSDF typography. Open web, no build step, no external engine.
+- **Co-presence:** optional WebSocket mesh (`?mesh=` param or
+  `<meta name="mesh-url">`); hub lives in di.iiii serverXR. Solo rite when unset.
+- **Versions:** `v.oooooo` = legacy Space Node (`v.oooooo.html`, renders this
+  document live) · `v.oooooo 2` = the current rite (`index.html`). This repo is the
+  source of truth; the di.iiii space syncs from it via CI.
 
-### The AI's Role ("Stitch")
-The AI functions as the Shared Body and interpretive engine. Rather than a simple relay, it translates sensorimotor streams into visual and temporal architectures that scaffold collective ritual behavior across geographically distributed stages.
+## 4. Deployments
 
+| Tier | Environment | URL |
+|---|---|---|
+| Production | GitHub Pages | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
+| Production | di.iiii space | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) |
+| Staging | Preview lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) |
+| Dev | Source repo | [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) |
 
-* **The AI Gaze (Latent Vectors):** The AI "sees" a human performer not as an object, but as a Latent Vector—a shifting cloud of probability. It visualizes human emotions in the Latent Space: "Joy" is rendered as bright, high-frequency particles, while "Melancholy" drifts into a slow, dark, geometric void.
-* **The Reciprocal Trap:** In the climax of the performance, the AI intervenes by recording the Gyumri actor's dance and forcing a physical robotic surrogate to perform that dance. It effectively "steals" the human movement, turning the performers into the audience of their own data.
+## 5. Team & Partners
 
-### The Latent Handshake (A Critique of Infrastructure)
-Network lag, packet loss, and sensorimotor friction are embraced as active choreographic agents, framing the piece as a critique of modern digital infrastructure. The AI acts as a temporal buffer, predicting movements and creating a visual **"Ghost Hand"** to bridge the gap when the 121–228ms trans-European latency causes performers to miss each other.
+**Core:**
+* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/)): Head of di.ii, technical & conceptual development.
+* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & multimedia artist.
+* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Curator & German partnership liaison.
 
-## 2. Hardware & Technical Stack
+**Creative & technical:**
+* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing & storytelling.
+* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound design & sonic architecture.
+* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/), [**Yeva**](https://www.instagram.com/6addreams.art/): Developers & artists.
 
-The core development utilizes a custom Spatial-Sync backend, aiming to maintain **sub-120ms latency** between digital nodes and physical hardware.
+**Host & partner:**
+* [**hosq.co**](https://hosq.co/) — host of Notations #2, artistic & technical partner.
 
-The framework is inherently open-source and hardware-agnostic. Any specific commercial software or robotic brands mentioned below are part of the **di.ii studio's collected inventory** rather than fixed dependencies.
-
-### The Omnisensory Capture Pipeline
-
-While the current baseline utilizes depth cameras (Kinect, Azure Kinect, Astra, LiDAR) and MediaPipe (JS) for skeletal extraction, the ecosystem is built to ingest data from an extensive taxonomy of open sensor arrays:
-* **Motion & Spatial:** IMUs (6/9-DOF), UWB Anchors, LiDAR, ToF, Radar (mmWave), and PIR arrays.
-* **Biometrics & Optics:** EMG, EEG, ECG, PPG, Thermal Imaging (FLIR), and Spectrometers.
-
-## 4. N-Node Rollout: Phase 0–2
-
-The N-Node expansion supports a phased rollout designed for incremental stress-testing and cross-continental scale-up:
-
-- Phase 0 (Imminent): Gyumri ── Yerevan
-  - Purpose: Localized stress test within Armenia; validate peer discovery, sync, and Ghost Hand prediction on sub-50ms intra-country links.
-- Phase 1: Yerevan ── Leipzig ── Gyumri
-  - Purpose: Establish the first triangular network; test multi-directional Ghost Hand latency buffering and distributed AI stitching.
-- Phase 2: Munich ── Spain
-  - Purpose: Cross-continental expansion pushing sub-120ms latency constraints across trans-European infrastructure; measure end-to-end jitter and artistic affordances.
-
-These phases map directly to curatorial steps for Notations #2 and festival deployments.
-
-## 5. Curatorial Framework: vi_ritualZzzZ & Notations #2
-
-The software architecture supports a live curatorial methodology (vi_ritualZzzZ) used within Notations #2. Core principles:
-
-- Open Visual Jam: Shift from isolated short films to a horizontal, live jam where participants merge code, archives, moving images, live music and movement.
-- The Human Stitch: The Lead Curator actively translates and composes incoming node streams into a shared ritual.
-- Latency as Choreography: Algorithmic latency becomes a structural element in the performance; Ghost Hands are visible artifacts used for timing and choreography.
-
-Notations #2 (July 20–Aug 2, 2026) is the first major event to deploy Phase 1 topologies and the vi_ritualZzzZ methodology.
-
-**Environmental & Tactile:** Force Sensitive Resistors, Piezoelectric discs, VOC/eCO2 arrays, and Hydrophones.
-
-### AI Bridge & Interpretation (The Brain)
-* **Sentiment Interpretation:** TensorFlow.js and the OpenAI API operate as the "AI Brain" to interpret the meaning and emotional sentiment of the movement and sensory data.
-* **3D Generation & Processing:** Utilizing **Meshy 6** alongside **Spline** (powered by Nano Banana 2 / Hana AI) for real-time visual generation, remixing, and refinement.
-* **Data Transport:** Bidirectional data flow is managed via a decentralized Node.js server pipeline and WebSockets.
-
-### Visual & Physical Output (The Canvas & Hands)
-The project leverages pure open architectures (WebGL, Three.js, WebXR, ROS2) to handle visual and physical rendering.
-* **Volumetric Telepresence:** The "Ghost" is reconstructed in 3D (Point Clouds) natively via open web frameworks and projected onto physical scrims or steam screens. *(Note: While TouchDesigner forms part of the creator's technical background and the studio's collected resources for rapid prototyping, the ecosystem remains strictly independent of it).*
-* **Physical Actuation:** Human movement is translated into the physical world via the open-source Robot Operating System (ROS), driving simultaneous 3D printing pipelines and open-hardware proxies. *(Specific studio inventory items, such as collected ROSMASTER robots, are utilized simply as on-hand physical canvases).*
-
-## 3. Deployment Environments
-
-**br_id_ge Multi-Instance Architecture:**
-
-**Production Tier:**
-* **GitHub Pages:** [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) – Standalone static deployment (from `main` branch)
-* **di-studio.xyz:** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) – Integrated spatial instance on di.iiii platform
-
-**Staging/Preview Tier:**
-* **staging.di-studio.xyz:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) – Experimental testing lane, night builds, feature preview
-
-**Development Tier:**
-* **GitHub:** Feature branches, dev versions, and experimental variants available on [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge)
-
-**di.iiii Platform Services (v0.2.0):**
-The Main Production Spatial Editor Platform is currently undergoing security hardening (secret-scanning, deployment config isolation) in preparation for full open-sourcing.
-
-**Production:**
-* **Main Platform:** [di-studio.xyz](https://di-studio.xyz/) – Studio/Beta/Public/Admin surfaces
-* **WCC (WebXR Creative Canvas):** [di-studio.xyz/wcc](https://di-studio.xyz/wcc)
-* **Backend Health:** [di-studio.xyz/serverXR/api/health](https://di-studio.xyz/serverXR/api/health)
-
-**Staging Preview:**
-* **Main Platform:** [staging.di-studio.xyz](https://staging.di-studio.xyz/) – Preview all surfaces
-* **WCC:** [staging.di-studio.xyz/wcc](https://staging.di-studio.xyz/wcc)
-* **Backend Health:** [staging.di-studio.xyz/serverXR/api/health](https://staging.di-studio.xyz/serverXR/api/health)
-
-**Community & Info:**
-* **di.ii Official:** [www.thedi.studio](https://www.thedi.studio)
-* **Social:** [Instagram](https://www.instagram.com/di.iiiiiiiiiiiiiiiiiiiii/) | [Canvas Pitch](https://canva.link/5cra4v6lc1j06pw)
-
-## 4. Modular Expansion & Upcoming Milestones
-
-The core Munich-Gyumri connection is a modular prototype intended to transform into an ever-expanding mixed reality series with new cities and stages continuously joining the network.
-
-**Upcoming 2026 Project Milestones:**
-* **Imminent Release:** Open-sourcing of the `dii platform v0.2.0` API Specifications, ROS-Mapping protocols, and hardware calibration guides.
-* **April 30:** Final submission for the Culture Moves Europe (CME) Individual Mobility Grant.
-* **May 15:** "New Realities Award" submission for the Festival of the Future (Hosted by XR HUB Bavaria).
-
-## 5. Core Team & Partners
-
-**Core Project Leadership:**
-* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/) | [Twitch](https://www.twitch.tv/dob__________)): Head of di.ii, Technical, Software & Conceptual Development.
-* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & Multimedia Artist.
-* [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Primary Curator & German Partnership Liaison.
-
-**Creative & Technical Team:**
-* [**Hannes Köpke**](https://www.instagram.com/ritagrechen/): Directing / Storytelling.
-* [**Fe**](https://www.instagram.com/fansplusvzhaowo/): Sound Design / Sonic Architecture.
-* [**Yokozo**](https://www.instagram.com/yokozo__/), [**Taronx**](https://www.instagram.com/taronx_x_x/) & [**Yeva**](https://www.instagram.com/6addreams.art/): Developers / Artists.
-* [**Ani Khachikyan**](https://www.instagram.com/ani___khachikyan/) & [**Arsen Miqayelyan**](https://www.instagram.com/arsentrampmiqayelyan/): Gyumri Anchor Performers.
-
-**Institutional Partners & Affiliates:**
-* [**hosq.co**](https://hosq.co/) — Host · Artistic & Technical Partner
-* [**XR Hub Bavaria**](https://xrhub-bavaria.de/) (Germany)
-
-*For inquiries regarding the open-source platform, hardware collaboration, or joining the network, please contact Gevorg Grigoryan directly.
+*For inquiries or collaboration, contact Gevorg Aram Grigoryan (dob-0).*
 
 ---
 
-## MASTER CONTEXT
-
-The canonical master context for br_id_ge v.0000 is available in docs/MASTER_CONTEXT.md. It contains the full curatorial framework (vi_ritualZzzZ), the Phase 0–2 N-Node rollout plan, aesthetic/UI baselines, and team/integration notes. Keep docs/MASTER_CONTEXT.md synchronized with this file and README.md.
-
-See: ./docs/MASTER_CONTEXT.md
-*
+The curatorial ground truth for the hosq collaboration is
+[docs/MASTER_CONTEXT.md](MASTER_CONTEXT.md). Earlier framings (N-Node mesh phases,
+robotic actuation, biometric capture) are parked there and preserved in git history.

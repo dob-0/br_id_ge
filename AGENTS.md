@@ -4,9 +4,9 @@ Short routing guide for AI agents working in `br_id_ge`.
 
 ## What This Project Is
 
-`br_id_ge` ("bridge") is a tele-symbiotic XR performance prototype and interactive spatial node editor. It is a node within the **di.iiii Spatial Platform** ecosystem — deployed as a standalone GitHub Pages site and as an integrated space on di-studio.xyz.
+`br_id_ge` (կամուրջ, "bridge") is a digital rite of transmission — a playable XR rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html`. It is a node within the **di.iiii Spatial Platform** ecosystem — deployed as a standalone GitHub Pages site and as an integrated space on di-studio.xyz.
 
-Core concept: N-Node mesh connecting geographic stages (Munich, Gyumri, Leipzig) through an AI core ("The Stitch"), using network latency as a choreographic element.
+Current focus: **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq) — theme "Rituals"/Communitas. Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
 
 ## Ecosystem Position
 
@@ -24,18 +24,18 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 1. `README.md` — project overview, live links, team
 2. `docs/PROJECT.md` — full technical and curatorial documentation
-3. `docs/MASTER_CONTEXT.md` — N-Node rollout plan and aesthetic baseline (Void theme)
+3. `docs/MASTER_CONTEXT.md` — hosq collaboration, Notations #2, notation concept, aesthetic baseline (Void theme)
 4. `DEVELOPMENT.md` — dev workflow, auto-push setup, secret scanning
 
 ## File Map
 
 | File | Role |
 |------|------|
-| `index.html` | Main SPA — all UI, Three.js particle scene, node editor, markdown render |
-| `serverXR/wsMesh.js` | WebSocket N-Node mesh server (draft — no auth, single-threaded) |
-| `src/components/NodeCanvas.jsx` | Draft React node canvas (not yet active in index.html) |
-| `docs/PROJECT.md` | Canonical project docs (synced from di.iiii) |
-| `docs/MASTER_CONTEXT.md` | Curatorial framework, N-Node phases, aesthetic spec |
+| `index.html` | The rite (`v.oooooo 2`) — five acts, Three.js, WebAudio drone, optional co-presence via `?mesh=`/`<meta name="mesh-url">` |
+| `v.oooooo.html` | Legacy Space Node (renders `docs/PROJECT.md` live) |
+| `serverXR/wsMesh.js` | Local/offline mesh server (hosting superseded by di.iiii `serverXR/src/meshHub.js`) |
+| `docs/PROJECT.md` | Canonical project docs |
+| `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
 | `scripts/auto-push-space.sh` | Multi-file repo sync watcher |
 
@@ -49,14 +49,13 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 ## Known Draft Status
 
-- `serverXR/wsMesh.js` — no auth (anyone can join any room), single process, Ghost Hand prediction is linear placeholder. Not production-ready.
-- `src/components/NodeCanvas.jsx` — unused draft; not imported by index.html.
+- `serverXR/wsMesh.js` — local/offline only (no auth, single process); production mesh is di.iiii `serverXR/src/meshHub.js`.
 - No test suite, no lint configuration.
 
 ## Default Safe Actions
 
 - edit `index.html` for UI/visual changes
-- edit `serverXR/wsMesh.js` for mesh/latency/Ghost Hand logic (keep it backward-compatible)
+- edit `serverXR/wsMesh.js` only for local/offline mesh runs (hosting lives in di.iiii meshHub.js)
 - edit `docs/MASTER_CONTEXT.md` for curatorial updates (do not let it drift from `docs/PROJECT.md`)
 - do not commit `.env` or any API keys — secret scan in `auto-push-readme.sh` will block it
 
