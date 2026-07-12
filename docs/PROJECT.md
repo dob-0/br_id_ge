@@ -1,37 +1,30 @@
-# br_id_ge — portal & process lab of di.iiii
+# br_id_ge — the bridge where the real enters di.iiii
 
-**By Gevorg Aram Grigoryan / di.ii studio — performed as an interactive XR rite in five acts**
+**By Gevorg Aram Grigoryan / di.ii studio**
 
-`br_id_ge` (կամուրջ, "bridge") is the **portal of di.iiii** (di-studio.xyz), the
-artist's own spatial platform — a collaborative process lab, framed by notation,
-where the real world enters the platform and becomes shared space: places enter
-as depth scans, people enter by answering, artists enter by being curated in.
-The flow is always the same: **reality → scan → notation → space → connection.**
+`br_id_ge` (կամուրջ, "bridge") is how the real world enters **di.iiii**
+(di-studio.xyz), the artist's own spatial platform — and becomes shared space.
+Three doors: **places** enter as 3D scans; **people** enter through a short rite —
+cross a bridge built of glowing Armenian letters and answer two questions, *who
+are you, and what do you carry?*; **artists** enter through an open jam, curated
+in. Every entry leaves a permanent mark — an inscribed stone (a *khachkar*, the
+Armenian carved cross-stone) in a shared field that is never erased. And the
+bridge runs both ways: what is built inside di.iiii can be carried back out.
 
-Its demonstration piece is a playable rite: you cross a bridge of glowing Armenian
-letters (Erkatagir / Trchnagir, MSDF-rendered), answer the Keeper of Memory —
-"Who are you, and what do you carry across the bridge?" — inscribe a khachkar with
-your name and a chosen word, and arrive in a shared field of everyone who crossed
-before you. The rite is the portal performing itself; the field is its memory.
+## The system — six connected parts
 
-## The system — br_id_ge is no longer one page
+One artwork grew into a small organism. All parts speak one visual language
+(near-black void · cyan = live in di.iiii · crimson = still on the real side ·
+amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 
-What began as a single-file artwork is now a small organism of connected parts,
-all speaking one design language (void `#05080d` · cyan = di.iiii/live · crimson =
-the real/notation · amber = the gantegh lamp/attention · stone = memory/letterforms):
-
-| organ | what it does | where |
+| part | in one sentence | where |
 |---|---|---|
-| **vi.ritual** — the rite | the five-act crossing, the portal performing itself | `index.html` → [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · di-studio.xyz/br_id_ge |
-| **the field** | every crossing appends a permanent khachkar into a di.iiii space — anonymous, append-only by construction, never erased | di.iiii space `vi-ritual` (open-inscriptions API) |
-| **live co-presence** | visitors crossing at the same moment appear to one another (Communitas) | WebSocket mesh in di.iiii serverXR |
-| **the open visual jam** | the portal held open for artists — their notations bridged into the same field; curation happens via br_id_ge | Notations #2, then ongoing |
-| **the constellation** | the lab's own map: every organ and audience as a node graph, managed from one private space | di.iiii space `br-id-ge-ops` |
-| **the scanner array** | how places enter — depth cameras and LiDAR feeding XR space | physical kit, staged per show |
-
-The loop through all of it is recursive: **reality → scan → notation → space →
-connection** — perform the ritual in br_id_ge and the result lives in di.iiii;
-build in di.iiii and carry it back across the bridge.
+| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · di-studio.xyz/br_id_ge |
+| **the field** | Every crossing appends a stone into a di.iiii space — anonymous, append-only, permanent. | di.iiii space `vi-ritual` |
+| **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
+| **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
+| **the constellation** | The private map where the whole system is seen and managed from one link. | di.iiii space `br-id-ge-ops` |
+| **the scanner array** | Depth cameras and LiDAR — how places will enter. | physical kit, staged per show |
 
 ## 1. The Rite — five acts
 

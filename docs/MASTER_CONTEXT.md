@@ -1,6 +1,6 @@
 MASTER CONTEXT: br_id_ge · Notations #2 (hosq)
 
-Project: br_id_ge (կամուրջ) — portal & collaborative process lab of di.iiii
+Project: br_id_ge (կամուրջ) — the bridge where the real enters di.iiii
 Artist/Curator: Gevorg Aram Grigoryan (dob-0)
 Current version: v.oooooo 2 — the five-act rite (see README "Versions")
 
@@ -8,27 +8,41 @@ This is the working master context for the hosq collaboration. Earlier framings
 (N-Node tele-symbiotic mesh, Munich–Gyumri phases, ROS actuation, biometric capture)
 are parked — see "Parked directions" below and git history for the full record.
 
-0. The Point (canonical concept — everything below serves this)
+0. The Point (CANONICAL — every other text about br_id_ge derives from this, sized down)
 
-- dob (Gevorg Aram Grigoryan) builds **di.iiii** — the browser-native XR platform.
-- **br_id_ge is di.iiii's portal and collaborative process lab, framed by
-  notation**: the named process by which the real world enters the platform and
-  becomes shared space. It is where everyone can come to the builder.
-- The flow: **reality → scan → notation → space → connection.**
-  · places enter as scans (depth cameras, LiDAR — the scanner array)
-  · people enter through the rite's questions ("who are you and what do you carry")
-  · artists enter through curation — their notations bridged in as new nodes
-- The portal is two-way and **recursive**: perform the ritual in br_id_ge and the
-  result lives on in di.iiii (the inscription becomes a persistent object in shared
-  space); build in di.iiii and carry it back across the bridge as what you carry.
-  Each crossing is a new horizon; the loop repeats and deepens — the same recursion
-  di.iiii's node model is built on.
-- The rite (v.oooooo 2) is the portal performing itself — the demonstration piece.
-  The inscription field is the portal's memory: append-only, never erased.
-- The open visual jam is the portal open to artists: **Gevorg curates via
-  br_id_ge.** An artist joining the jam is being bridged in, not exhibited beside.
-- br_id_ge starts publicly at **Notations #2** — and does not end there; it is a
-  standing practice that grows node by node.
+ONE LINE.
+br_id_ge (կամուրջ, "bridge") is how the real world enters di.iiii — Gevorg Aram
+Grigoryan's spatial platform — and becomes shared space.
+
+ONE PARAGRAPH.
+Everything real that wants to live in di.iiii crosses this bridge, through one of
+three doors. Places enter as 3D scans (depth cameras, LiDAR). People enter through
+a short rite: you cross a bridge built of glowing Armenian letters and answer two
+questions — who are you, and what do you carry? Artists enter through an open jam,
+curated in by Gevorg. Every entry leaves a permanent mark — an inscribed stone
+(a khachkar, the Armenian carved cross-stone) in a shared field that is never
+erased. And the bridge runs both ways: what is built inside di.iiii can be carried
+back out across it. br_id_ge opens publicly at Notations #2 (July 20 – August 2,
+2026, State Philharmonia, Yerevan, hosted by hosq) and keeps growing after it.
+
+THE RECAP — six organs, where each one stands (2026-07-13).
+
+| organ | in one sentence | status |
+|---|---|---|
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge · di-studio.xyz/br_id_ge (solo mode) |
+| the field | Every crossing appends a stone into di.iiii space `vi-ritual` — anonymous, append-only, permanent. | built & working locally · prod pending |
+| live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | backend live on staging + prod · client switch still off |
+| the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |
+| the constellation | The private map where the whole system is seen and managed from one link. | live locally (`/br-id-ge-ops`) · prod space pending |
+| the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready · staged per show |
+
+WORKFLOW. Work happens privately (space `br-id-ge-ops` + repo `br_id_ge-ops`);
+approved pages graduate to the public repo; each audience gets exactly one link
+(hosq → hosq.html + PDF · artists → jam.html · everyone → the rite).
+
+BEFORE THE FESTIVAL (on Gevorg): ① answer the ten rider questions ② jam slot
+dates + hosq contact ③ prod switches — create spaces `vi-ritual` + `br-id-ge-ops`
+signed-in, promote di.iiii dev→main, uncomment the mesh + field metas in index.html.
 
 1. The Collaboration — hosq
 

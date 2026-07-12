@@ -1,28 +1,25 @@
 # br_id_ge 🌉
 
-**Portal & collaborative process lab of di.iiii — performed as an XR rite in five acts**
+**The bridge where the real enters di.iiii**
 
-`br_id_ge` (կամուրջ, "bridge") is the portal of the **di.iiii Spatial Platform**:
-the process, framed by notation, by which the real enters the platform and becomes
-shared space — places as scans, people through the rite's questions, artists
-through curation. Built on the open web — Three.js/WebGL, no install, no engine.
+`br_id_ge` (կամուրջ, "bridge") is how the real world enters the **di.iiii Spatial
+Platform** and becomes shared space. Three doors: places enter as 3D scans; people
+enter through a short rite — cross a bridge of glowing Armenian letters and answer
+two questions, *who are you, and what do you carry?*; artists enter through an
+open jam, curated in. Every entry leaves a permanent mark — an inscribed stone
+(a *khachkar*) in a shared field that is never erased. Built on the open web —
+Three.js/WebGL, no install, no engine.
 
-It is no longer one page but a connected system:
+Six connected parts:
 
-- **vi.ritual** — the five-act rite (`index.html`): cross a bridge of glowing
-  Armenian letters, answer the Keeper of Memory, inscribe a khachkar with your
-  name and a carried word.
-- **the field** — every crossing appends a permanent stone into a di.iiii space
-  (`vi-ritual`): anonymous, append-only, never erased. Ritual in br_id_ge →
-  result in di.iiii — the recursion is literal.
-- **live co-presence** — a WebSocket mesh; visitors crossing at the same moment
-  appear to one another.
-- **the open visual jam** — the portal held open for artists at Notations #2;
-  their notations are bridged into the same field.
-- **the constellation** — the lab's private node-graph map, where all of this is
-  seen and managed as one space.
+- **vi.ritual** — the five-act rite (`index.html`), playable right now
+- **the field** — every crossing becomes a permanent stone in di.iiii space `vi-ritual`
+- **live co-presence** — visitors crossing at the same moment see each other
+- **the open visual jam** — the artists' door, opening at Notations #2
+- **the constellation** — the private map where it's all managed from one link
+- **the scanner array** — depth cameras + LiDAR, how places will enter
 
-Full anatomy: [docs/PROJECT.md](docs/PROJECT.md) · concept: [docs/MASTER_CONTEXT.md](docs/MASTER_CONTEXT.md) §0.
+Full anatomy: [docs/PROJECT.md](docs/PROJECT.md) · canonical recap: [docs/MASTER_CONTEXT.md](docs/MASTER_CONTEXT.md) §0.
 
 Now in preparation for **Notations #2** (July 20 – Aug 2, 2026, State Philharmonia
 of Armenia), a laboratory-festival hosted by [**hosq**](https://hosq.co/) under the
