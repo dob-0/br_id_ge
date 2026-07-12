@@ -7,6 +7,9 @@
 <meta name="description" content="br_id_ge (կամուրջ) — a playable tele-symbiotic rite in five acts. Cross a bridge of Armenian letters, answer the Keeper, inscribe what you carry, and meet those crossing with you. A node of the di.iiii platform.">
 <!-- Live co-presence: set the mesh endpoint to light up act v across visitors. Empty = solo rite.
 <meta name="mesh-url" content="wss://your-host/mesh"> -->
+<!-- vi.ritual → di.iiii: set the field endpoint and every inscription becomes a persistent
+     object in the di.iiii space (the rite also shows the shared field). Empty = local field only.
+<meta name="field-url" content="https://di-studio.xyz/serverXR/api/spaces/vi-ritual"> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -294,6 +297,14 @@ function placeInscription(entry,i){const a=i*2.399,r=9+i*1.1;
 field.forEach(placeInscription);
 const myKh=mark(new THREE.Vector3(end.x,end.y+2,end.z-6),true);
 document.getElementById('fieldn').textContent=field.length;
+// vi.ritual → di.iiii: the shared field lives in a di.iiii space (append-only inscriptions).
+// Endpoint comes from ?field=<space-api-url>, <meta name="field-url">, or window.BR_FIELD_URL.
+const FIELD_URL=((new URLSearchParams(location.search).get('field'))||(document.querySelector('meta[name="field-url"]')||{}).content||window.BR_FIELD_URL||'').replace(/\/+$/,'');
+if(FIELD_URL){fetch(FIELD_URL+'/scene').then(r=>r.ok?r.json():Promise.reject()).then(({scene:sc})=>{
+  const remote=(sc&&sc.objects||[]).filter(o=>String(o.id||'').startsWith('insc-')).map(o=>String(o.data||'').trim()).filter(Boolean);
+  remote.forEach(tag=>{if(!field.includes(tag)){field.push(tag);placeInscription(tag,field.length-1);}});
+  document.getElementById('fieldn').textContent=field.length;
+}).catch(()=>{});}
 
 // ── state ──
 let prog=0,target=0,started=false,carried=0,dialogOpen=false;
@@ -371,6 +382,8 @@ let inscShown=false;
 function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
 function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
+  // the crossing leaves a mark in di.iiii — fire-and-forget, the rite never blocks on it
+  if(FIELD_URL){fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})}).catch(()=>{});}
   placeInscription(tag,field.length-1);                 // your word joins the drifting field
   document.getElementById('fieldn').textContent=field.length;
   // build name (amber) + word (calligraphic) glyphs rising from the khachkar
