@@ -11,7 +11,7 @@ in. Every entry leaves a permanent mark — an inscribed stone (a *khachkar*, th
 Armenian carved cross-stone) in a shared field that is never erased. And the
 bridge runs both ways: what is built inside di.iiii can be carried back out.
 
-## The system — six connected parts
+## The system — seven connected parts
 
 One artwork grew into a small organism. All parts speak one visual language
 (near-black void · cyan = live in di.iiii · crimson = still on the real side ·
@@ -19,8 +19,9 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 
 | part | in one sentence | where |
 |---|---|---|
-| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · di-studio.xyz/br_id_ge |
-| **the field** | Every crossing appends a stone into a di.iiii space — anonymous, append-only, permanent. | di.iiii space `vi-ritual` |
+| **the landing** | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
+| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
+| **the field** | Everything that crossed: stones first, then scans of places and artists’ works — all objects in one space. | di.iiii space `vi-ritual` |
 | **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
 | **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
 | **the constellation** | The private map where the whole system is seen and managed from one link. | di.iiii space `br-id-ge-ops` |

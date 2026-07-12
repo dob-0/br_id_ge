@@ -25,12 +25,13 @@ erased. And the bridge runs both ways: what is built inside di.iiii can be carri
 back out across it. br_id_ge opens publicly at Notations #2 (July 20 – August 2,
 2026, State Philharmonia, Yerevan, hosted by hosq) and keeps growing after it.
 
-THE RECAP — six organs, where each one stands (2026-07-13).
+THE RECAP — seven organs, where each one stands (2026-07-13).
 
 | organ | in one sentence | status |
 |---|---|---|
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge · di-studio.xyz/br_id_ge (solo mode) |
-| the field | Every crossing appends a stone into di.iiii space `vi-ritual` — anonymous, append-only, permanent. | built & working locally · prod pending |
+| the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (space face) · Pages /bridge.html |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
+| the field | Everything that crossed, in di.iiii space `vi-ritual`: stones are the first entry type — scans of places and artists’ works land in the same space as objects. | built & working locally · prod pending |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | backend live on staging + prod · client switch still off |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |
 | the constellation | The private map where the whole system is seen and managed from one link. | live locally (`/br-id-ge-ops`) · prod space pending |

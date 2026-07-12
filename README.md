@@ -10,10 +10,11 @@ open jam, curated in. Every entry leaves a permanent mark — an inscribed stone
 (a *khachkar*) in a shared field that is never erased. Built on the open web —
 Three.js/WebGL, no install, no engine.
 
-Six connected parts:
+Seven connected parts:
 
-- **vi.ritual** — the five-act rite (`index.html`), playable right now
-- **the field** — every crossing becomes a permanent stone in di.iiii space `vi-ritual`
+- **the landing** — the public door and the one link to share: di-studio.xyz/br_id_ge
+- **vi.ritual** — the five-act rite (`index.html`), playable at dob-0.github.io/br_id_ge
+- **the field** — everything that crossed lands in di.iiii space `vi-ritual`: stones first, scans and artists’ works next
 - **live co-presence** — visitors crossing at the same moment see each other
 - **the open visual jam** — the artists' door, opening at Notations #2
 - **the constellation** — the private map where it's all managed from one link

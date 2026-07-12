@@ -2,7 +2,7 @@
 
 Read first. Updated at end of each session. Replace, don't append.
 
-active_branch: main · live: https://dob-0.github.io/br_id_ge/ · space: https://di-studio.xyz/br_id_ge
+active_branch: main · the rite: https://dob-0.github.io/br_id_ge/ · the landing: https://di-studio.xyz/br_id_ge
 near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, hosted by **hosq**) · program: 3d research → 8d lab → 1d install → 2d festival · ~8 days to arrival as of 2026-07-12
 
 **versions:** `v.oooooo` = legacy Space Node (`v.oooooo.html` → space `v-oooooo`, renders `docs/PROJECT.md` live) · `v.oooooo 2` = the five-act rite (`index.html` → space `newww`). Repo is master; space syncs from it.
