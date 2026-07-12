@@ -1,15 +1,18 @@
-# br_id_ge — a digital rite of transmission
+# br_id_ge — portal & process lab of di.iiii
 
-**An interactive XR rite in five acts, by Gevorg Aram Grigoryan / di.ii studio**
+**By Gevorg Aram Grigoryan / di.ii studio — performed as an interactive XR rite in five acts**
 
-`br_id_ge` (կամուրջ, "bridge") is a playable rite about keeping identity continuous
-across rupture and distance. You cross a bridge of glowing Armenian letters
-(Erkatagir / Trchnagir, MSDF-rendered), answer the Keeper of Memory — "Who are you,
-and what do you carry across the bridge?" — inscribe a khachkar with your name and
-a chosen word, and arrive in a shared field of everyone who crossed before you.
+`br_id_ge` (կամուրջ, "bridge") is the **portal of di.iiii** (di-studio.xyz), the
+artist's own spatial platform — a collaborative process lab, framed by notation,
+where the real world enters the platform and becomes shared space: places enter
+as depth scans, people enter by answering, artists enter by being curated in.
+The flow is always the same: **reality → scan → notation → space → connection.**
 
-**Platform context:** br_id_ge is a node of the **di.iiii Spatial Platform**
-(di-studio.xyz) — deployed standalone on GitHub Pages and as an integrated space.
+Its demonstration piece is a playable rite: you cross a bridge of glowing Armenian
+letters (Erkatagir / Trchnagir, MSDF-rendered), answer the Keeper of Memory —
+"Who are you, and what do you carry across the bridge?" — inscribe a khachkar with
+your name and a chosen word, and arrive in a shared field of everyone who crossed
+before you. The rite is the portal performing itself; the field is its memory.
 
 ## 1. The Rite — five acts
 

@@ -1,12 +1,34 @@
 MASTER CONTEXT: br_id_ge · Notations #2 (hosq)
 
-Project: br_id_ge (կամուրջ) — a digital rite of transmission
+Project: br_id_ge (կամուրջ) — portal & collaborative process lab of di.iiii
 Artist/Curator: Gevorg Aram Grigoryan (dob-0)
 Current version: v.oooooo 2 — the five-act rite (see README "Versions")
 
 This is the working master context for the hosq collaboration. Earlier framings
 (N-Node tele-symbiotic mesh, Munich–Gyumri phases, ROS actuation, biometric capture)
 are parked — see "Parked directions" below and git history for the full record.
+
+0. The Point (canonical concept — everything below serves this)
+
+- dob (Gevorg Aram Grigoryan) builds **di.iiii** — the browser-native XR platform.
+- **br_id_ge is di.iiii's portal and collaborative process lab, framed by
+  notation**: the named process by which the real world enters the platform and
+  becomes shared space. It is where everyone can come to the builder.
+- The flow: **reality → scan → notation → space → connection.**
+  · places enter as scans (depth cameras, LiDAR — the scanner array)
+  · people enter through the rite's questions ("who are you and what do you carry")
+  · artists enter through curation — their notations bridged in as new nodes
+- The portal is two-way and **recursive**: perform the ritual in br_id_ge and the
+  result lives on in di.iiii (the inscription becomes a persistent object in shared
+  space); build in di.iiii and carry it back across the bridge as what you carry.
+  Each crossing is a new horizon; the loop repeats and deepens — the same recursion
+  di.iiii's node model is built on.
+- The rite (v.oooooo 2) is the portal performing itself — the demonstration piece.
+  The inscription field is the portal's memory: append-only, never erased.
+- The open visual jam is the portal open to artists: **Gevorg curates via
+  br_id_ge.** An artist joining the jam is being bridged in, not exhibited beside.
+- br_id_ge starts publicly at **Notations #2** — and does not end there; it is a
+  standing practice that grows node by node.
 
 1. The Collaboration — hosq
 

@@ -1,12 +1,14 @@
 # br_id_ge 🌉
 
-**A digital rite of transmission — an interactive XR rite in five acts**
+**Portal & collaborative process lab of di.iiii — performed as an XR rite in five acts**
 
-`br_id_ge` (կամուրջ, "bridge") is a playable rite about keeping identity continuous
-across rupture and distance. Cross a bridge of glowing Armenian letters, answer the
-Keeper of Memory, inscribe a khachkar with your name and a chosen word, and arrive
-in a shared field of everyone who crossed before you. Built on the open web —
-single-file Three.js/WebGL, a node of the **di.iiii Spatial Platform**.
+`br_id_ge` (կամուրջ, "bridge") is the portal of the **di.iiii Spatial Platform**:
+the process, framed by notation, by which the real enters the platform and becomes
+shared space — places as scans, people through the rite's questions, artists
+through curation. Its demonstration piece is a playable rite: cross a bridge of
+glowing Armenian letters, answer the Keeper of Memory, inscribe a khachkar with
+your name and a chosen word, and arrive in a shared field of everyone who crossed
+before you. Built on the open web — single-file Three.js/WebGL.
 
 Now in preparation for **Notations #2** (July 20 – Aug 2, 2026, State Philharmonia
 of Armenia), a laboratory-festival hosted by [**hosq**](https://hosq.co/) under the
