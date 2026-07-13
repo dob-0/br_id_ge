@@ -7,8 +7,8 @@
 Three doors: **places** enter as 3D scans; **people** enter through a short rite —
 cross a bridge built of glowing Armenian letters and answer two questions, *who
 are you, and what do you carry?*; **artists** enter through an open jam, curated
-in. Every entry leaves a permanent mark — an inscribed stone (a *khachkar*, the
-Armenian carved cross-stone) in a shared field that is never erased. And the
+in. Every entry leaves a permanent mark — an inscribed stone — a *digitalkar*
+(*kar* is Armenian for stone) — in a shared field that is never erased. And the
 bridge runs both ways: what is built inside di.iiii can be carried back out.
 
 ## The system — seven connected parts
@@ -34,9 +34,9 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
    *duduk* dam-drone.
 3. **Witness** — the Keeper (archivist, not oracle) blocks the span and asks who
    you are and what you carry.
-4. **Inscription** — an **Epigraphic-Semantic Hybrid** khachkar: your name in rigid
-   *Erkatagir* on the base, your word in decorative *Trchnagir* woven through the
-   cross.
+4. **Inscription** — a **digitalkar**, the digital stone: your name in rigid
+   *Erkatagir* at its base, your word in decorative *Trchnagir* woven through
+   its body.
 5. **Echo** — the shared field: every inscribed stone persists; with the live
    co-presence mesh, others crossing now are present with you.
 

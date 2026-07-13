@@ -20,9 +20,9 @@ Everything real that wants to live in di.iiii crosses this bridge, through one o
 three doors. Places enter as 3D scans (depth cameras, LiDAR). People enter through
 a short rite: you cross a bridge built of glowing Armenian letters and answer two
 questions — who are you, and what do you carry? Artists enter through an open jam,
-curated in by Gevorg. Every entry leaves a permanent mark — an inscribed stone
-(a khachkar, the Armenian carved cross-stone) in a shared field that is never
-erased. And the bridge runs both ways: what is built inside di.iiii can be carried
+curated in by Gevorg. Every entry leaves a permanent mark — an inscribed stone —
+a digitalkar (kar is Armenian for stone; stone once, worked over time, became
+human — here the human returns into stone) — in a shared field never erased. And the bridge runs both ways: what is built inside di.iiii can be carried
 back out across it. br_id_ge opens publicly at Notations #2 (July 20 – August 2,
 2026, State Philharmonia, Yerevan, hosted by hosq) and keeps growing after it.
 
@@ -95,9 +95,13 @@ openInscriptions on the space, uncomment the mesh + field metas in index.html.
 - The Keeper — "keeper of cultural memory / witness": strictly an archivist that
   asks "Who are you, and what do you carry across the bridge?" — not a spiritual
   entity.
-- "Epigraphic-Semantic Hybrid" — the dual-typography khachkar: the visitor's name
-  in rigid Erkatagir on the base, their chosen word in decorative Trchnagir woven
-  through the cross.
+- "digitalkar" — the digital stone (kar = քար, Armenian for stone): the visitor's
+  name in rigid Erkatagir at its base, their chosen word in decorative Trchnagir
+  woven through its body. The canonical name of what a crossing leaves behind.
+  The idea comes from evolution: stone, worked by hands over time, became human —
+  tools, letters, memory. Through the rite the human returns into stone: a stone
+  made of data, carrying a name and a word forever. And through br_id_ge these
+  stones are sensed and read — the field is where humanity's newest stones stand.
 - Communitas — the goal of the ritual; the solo rite resolves into a shared,
   persistent field (Act V "Echo" + live co-presence mesh).
 - The five acts: Threshold → Crossing → Witness → Inscription → Echo.
@@ -109,10 +113,10 @@ openInscriptions on the space, uncomment the mesh + field metas in index.html.
 - "Kinetic Refresh" (unconscious swipe-for-novelty) can be redirected into
   conscious transmission → no transactional UI; progress is breathing-paced,
   synchronized with the duduk drone.
-- Khachkars demand genealogical continuation, users want semantic agency → the
-  Epigraphic-Semantic Hybrid stone (name + chosen word).
+- Stone inscription traditions demand continuation, users want semantic agency →
+  the digitalkar carries both (name + chosen word).
 - "Passive Informational Drift" isolates → the ending reveals the shared field of
-  inscribed khachkars (occlusion 100% → 0%): the diaspora made visible.
+  inscribed digitalkars (occlusion 100% → 0%): the diaspora made visible.
 - MSDF text rendering (multi-channel signed distance fields) keeps Erkatagir and
   Trchnagir edges clean in WebGL at high frame rates — the technical basis of the
   letter bridge.

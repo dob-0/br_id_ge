@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Serif+Armenian:wght@300;500;700&family=Outfit:wght@200;300;600&display=swap" rel="stylesheet">
 <style>
-:root{ --void:#050608; --gantegh:#ffb347; --stitch:#5fd0ff; --khachkar:#cdb98f;
+:root{ --void:#050608; --gantegh:#ffb347; --stitch:#5fd0ff; --digitalkar:#cdb98f;
   --tx:#f4ede0; --dim:#8a8276; --faint:#564f44; }
 *{box-sizing:border-box;margin:0;padding:0}
 ::selection{background:rgba(255,179,71,.25);color:#fff}
@@ -91,7 +91,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   letter-spacing:.26em; text-transform:uppercase; color:var(--void); background:var(--gantegh); padding:.9rem 2.2rem;
   border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(255,179,71,.45); transition:.25s}
 #enterBtn:hover{transform:translateY(-2px); box-shadow:0 0 64px rgba(255,179,71,.7)}
-#closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--khachkar); font-size:clamp(1rem,2.4vw,1.3rem);
+#closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--digitalkar); font-size:clamp(1rem,2.4vw,1.3rem);
   max-width:34ch; margin-top:1.6rem; min-height:1.4em}
 
 #intro{position:fixed; z-index:40; inset:0; background:#000; display:flex; align-items:center; justify-content:center;
@@ -119,7 +119,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 <div class="hud mono">
   <span>carried <span class="k" id="carried">0</span></span>
   <span class="mid" id="midhint">move to reveal · click letters to carry them</span>
-  <span>the field · <span class="s" id="fieldn">0</span> khachkars · <span class="s" id="present">solo</span></span>
+  <span>the field · <span class="s" id="fieldn">0</span> digitalkars · <span class="s" id="present">solo</span></span>
 </div>
 <div id="prog"></div>
 
@@ -138,7 +138,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   <div class="lbl">ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ · inscription</div>
   <div class="q">What do you carry?<span class="arm">Ի՞նչ ես տանում կամրջի վրայով։</span></div>
   <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
-  <div class="hint" id="inscHint">press enter to inscribe it into the khachkar</div>
+  <div class="hint" id="inscHint">press enter to inscribe it into the digitalkar</div>
   <div id="closing"></div>
   <a id="enterBtn" href="#">↻ cross again</a>
 </div>
@@ -280,7 +280,7 @@ const Mesh={ws:null,live:false,lat:0,peers:new Map(),lastSend:0,lastPing:0,
 };
 Mesh.connect();
 
-// the khachkar + diaspora field
+// the digitalkar + diaspora field
 const end=pathAt(1.0);
 function mark(pos,bright){const m=new THREE.SpriteMaterial({map:glyphTex('☩'),color:0xffd9a0,transparent:true,opacity:bright?0:.3,blending:THREE.AdditiveBlending,depthWrite:false});
   const s=new THREE.Sprite(m);const sc=bright?9:2.4+Math.random()*1.6;s.scale.set(sc,sc*1.3,1);s.position.copy(pos);scene.add(s);return s;}
@@ -384,7 +384,7 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
   if(FIELD_URL){fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})}).catch(()=>{});}
   placeInscription(tag,field.length-1);                 // your word joins the drifting field
   document.getElementById('fieldn').textContent=field.length;
-  // build name (amber) + word (calligraphic) glyphs rising from the khachkar
+  // build name (amber) + word (calligraphic) glyphs rising from the digitalkar
   [...name].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
     const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.3,end.y+4.4,end.z-6);s.scale.set(1.5,1.5,1.5);scene.add(s);});
   [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
@@ -394,8 +394,8 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
   inscEl.querySelector('.lbl').innerHTML='ԱՐՁԱԳԱՆՔ · echo · act v';
   const others=field.length-1;
   closing.textContent = Mesh.live
-    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your khachkar joins '+others+' before you. You are not alone.')
-    : ('Communitas — your khachkar joins '+others+' before you. You are no longer alone on the bridge.');
+    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your digitalkar joins '+others+' before you. You are not alone.')
+    : ('Communitas — your digitalkar joins '+others+' before you. You are no longer alone on the bridge.');
   enterBtn.style.display='inline-block';
   communion=true;
   if(drone){try{drone.g.gain.linearRampToValueAtTime(0.09,drone.ctx.currentTime+3);}catch(e){}}   // a swell into the echo
@@ -460,7 +460,7 @@ function frame(){
   Mesh.send(p);
   simGhost+=((Mesh.live?0:1)-simGhost)*0.05;                 // fade the simulated nodes out once real peers are live
   ghosts.forEach((g,gi)=>{
-    if(communion){const a=tm*0.32+gi*1.256;                  // act v — gather around the khachkar
+    if(communion){const a=tm*0.32+gi*1.256;                  // act v — gather around the digitalkar
       g.s.position.set(end.x+Math.cos(a)*8,end.y+2+Math.sin(a*1.2)*2.2,end.z-8+Math.sin(a)*4);
       g.s.material.opacity=simGhost*0.6*(0.6+0.4*Math.sin(tm*2.2+gi));return;}
     g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
@@ -470,7 +470,7 @@ function frame(){
   const present=Mesh.update(tm,camera.position.z,communion);
   fieldGroup.rotation.y=Math.sin(tm*0.1)*0.08;fieldGroup.position.y=Math.sin(tm*0.4)*0.3;
 
-  // khachkar ignites at the end / after inscription
+  // digitalkar ignites at the end / after inscription
   const arrive=M.clamp((p-0.82)/0.16,0,1);
   myKh.material.opacity=inscribed?0.95:arrive*0.85;myKh.scale.setScalar(8+Math.sin(tm*0.8)*0.6);
 

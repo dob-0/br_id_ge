@@ -6,8 +6,8 @@
 Platform** and becomes shared space. Three doors: places enter as 3D scans; people
 enter through a short rite — cross a bridge of glowing Armenian letters and answer
 two questions, *who are you, and what do you carry?*; artists enter through an
-open jam, curated in. Every entry leaves a permanent mark — an inscribed stone
-(a *khachkar*) in a shared field that is never erased. Built on the open web —
+open jam, curated in. Every entry leaves a permanent mark — an inscribed stone —
+a *digitalkar* (*kar* is Armenian for stone) — in a shared field that is never erased. Built on the open web —
 Three.js/WebGL, no install, no engine.
 
 Everything lives in **one di.iiii space** (`br_id_ge`); this repo is its file
