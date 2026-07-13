@@ -8,6 +8,10 @@
 <!-- Live co-presence + the permanent field — the rite is communal since 2026-07-13. -->
 <meta name="mesh-url" content="wss://di-studio.xyz/serverXR/mesh">
 <meta name="field-url" content="https://di-studio.xyz/serverXR/api/spaces/br_id_ge">
+<!-- The keeper — local LLM, layer 1 of the installation. Uncomment on the show rig
+     (or pass ?keeper=http://127.0.0.1:11434&keeperModel=dob-fast). Rite never blocks on it.
+<meta name="keeper-url" content="http://127.0.0.1:11434">
+<meta name="keeper-model" content="dob-fast"> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,6 +101,11 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 #intro .t span{color:var(--gantegh); animation:blink 2s infinite}
 #intro .t .p{display:block; margin-top:1.6rem; font-size:.6rem; letter-spacing:.18em; color:var(--faint); text-transform:none}
 #intro.gone{opacity:0; pointer-events:none}
+#whisper{position:fixed; z-index:31; top:3.4rem; left:0; right:0; text-align:center; pointer-events:none;
+  font-family:'Space Mono',monospace; font-size:.68rem; letter-spacing:.18em; color:var(--stitch);
+  text-shadow:0 0 18px rgba(0,229,255,.35); opacity:0; transition:opacity 1.2s; padding:0 1.5rem}
+#whisper.show{opacity:.92}
+#whisper .w{color:var(--dim); letter-spacing:.3em; text-transform:uppercase; font-size:.58rem; margin-right:.9em}
 @media (prefers-reduced-motion: reduce){#grain{animation:none} .chrome .dot,#intro .t span{animation:none}}
 </style>
 </head>
@@ -118,6 +127,8 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   <span>the field · <span class="s" id="fieldn">0</span> digitalkars · <span class="s" id="present">solo</span></span>
 </div>
 <div id="prog"></div>
+
+<div id="whisper"><span class="w">ՎԿԱ</span><span id="whisperTx"></span></div>
 
 <div id="hero"><div class="g arm">կամուրջ</div><div class="s">the scan · a rite of entering · five acts</div></div>
 
@@ -295,6 +306,33 @@ const Mesh={ws:null,live:false,lat:0,peers:new Map(),lastSend:0,lastPing:0,
 };
 Mesh.connect();
 
+// ── the keeper — local LLM, layer 1 of the installation ──
+// A live mind on the show rig; the rite never blocks on it and the scripted
+// lines stand until (unless) the keeper actually speaks.
+const Q=new URLSearchParams(location.search);
+const KEEPER_URL=(Q.get('keeper')||(document.querySelector('meta[name="keeper-url"]')||{}).content||window.BR_KEEPER_URL||'').replace(/\/+$/,'');
+const KEEPER_MODEL=Q.get('keeperModel')||(document.querySelector('meta[name="keeper-model"]')||{}).content||'dob-fast';
+const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a carved inscription. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.';
+function askKeeper(prompt){if(!KEEPER_URL)return Promise.resolve('');
+  const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),25000);
+  return fetch(KEEPER_URL+'/api/generate',{method:'POST',signal:ctl.signal,
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:KEEPER_MODEL,stream:false,think:false,system:KEEPER_SYS,prompt,
+      options:{num_predict:70,temperature:0.9}})})
+  .then(r=>r.ok?r.json():Promise.reject())
+  .then(d=>{clearTimeout(t);
+    let s=String(d.response||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+    s=s.split('\n').map(x=>x.trim()).filter(Boolean)[0]||'';
+    s=s.replace(/^["'“”«]+|["'“”»]+$/g,'').replace(/^(ՎԿԱ|VKA|keeper|the keeper)\s*[:·—-]\s*/i,'');
+    // if the model ran out of tokens mid-word, fall back to the last finished phrase
+    if(d.done_reason==='length'){const cut=Math.max(s.lastIndexOf('։'),s.lastIndexOf('.'),s.lastIndexOf('!'),s.lastIndexOf('…'),s.lastIndexOf(','));
+      s=cut>12?s.slice(0,cut+1).replace(/,$/,'…'):s.slice(0,s.lastIndexOf(' '))+'…';}
+    return s.slice(0,180);})
+  .catch(()=>{clearTimeout(t);return '';});}
+const whisperEl=document.getElementById('whisper'),whisperTx=document.getElementById('whisperTx');
+function whisper(line){if(!line)return;whisperTx.textContent=line;whisperEl.classList.add('show');
+  clearTimeout(whisper._t);whisper._t=setTimeout(()=>whisperEl.classList.remove('show'),12000);}
+
 // ── the field: what every crossing left behind ──
 const FIELD_URL=((new URLSearchParams(location.search).get('field'))||(document.querySelector('meta[name="field-url"]')||{}).content||window.BR_FIELD_URL||'').replace(/\/+$/,'');
 let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]');}catch(e){field=[];}
@@ -406,6 +444,7 @@ function openKeeper(){keeperShown=true;dialogOpen=true;hideActNow();
 nameIn.addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=(nameIn.value||'').trim();if(!v||name)return;
   nameIn.style.display='none';keeperEl.querySelector('.hint').style.display='none';chord();
   keeperQ.innerHTML='<span class="arm" style="color:var(--stitch);font-size:1.25em">'+v.replace(/</g,'&lt;')+'</span><br>the bridge remembers your name.<span class="arm">շարունակի՛ր · keep sweeping.</span>';
+  askKeeper('A visitor steps onto the bridge carrying '+remembered+' letters of their world and gives their name: '+v+'. Greet the crossing in one line.').then(whisper);
   setTimeout(()=>{name=v;keeperEl.classList.remove('show');dialogOpen=false;
     midhint.textContent='the stone waits — keep sweeping';},2600);});
 
@@ -438,6 +477,8 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
   closing.textContent = Mesh.live
     ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your world, condensed, joins '+others+' before you. You are not alone.')
     : ('Communitas — your world, condensed, joins '+others+' before you. You are no longer alone on the bridge.');
+  askKeeper('The visitor has crossed. Their name: '+(name||'a nameless one')+'. They carried the word: '+word+'. Their world condensed into a digitalkar, joining '+others+' before them. Bless the inscription in one line.')
+    .then(line=>{if(line)closing.textContent=line;});
   enterBtn.style.display='inline-block';
   communion=true;fieldGroup.visible=true;
   if(drone){try{drone.g.gain.linearRampToValueAtTime(0.085,drone.ctx.currentTime+3);}catch(e){}}
