@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>br_id_ge — needs dash</title>
+<meta name="description" content="br_id_ge at Notations #2 — living list of what di.ii brings and what we ask of hosq.">
+<meta property="og:title" content="br_id_ge — needs dash">
+<meta property="og:description" content="What we have · what we want from hosq — a living rider worksheet.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* the br_id_ge language — one palette across all surfaces:
+       cyan = di.iiii/live · crimson = the real/notation · amber = the lamp/attention · stone = memory/letterforms */
+    --bg:#05080d; --bg2:#0a1018; --line:#1b2634; --txt:#c3d0dc; --acc:#00e5ff;
+    --amber:#ffb347; --dim:#5f6b7a; --real:#ff2a5f; --stone:#cdb98f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bg)}
+  body{font-family:'Outfit',sans-serif;color:var(--txt);font-weight:300;min-height:100vh;padding:28px clamp(16px,4vw,56px) 80px}
+  button{font:inherit;background:none;border:none;color:inherit;cursor:pointer}
+  .mono,button,input{font-family:'Space Mono',monospace}
+  :focus-visible{outline:1px solid var(--acc);outline-offset:2px}
+
+  .chrome{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+  .label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:lowercase;color:var(--dim)}
+  .label b{color:var(--amber);font-weight:400}
+  .label .ok{color:var(--acc)}
+
+  h1{font-weight:200;font-size:clamp(26px,4.5vw,40px);letter-spacing:.1em;color:#eaf3fb;margin-top:26px}
+  h1 .a{color:var(--acc)} h1 .r{color:var(--real)}
+  .lede{margin-top:8px;font-size:15px;line-height:1.6;color:var(--dim);max-width:640px}
+
+  /* the span — one thin bridge line joining the two banks */
+  .span{height:1px;margin:26px 0 22px;background:linear-gradient(90deg,var(--acc),var(--line) 30%,var(--line) 70%,var(--real))}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .toolbar button{font-size:11px;letter-spacing:.18em;text-transform:lowercase;color:var(--dim);
+    border:1px solid var(--line);background:var(--bg2);padding:7px 14px;transition:color .15s,border-color .15s}
+  .toolbar button:hover{color:var(--txt);border-color:var(--dim)}
+  #msg{font-size:11px;letter-spacing:.18em;color:var(--amber);align-self:center;min-height:1em}
+
+  .banks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+  @media (max-width:980px){.banks{grid-template-columns:1fr}}
+
+  .bank{border:1px solid var(--line);background:var(--bg2);padding:18px 16px 14px;display:flex;flex-direction:column}
+  .bank .k{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:lowercase}
+  .bank h2{font-weight:300;font-size:19px;letter-spacing:.04em;color:#e8f2fa;margin:6px 0 2px}
+  .bank .d{font-size:12.5px;color:var(--dim);line-height:1.5;margin-bottom:12px}
+  .bank[data-list="have"] .k{color:var(--acc)}
+  .bank[data-list="want"] .k{color:var(--real)}
+  .bank[data-list="wish"] .k{color:var(--stone)}
+
+  .bank ul{list-style:none;flex:1}
+  .bank li{display:flex;align-items:flex-start;gap:9px;padding:8px 2px;border-top:1px solid var(--line);font-size:14px;line-height:1.5}
+  .bank li.dragging{opacity:.35}
+  .bank li.dropline{box-shadow:0 -1px 0 var(--acc)}
+
+  .st{flex:none;font-family:'Space Mono',monospace;font-size:13px;width:20px;padding-top:1px}
+  li[data-s="open"] .st{color:var(--amber)}
+  li[data-s="ok"] .st{color:var(--acc)}
+  li[data-s="ok"] .txt{color:var(--dim)}
+  .txt{flex:1;min-width:0;overflow-wrap:break-word}
+  .txt:focus{outline:none;box-shadow:0 1px 0 var(--acc)}
+  .del{flex:none;color:var(--dim);font-size:14px;padding:0 4px;opacity:0;transition:opacity .12s}
+  li:hover .del,li:focus-within .del{opacity:1}
+  @media (hover:none){.del{opacity:.6}}
+  .del:hover{color:var(--real)}
+
+  .add{display:flex;gap:8px;margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+  .add input{flex:1;min-width:0;background:none;border:none;color:var(--txt);font-size:12.5px;letter-spacing:.02em}
+  .add input::placeholder{color:var(--dim);opacity:.7}
+  .add input:focus{outline:none;box-shadow:0 1px 0 var(--acc)}
+  .add button{color:var(--dim);font-size:14px;padding:0 6px}
+  .add button:hover{color:var(--acc)}
+
+  footer{margin-top:34px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <span class="label">br_id_ge · <b>needs dash</b> · notations #2</span>
+  <span class="label" id="count"></span>
+</div>
+
+<h1>what we <span class="a">have</span> · what we <span class="r">want</span></h1>
+<p class="lede">The living rider worksheet — every line editable in place. Click the mark to flip
+⚠ open / ✓ settled, drag lines across the span, add what appears. Feeds
+<span class="mono">hosq.html</span> page 2.</p>
+
+<div class="span" aria-hidden="true"></div>
+
+<div class="toolbar" role="toolbar" aria-label="dash actions">
+  <button id="b-md">copy markdown</button>
+  <button id="b-exp">export json</button>
+  <button id="b-imp">import json</button>
+  <button id="b-rst">reset to seed</button>
+  <input type="file" id="file" accept=".json" hidden>
+  <span id="msg" role="status" aria-live="polite"></span>
+</div>
+
+<div class="banks" id="banks"></div>
+
+<footer>
+  <span class="label">edits live in this browser · copy markdown to bake into the rider</span>
+  <span class="label">di.ii · gevorg_aram1@thedi.studio</span>
+</footer>
+
+<script>
+'use strict';
+const KEY='bridge.dash.v1';
+const SEED={v:1,lists:[
+ {id:'have',k:'di.ii brings',h:'we have',d:'confirmed in the studio — travels to the philharmonia',items:[
+  {t:'2× 5000 ANSI-lumen projectors — main + second unit / second surface',s:'ok'},
+  {t:'playback machine — WebGL-capable laptop + backup unit',s:'ok'},
+  {t:'depth: RealSense D405 (macro / gestural)',s:'ok'},
+  {t:'depth: Orbbec Astra',s:'ok'},
+  {t:'input station — trackpad on plinth · signal cabling up to 10 m',s:'ok'},
+  {t:'full software stack — open web, nothing to install',s:'ok'},
+  {t:'co-presence + field servers — live on di-studio.xyz',s:'ok'},
+  {t:'QR / wayfinding artwork — print-ready files',s:'ok'}]},
+ {id:'want',k:'hosq / venue provides',h:'we want',d:'the asks — ⚠ until hosq confirms each one',items:[
+  {t:'projection surface ≥3×2 m — wall, scrim or architectural plane, dark-capable zone',s:'open'},
+  {t:'placement — plinth or rigging point with sightline · webcam / depth-sensor mount',s:'open'},
+  {t:'power — 4× 230V at position (2 projectors + playback) · plinth ~80 cm',s:'open'},
+  {t:'audio — stereo send to house system, or 2 powered speakers',s:'open'},
+  {t:'internet — wired preferred, else Wi-Fi ≥10 Mbps — non-negotiable',s:'open'},
+  {t:'install-day access + 2 h focus / soundcheck',s:'open'},
+  {t:'guest Wi-Fi for ~30 concurrent visitors (staging b)',s:'open'},
+  {t:'6–10 printed QR signs at entrances / lounge / between program points',s:'open'},
+  {t:'a quieter zone — the rite asks for a moment of attention',s:'open'},
+  {t:'recipient for the rider — name / email',s:'open'},
+  {t:'jam slot dates within the festival',s:'open'}]},
+ {id:'wish',k:'wishlist · optional',h:'would be great',d:'not blockers — asked if hosq or participants have them around',items:[
+  {t:'lent depth cameras (Kinect, RealSense, …) — volumetric map of the full stage',s:'open'},
+  {t:'EEG headset — biofeedback experiment during the laboratory',s:'open'},
+  {t:'shared Echo screen — 1 display or projector + power',s:'open'}]}]};
+
+let D;
+try{ D=JSON.parse(localStorage.getItem(KEY)) }catch(e){}
+if(!D||!Array.isArray(D.lists)) D=structuredClone(SEED);
+
+const save=()=>{ localStorage.setItem(KEY,JSON.stringify(D)); count() };
+const say=m=>{ const el=document.getElementById('msg'); el.textContent=m;
+  clearTimeout(say.t); say.t=setTimeout(()=>el.textContent='',2600) };
+const count=()=>{ let ok=0,open=0;
+  D.lists.forEach(l=>l.items.forEach(i=>i.s==='ok'?ok++:open++));
+  document.getElementById('count').innerHTML=
+    `<span class="ok">${ok} settled</span> · <b>${open} open</b>` };
+
+function render(){
+  const root=document.getElementById('banks'); root.innerHTML='';
+  D.lists.forEach(list=>{
+    const bank=document.createElement('section');
+    bank.className='bank'; bank.dataset.list=list.id;
+    bank.innerHTML=`<div class="k">${list.k}</div><h2>${list.h}</h2><p class="d">${list.d}</p>`;
+    const ul=document.createElement('ul');
+    list.items.forEach((it,i)=>ul.appendChild(row(list,it,i)));
+    ul.addEventListener('dragover',e=>{e.preventDefault();
+      const li=e.target.closest('li'); ul.querySelectorAll('.dropline').forEach(x=>x.classList.remove('dropline'));
+      if(li&&!li.classList.contains('dragging')) li.classList.add('dropline')});
+    ul.addEventListener('drop',e=>{e.preventDefault(); drop(list,e,ul)});
+    bank.appendChild(ul);
+    const add=document.createElement('form'); add.className='add';
+    add.innerHTML=`<input placeholder="+ add a line" aria-label="add to ${list.h}"><button type="submit" aria-label="add">+</button>`;
+    add.addEventListener('submit',e=>{e.preventDefault();
+      const inp=add.querySelector('input'), t=inp.value.trim(); if(!t)return;
+      list.items.push({t,s:list.id==='have'?'ok':'open'}); inp.value=''; save(); render();
+      root.querySelector(`[data-list="${list.id}"] .add input`).focus()});
+    bank.appendChild(add);
+    root.appendChild(bank);
+  });
+  count();
+}
+
+function row(list,it,i){
+  const li=document.createElement('li');
+  li.dataset.s=it.s; li.draggable=true;
+  const st=document.createElement('button'); st.className='st';
+  st.textContent=it.s==='ok'?'✓':'⚠';
+  st.title='flip open / settled'; st.setAttribute('aria-label','flip status');
+  st.addEventListener('click',()=>{it.s=it.s==='ok'?'open':'ok'; save(); render()});
+  const tx=document.createElement('span'); tx.className='txt';
+  tx.contentEditable='plaintext-only'; tx.textContent=it.t; tx.spellcheck=false;
+  tx.addEventListener('input',()=>{it.t=tx.textContent; save()});
+  tx.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tx.blur()}});
+  const del=document.createElement('button'); del.className='del'; del.textContent='×';
+  del.setAttribute('aria-label','delete line');
+  del.addEventListener('click',()=>{list.items.splice(i,1); save(); render()});
+  li.addEventListener('dragstart',e=>{li.classList.add('dragging');
+    e.dataTransfer.setData('text/plain',JSON.stringify({from:list.id,i}))});
+  li.addEventListener('dragend',()=>document.querySelectorAll('.dragging,.dropline')
+    .forEach(x=>x.classList.remove('dragging','dropline')));
+  li.append(st,tx,del);
+  return li;
+}
+
+function drop(list,e,ul){
+  let src; try{ src=JSON.parse(e.dataTransfer.getData('text/plain')) }catch(_){ return }
+  const from=D.lists.find(l=>l.id===src.from); if(!from||!from.items[src.i])return;
+  const [it]=from.items.splice(src.i,1);
+  const tgt=e.target.closest('li');
+  let at=list.items.length;
+  if(tgt){ at=[...ul.children].indexOf(tgt);
+    if(from===list&&src.i<at)at=Math.max(0,at); }
+  list.items.splice(at,0,it); save(); render();
+}
+
+/* toolbar */
+document.getElementById('b-md').addEventListener('click',()=>{
+  const md=D.lists.map(l=>`## ${l.h} — ${l.k}\n\n`+
+    l.items.map(i=>`- [${i.s==='ok'?'x':' '}] ${i.t}`).join('\n')).join('\n\n');
+  navigator.clipboard.writeText(md).then(()=>say('markdown copied'),()=>say('copy blocked — export json instead'))});
+document.getElementById('b-exp').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));
+  a.download='bridge-needs.json'; a.click(); URL.revokeObjectURL(a.href); say('exported')});
+document.getElementById('b-imp').addEventListener('click',()=>document.getElementById('file').click());
+document.getElementById('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  f.text().then(t=>{ const j=JSON.parse(t);
+    if(!j||!Array.isArray(j.lists))throw 0; D=j; save(); render(); say('imported')})
+   .catch(()=>say('not a dash json')); e.target.value=''});
+document.getElementById('b-rst').addEventListener('click',()=>{
+  if(confirm('replace everything with the seed lists?')){D=structuredClone(SEED); save(); render(); say('seed restored')}});
+
+render();
+</script>
+</body>
+</html>
