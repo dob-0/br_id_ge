@@ -31,7 +31,7 @@ THE RECAP — seven organs, where each one stands (2026-07-13).
 | organ | in one sentence | status |
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (space face) · Pages /bridge.html |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — di-studio.xyz/br_id_ge/p/newww (solo mode) |
 | the field | Everything that crossed, held in the ONE space’s own scene: stones first — scans of places and artists’ works land there too. Viewer: Pages `/field.html`. | live local + staging · prod pending |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — the rite is communal (metas flipped 2026-07-13) |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |

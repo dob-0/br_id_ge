@@ -4,7 +4,7 @@ Short routing guide for AI agents working in `br_id_ge`.
 
 ## What This Project Is
 
-`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html` — deployed as a standalone GitHub Pages site and as an integrated space on di-studio.xyz.
+`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html` — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
 
 Current focus: **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq) — theme "Rituals"/Communitas. Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
 
@@ -61,8 +61,8 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 ## Deployment
 
-- GitHub Pages: push to `main` → `.github/workflows/pages.yml` → `dob-0.github.io/br_id_ge/`
-- di-studio.xyz: hosted as a space within the di.iiii platform
+- Canonical (the only URLs ever linked or shared): di.iiii space `br_id_ge` — door `di-studio.xyz/br_id_ge`, rite `di-studio.xyz/br_id_ge/p/newww`, field `/p/br-id-ge-field`
+- GitHub Pages still deploys on push to `main` (`.github/workflows/pages.yml`) but is backend/mirror only — never link it anywhere
 
 ## Validation
 

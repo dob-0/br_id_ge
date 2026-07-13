@@ -2,7 +2,7 @@
 
 Read first. Updated at end of each session. Replace, don't append.
 
-active_branch: main · the rite: https://dob-0.github.io/br_id_ge/ · the landing: https://di-studio.xyz/br_id_ge
+active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the landing: https://di-studio.xyz/br_id_ge
 near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, hosted by **hosq**) · ~7 days to arrival as of 2026-07-13
 
 **Title:** `br_id_ge XR_ Notations:vi.ritual` (vi = virtual; plural vi.rituals, plain s).
@@ -31,8 +31,8 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, ho
 
 ## What works
 
-- The full loop LIVE on the internet: cross at dob-0.github.io/br_id_ge → mesh co-presence
-  → digitalkar lands in prod space `br_id_ge` → visible at /field.html and in Act V.
+- The full loop LIVE on the internet: cross at di-studio.xyz/br_id_ge/p/newww → mesh co-presence
+  → digitalkar lands in prod space `br_id_ge` → visible in the field (/p/br-id-ge-field) and in Act V.
 - ONE space holds everything (landing · rite · field scene · board · map · guide · drafts · beta lab).
 - CI: push main → Pages + space sync; ops sync via `sync-ops.sh` (or the /sync skill).
 

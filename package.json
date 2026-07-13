@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/dob-0/br_id_ge/issues"
   },
-  "homepage": "https://github.com/dob-0/br_id_ge#readme",
+  "homepage": "https://di-studio.xyz/br_id_ge",
   "dependencies": {
     "ws": "^8.21.0"
   }

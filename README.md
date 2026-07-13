@@ -21,8 +21,8 @@ source and its GitHub Pages mirror.
 ## Quick Links
 
 - **The door (share this):** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge)
-- **The rite:** [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · **the field:** [/field.html](https://dob-0.github.io/br_id_ge/field.html)
-- **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://github.com/dob-0/di.iiii)
+- **The rite:** [di-studio.xyz/br_id_ge/p/newww](https://di-studio.xyz/br_id_ge/p/newww) · **the field:** [di-studio.xyz/br_id_ge/p/br-id-ge-field](https://di-studio.xyz/br_id_ge/p/br-id-ge-field)
+- **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://di-studio.xyz)
 - [DEVELOPMENT.md](DEVELOPMENT.md) — contributor setup, deploy pipeline
 
 ## Versions — same names everywhere
