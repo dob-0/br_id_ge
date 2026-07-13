@@ -102,6 +102,10 @@ openInscriptions on the space, uncomment the mesh + field metas in index.html.
   tools, letters, memory. Through the rite the human returns into stone: a stone
   made of data, carrying a name and a word forever. And through br_id_ge these
   stones are sensed and read — the field is where humanity's newest stones stand.
+  DEEP LINEAGE (kept implicit — never named on any surface): the digitalkar
+  descends from the khachkar, the old Armenian heritage of inscribed stones; we
+  now build the digital one. The ancestry stays felt, not spoken — the word
+  "khachkar" does not appear in public texts, pages, or the rite.
 - Communitas — the goal of the ritual; the solo rite resolves into a shared,
   persistent field (Act V "Echo" + live co-presence mesh).
 - The five acts: Threshold → Crossing → Witness → Inscription → Echo.
