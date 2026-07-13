@@ -72,6 +72,11 @@ Everything we build is LOOKED AT before it graduates, in this order:
 first seen. Never merge a visual surface to `main` that nobody has looked at on
 local + staging.
 
+**We work IN di.iiii** — if something can run on di.iiii, it runs there: as a
+space project, on serverXR, through the mesh. Build for the platform first;
+standalone hosting (Pages, anything else) is a mirror of the di.iiii thing, not
+the thing itself.
+
 ## Deployment
 
 - GitHub Pages: push to `main` → `.github/workflows/pages.yml` → `dob-0.github.io/br_id_ge/`
