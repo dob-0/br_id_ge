@@ -14,10 +14,10 @@ Seven connected parts:
 
 - **the landing** — the public door and the one link to share: di-studio.xyz/br_id_ge
 - **vi.ritual** — the five-act rite (`index.html`), playable at dob-0.github.io/br_id_ge
-- **the field** — everything that crossed lands in di.iiii space `vi-ritual`: stones first, scans and artists’ works next
+- **the field** — everything that crossed lands in the one space’s scene: stones first, scans and artists’ works next
 - **live co-presence** — visitors crossing at the same moment see each other
 - **the open visual jam** — the artists' door, opening at Notations #2
-- **the constellation** — the private map where it's all managed from one link
+- **the constellation** — the map where it's all seen and managed, a project in the same space
 - **the scanner array** — depth cameras + LiDAR, how places will enter
 
 Full anatomy: [docs/PROJECT.md](docs/PROJECT.md) · canonical recap: [docs/MASTER_CONTEXT.md](docs/MASTER_CONTEXT.md) §0.

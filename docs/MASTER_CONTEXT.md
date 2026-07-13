@@ -31,19 +31,21 @@ THE RECAP — seven organs, where each one stands (2026-07-13).
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (space face) · Pages /bridge.html |
 | vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
-| the field | Everything that crossed, in di.iiii space `vi-ritual`: stones are the first entry type — scans of places and artists’ works land in the same space as objects. | built & working locally · prod pending |
+| the field | Everything that crossed, held in the ONE space’s own scene: stones first — scans of places and artists’ works land there too. Viewer: Pages `/field.html`. | live local + staging · prod pending |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | backend live on staging + prod · client switch still off |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |
-| the constellation | The private map where the whole system is seen and managed from one link. | live locally (`/br-id-ge-ops`) · prod space pending |
+| the constellation | The map where the whole system is seen and managed — a project inside the same space. | live local + staging |
 | the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready · staged per show |
 
-WORKFLOW. Work happens privately (space `br-id-ge-ops` + repo `br_id_ge-ops`);
-approved pages graduate to the public repo; each audience gets exactly one link
-(hosq → hosq.html + PDF · artists → jam.html · everyone → the rite).
+WORKFLOW. EVERYTHING lives in ONE public di.iiii space, `br_id_ge` — the landing
+is its face, the rite/field/map/board/drafts are its projects, the stones live in
+its scene. Files come from two repos (public + ops); approved pages graduate to
+the public repo; each audience gets exactly one link (everyone → the landing ·
+hosq → hosq.html + PDF · artists → jam.html).
 
 BEFORE THE FESTIVAL (on Gevorg): ① answer the ten rider questions ② jam slot
-dates + hosq contact ③ prod switches — create spaces `vi-ritual` + `br-id-ge-ops`
-signed-in, promote di.iiii dev→main, uncomment the mesh + field metas in index.html.
+dates + hosq contact ③ prod switches — promote di.iiii dev→main, flip
+openInscriptions on the space, uncomment the mesh + field metas in index.html.
 
 1. The Collaboration — hosq
 

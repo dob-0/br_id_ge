@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vi.ritual · the field</title>
+<meta name="description" content="The field of vi.ritual — every stone is one crossing of br_id_ge, inscribed forever in di.iiii.">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{--void:#05080d;--gantegh:#ffb347;--khachkar:#cdb98f;--stitch:#00e5ff;--dim:#5f6b7a}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--void);color:var(--khachkar);font-family:'Space Mono',monospace}
+canvas{display:block;cursor:grab}
+canvas.grabbing{cursor:grabbing}
+.chrome{position:fixed;pointer-events:none;font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:lowercase}
+#hd{top:18px;left:20px}
+#hd b{color:var(--khachkar);font-weight:700}
+#hd .arm{color:var(--gantegh);letter-spacing:.5em;margin-top:5px;font-size:10px}
+#count{top:18px;right:20px;text-align:right;line-height:1.9}
+#count .n{color:var(--gantegh);font-weight:700}
+#cta{bottom:18px;left:20px;pointer-events:auto}
+#cta a{color:var(--stitch);text-decoration:none;border:1px solid #23303f;padding:9px 16px;display:inline-block;letter-spacing:.2em}
+#cta a:hover{border-color:var(--stitch)}
+#hint{bottom:18px;right:20px;text-align:right;line-height:1.9}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="chrome" id="hd"><b>vi.ritual</b> · the field · br_id_ge<div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div></div>
+<div class="chrome" id="count"><span class="n" id="n">0</span> stones<br>each one = a crossing of the bridge<br><span id="others"></span></div>
+<div class="chrome" id="cta"><a href="https://dob-0.github.io/br_id_ge/" target="_top">cross the bridge →</a></div>
+<div class="chrome" id="hint">drag orbit · scroll zoom</div>
+<script>
+// The field reads THE ONE SPACE. Same-origin on di.iiii; absolute from the
+// Pages mirror (CORS on scene reads is open). ?api= overrides for local work.
+const API=(new URLSearchParams(location.search).get('api'))||
+  (location.hostname.endsWith('github.io')?'https://di-studio.xyz/serverXR/api/spaces/br_id_ge':'/serverXR/api/spaces/br_id_ge');
+
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x05080d,0.016);
+const camera=new THREE.PerspectiveCamera(52,1,0.1,300);
+camera.position.set(0,7,26);camera.lookAt(0,1,0);
+const world=new THREE.Group();scene.add(world);
+
+const glyphCache={};
+function glyphTex(ch,color){const k=ch+color;if(glyphCache[k])return glyphCache[k];
+  const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d');
+  g.font='96px "Space Mono", serif';g.textAlign='center';g.textBaseline='middle';
+  g.shadowColor=color;g.shadowBlur=22;g.fillStyle=color;g.fillText(ch,64,66);
+  const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;glyphCache[k]=t;return t;}
+
+// gantegh — one warm lamp at the center of the field
+{const m=new THREE.SpriteMaterial({map:glyphTex('●','#ffb347'),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false});
+ const s=new THREE.Sprite(m);s.scale.set(2.2,2.2,1);s.position.set(0,2.2,0);world.add(s);
+ world.add(new THREE.PointLight(0xffb347,1.1,60));}
+
+// dust
+{const p=new Float32Array(420);for(let i=0;i<p.length;i++)p[i]=(Math.random()-.5)*90;
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(p,3));
+ scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0x1b2430,size:.09,transparent:true,opacity:.8})));}
+
+const stones=new Map(); // objectId -> group
+// word + name rendered as ONE billboard texture — a sprite always faces the
+// camera, so a single texture can never read mirrored as the field rotates
+function labelTex(word,name){const cv=document.createElement('canvas');cv.width=512;cv.height=192;
+  const g=cv.getContext('2d');g.textAlign='center';
+  g.font='700 52px "Space Mono", serif';g.shadowColor='#cdb98f';g.shadowBlur=16;g.fillStyle='#cdb98f';
+  g.fillText(word.slice(0,12),256,78);
+  g.font='26px "Space Mono", serif';g.shadowBlur=6;g.shadowColor='#5b6674';g.fillStyle='#5b6674';
+  g.fillText(name.slice(0,20),256,132);
+  const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;}
+function placeStone(tag,i){
+  const a=i*2.399,r=4+i*0.85;
+  const pos=new THREE.Vector3(Math.cos(a)*r,1.3+Math.sin(i*1.7)*.4,Math.sin(a)*r);
+  const grp=new THREE.Group();grp.position.copy(pos);
+  const cross=new THREE.Sprite(new THREE.SpriteMaterial({map:glyphTex('☩','#ffd9a0'),transparent:true,opacity:.6,blending:THREE.AdditiveBlending,depthWrite:false}));
+  cross.scale.set(2.4,3.0,1);grp.add(cross);
+  const parts=String(tag).split('·');const word=(parts.pop()||'').trim();const name=parts.join('·').trim();
+  const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(word,name),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
+  label.position.set(0,-2.6,0);label.scale.set(4.6,1.725,1);grp.add(label);
+  grp.userData={phase:i*1.31,baseY:pos.y};
+  world.add(grp);return grp;}
+
+async function loadField(){
+  try{
+    const r=await fetch(API+'/scene');if(!r.ok)return;
+    const objects=((await r.json()).scene||{}).objects||[];
+    const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
+    insc.forEach((o,i)=>{if(!stones.has(o.id))stones.set(o.id,placeStone(o.data||'',stones.size));});
+    document.getElementById('n').textContent=stones.size;
+    // the field is not only stones — anything carried into this space counts
+    const carried=objects.length-insc.length;
+    document.getElementById('others').textContent=carried>0?`+ ${carried} other things carried in`:'';
+  }catch(e){}}
+loadField();setInterval(loadField,20000);
+addEventListener('focus',loadField);
+
+let dragging=false,px=0,vy=0,vx=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;canvas.classList.add('grabbing');});
+addEventListener('pointerup',()=>{dragging=false;canvas.classList.remove('grabbing');});
+addEventListener('pointermove',e=>{if(!dragging)return;vy=(e.clientX-px)*.004;px=e.clientX;});
+canvas.addEventListener('wheel',e=>{e.preventDefault();
+  camera.position.multiplyScalar(1+e.deltaY*.0009);
+  const d=camera.position.length();if(d<10)camera.position.setLength(10);if(d>70)camera.position.setLength(70);
+},{passive:false});
+
+const resize=()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();};
+addEventListener('resize',resize);resize();
+
+renderer.setAnimationLoop(()=>{
+  const t=performance.now()*.001;
+  world.rotation.y+=vy+(dragging?0:.0016);vy*=.9;
+  stones.forEach(g=>{g.position.y=g.userData.baseY+Math.sin(t*.6+g.userData.phase)*.25;});
+  camera.lookAt(0,1,0);
+  renderer.render(scene,camera);
+});
+</script>
+</body>
+</html>
