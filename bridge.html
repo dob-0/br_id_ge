@@ -68,6 +68,20 @@
 
   footer{position:relative;z-index:1;max-width:640px;width:100%;margin:0 auto;padding:0 24px 26px;
          display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* motion — entrance + micro-interactions (skipped under reduced motion) */
+@media (prefers-reduced-motion: no-preference){
+  h1,.arm,.lede,.cross,.facts,.foot{opacity:0;transform:translateY(14px);
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+  .arm{animation-delay:.12s}.lede{animation-delay:.24s}.cross{animation-delay:.4s}
+  .facts{animation-delay:.55s}.foot{animation-delay:.7s}
+  @keyframes rise{to{opacity:1;transform:none}}
+}
+.cross{transition:box-shadow .25s,letter-spacing .25s,border-color .25s}
+.cross:hover{box-shadow:0 0 34px rgba(0,229,255,.22);letter-spacing:.34em}
+.fact{transition:border-color .3s}
+.fact:hover{border-top-color:var(--acc)}
+a{transition:color .2s,border-color .2s}
 </style>
 </head>
 <body>

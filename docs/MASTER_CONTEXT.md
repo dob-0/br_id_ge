@@ -33,9 +33,9 @@ THE RECAP — seven organs, where each one stands (2026-07-13).
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (space face) · Pages /bridge.html |
 | vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
 | the field | Everything that crossed, held in the ONE space’s own scene: stones first — scans of places and artists’ works land there too. Viewer: Pages `/field.html`. | live local + staging · prod pending |
-| live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | backend live on staging + prod · client switch still off |
+| live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — the rite is communal (metas flipped 2026-07-13) |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |
-| the constellation | The map where the whole system is seen and managed — a project inside the same space. | live local + staging |
+| the constellation | The map where the whole system is seen and managed — a project inside the same space. | LIVE on all tiers |
 | the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready · staged per show |
 
 WORKFLOW. EVERYTHING lives in ONE public di.iiii space, `br_id_ge` — the landing

@@ -26,7 +26,13 @@ canvas.grabbing{cursor:grabbing}
 #count .n{color:var(--gantegh);font-weight:700}
 #cta{bottom:18px;left:20px;pointer-events:auto}
 #cta a{color:var(--stitch);text-decoration:none;border:1px solid #23303f;padding:9px 16px;display:inline-block;letter-spacing:.2em}
-#cta a:hover{border-color:var(--stitch)}
+#cta a{transition:border-color .25s,box-shadow .25s,letter-spacing .25s}
+#cta a:hover{border-color:var(--stitch);box-shadow:0 0 26px rgba(0,229,255,.18);letter-spacing:.28em}
+@media (prefers-reduced-motion: no-preference){
+  .chrome{opacity:0;animation:fade 1.2s .3s ease forwards}
+  canvas{opacity:0;animation:fade 1.6s ease forwards}
+  @keyframes fade{to{opacity:1}}
+}
 #hint{bottom:18px;right:20px;text-align:right;line-height:1.9}
 </style>
 </head>
@@ -96,7 +102,9 @@ async function loadField(){
     const objects=((await r.json()).scene||{}).objects||[];
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach((o,i)=>{if(!stones.has(o.id))stones.set(o.id,placeStone(o.data||'',stones.size));});
-    document.getElementById('n').textContent=stones.size;
+    {const el=document.getElementById('n'),to=stones.size,from=parseInt(el.textContent)||0;
+     if(matchMedia('(prefers-reduced-motion: reduce)').matches||to<=from){el.textContent=to;}
+     else{let v=from;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t);},60);}}
     // the field is not only stones — anything carried into this space counts
     const carried=objects.length-insc.length;
     document.getElementById('others').textContent=carried>0?`+ ${carried} other things carried in`:'';
