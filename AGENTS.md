@@ -59,6 +59,19 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 - edit `docs/MASTER_CONTEXT.md` for curatorial updates (do not let it drift from `docs/PROJECT.md`)
 - do not commit `.env` or any API keys — secret scan in `auto-push-readme.sh` will block it
 
+## Golden Rule — see it before it ships
+
+Everything we build is LOOKED AT before it graduates, in this order:
+
+1. **local** — open the page in a browser (file:// or the di.iiii dev stack on :4000)
+2. **staging** — sync into the `br_id_ge` space at `staging.di-studio.xyz`
+   (`node scripts/sync-space.mjs` in `br_id_ge-ops` with `--to https://staging.di-studio.xyz/serverXR`)
+3. only then merge/publish — Pages and prod follow
+
+**GitHub is the backend** — the place where things are KEPT, not where they are
+first seen. Never merge a visual surface to `main` that nobody has looked at on
+local + staging.
+
 ## Deployment
 
 - GitHub Pages: push to `main` → `.github/workflows/pages.yml` → `dob-0.github.io/br_id_ge/`
