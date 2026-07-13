@@ -3,6 +3,7 @@ MASTER CONTEXT: br_id_ge · Notations #2 (hosq)
 Project: br_id_ge (կամուրջ) — the bridge where the real enters di.iiii
 Artist/Curator: Gevorg Aram Grigoryan (dob-0)
 Current version: v.oooooo 2 — the five-act rite (see README "Versions")
+Festival title (canonical): br_id_ge XR_ Notations:v.ritual — the rite is presented as **v.ritual**; the jam opens it into **v.rituals**
 
 This is the working master context for the hosq collaboration. Earlier framings
 (N-Node tele-symbiotic mesh, Munich–Gyumri phases, ROS actuation, biometric capture)
@@ -30,7 +31,7 @@ THE RECAP — seven organs, where each one stands (2026-07-13).
 | organ | in one sentence | status |
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (space face) · Pages /bridge.html |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
+| v.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): cross the letter bridge, answer the Keeper, inscribe your stone. | LIVE — dob-0.github.io/br_id_ge (solo mode) |
 | the field | Everything that crossed, held in the ONE space’s own scene: stones first — scans of places and artists’ works land there too. Viewer: Pages `/field.html`. | live local + staging · prod pending |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | backend live on staging + prod · client switch still off |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · waiting on slot dates |
