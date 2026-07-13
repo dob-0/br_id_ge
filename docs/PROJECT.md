@@ -20,7 +20,7 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 | part | in one sentence | where |
 |---|---|---|
 | **the landing** | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
-| **v.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
+| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
 | **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | Pages `/field.html` · the `br_id_ge` space |
 | **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
 | **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
