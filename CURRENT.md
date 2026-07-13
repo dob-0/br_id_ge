@@ -29,13 +29,13 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, ho
 - Playable rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html`; synthesized duduk drone.
 - Repo = master of both space projects; CI syncs both + Pages.
 - Co-presence mesh live on staging AND prod backends; client speaks it via `?mesh=`.
-- Field writes live locally + backend on staging; ops constellation space `br-id-ge-ops` (local).
+- ONE space `br_id_ge` holds everything (landing face, rite, field in its scene, board/map/drafts as projects); field writes live local + staging.
 
 ## Open (hosq track)
 
 - **Go-live pair:** uncomment `<meta name="mesh-url">` AND `<meta name="field-url">` in
-  `index.html` + push — after di.iiii dev→main promotion and creating prod spaces
-  `vi-ritual` (public + openInscriptions) and `br-id-ge-ops` (private) while signed in.
+  `index.html` + push — after di.iiii dev→main promotion and flipping
+  `openInscriptions` on the prod `br_id_ge` space (no new spaces needed).
 - **Staging format** (projection / devices / spatial tracking) — decided during the lab; determines what co-presence means in the hall.
 - **Notation reading of the piece:** whether the Khaz/score framing of the letter bridge becomes explicit in the artwork.
 - **Felt-impact polish:** Keeper dialogue depth, sound (real duduk vs synth), khachkar craft, letter legibility.

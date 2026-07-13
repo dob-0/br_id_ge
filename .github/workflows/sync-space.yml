@@ -15,7 +15,6 @@ on:
       - 'di-space.json'
       - 'di-space.v1.json'
       - 'di-space.landing.json'
-      - 'references/**'
       - 'assets/**'
       - 'scripts/sync-space.mjs'
       - '.github/workflows/sync-space.yml'

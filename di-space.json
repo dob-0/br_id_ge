@@ -6,9 +6,7 @@
   "mode": "code",
   "entry": "index.html",
   "include": [],
-  "assets": [
-    "references/*.mp4"
-  ],
+  "assets": [],
   "publish": false,
   "live": "https://di-studio.xyz/serverXR"
 }
