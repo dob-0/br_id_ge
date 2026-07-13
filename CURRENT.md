@@ -6,28 +6,34 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
 near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, hosted by **hosq**) · ~7 days to arrival as of 2026-07-13
 
 **Title:** `br_id_ge XR_ Notations:vi.ritual` (vi = virtual; plural vi.rituals, plain s).
-**versions:** `v.oooooo` = legacy Space Node · `v.oooooo 2` = the five-act rite (`index.html` → project `newww`, presented as **vi.ritual**). Repo is master; space syncs from it.
+**versions:** `v.oooooo` = legacy Space Node · `v.oooooo 2` = the corridor rite (git history) ·
+**`v.oooooo 3` = THE SCAN** — total rewrite 2026-07-13 (`index.html` → project `newww`, presented as **vi.ritual**). Repo is master; space syncs from it.
 
 ## Focus
 
 **The hosq collaboration only.** Canonical concept & recap: `docs/MASTER_CONTEXT.md` §0
 (one line / one paragraph / one page — every other about-text derives from it).
 
-## Last session (2026-07-13 — GO-LIVE)
+## Last session (2026-07-13 later — THE SCAN + di.iiii-only links)
 
-- **LIVE ON PROD, all tiers identical:** di.iiii dev→main promoted; `di-studio.xyz/br_id_ge`
-  = the landing (published face); both metas flipped — **the rite is communal** (live mesh)
-  and every crossing leaves a permanent stone in the space's scene; first prod stone laid.
-- **digitalkar** is the stone's canonical name (digital + kar/քար "stone"); the word
-  "khachkar" is excluded from ALL surfaces — it is the deep lineage, recorded once in
-  MASTER_CONTEXT §4 as implicit. Evolution canon: stone became human; the human returns into stone.
-- **Rider FILLED** (requirements-not-questions, from studio inventory) — hosq one-pager has
-  ONE ⚠ left (projector backup confirm); PDF exported; graduation still user-gated.
-- **House-pattern cleanup** (analyzed vs beyond_form/platform_recordar): 31MB unreferenced
-  `references/` cut from Pages, og:meta added, project titles polished ("vi.ritual — the
-  rite", "the landing — the door"), motion pass (reduced-motion-safe) on landing/field.
-- Ops repo got its toolkit: AGENTS.md/CLAUDE.md, `/sync` `/publish` `/status` skills,
-  autosync hook, permission allowlist.
+- **The rite rewritten totally → "the scan" (v.oooooo 3):** your camera is the lamp; what it
+  sees enters the bridge as Armenian letters (glyph-atlas point shader, 64×36 shell). Sweep to
+  crystallize — the real arrives CRIMSON, settles to stone/amber. Same liturgy: five acts,
+  Keeper's two questions, inscription POST + mesh presence unchanged. At inscription the whole
+  remembered world CONDENSES into the digitalkar (name above, word upon it) → Echo shows the
+  field. No camera / sandboxed → "memory mode": the bridge dreams a room, same mechanic, still
+  completes. Privacy stated on the intro: no image leaves the device. HUD is honest now (no fake
+  bpm/latency). Verified end-to-end headless (fake cam + denied cam): full loop, POST lands, 0 errors.
+- **LINKS CANON (user command): di.iiii URLs ONLY — no GitHub links ever again.** Rite =
+  `/br_id_ge/p/newww`, field = `/p/br-id-ge-field`, hosq/jam = `/p/br-id-ge-hosq|jam` (the
+  `/:space/p/:id` public viewer). Both repos rewritten; graduate.sh prints di.iiii links;
+  Pages/repo = backend mirror only. Remaining github URLs: og:image jpgs (3 stills need one
+  prod asset upload, then patch) + package.json machinery + field.html hostname check (functional).
+- **Camera-in-viewer finding:** `/p/` viewer iframes are sandboxed srcDoc (opaque origin) →
+  getUserMedia impossible there BY DESIGN. Full scan needs a top-level di.iiii URL — proposed:
+  small serverXR raw-page route, owner/admin-gated per space (NOT built yet). Inside the viewer
+  the rite auto-falls back to memory mode, so /p/newww still completes.
+- **digitalkar / khachkar-implicit canon unchanged; rider status unchanged (see hosq track).**
 
 ## What works
 
@@ -42,8 +48,10 @@ near milestone: **Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, ho
 - ⚠ hosq recipient for the one-pager + send the approved blurb to Lusine → then `graduate.sh hosq`.
 - ⚠ Jam slot dates → `graduate.sh jam`.
 - Staging format (projection / devices / hybrid) — decided during the lab.
+- **Scan on prod needs:** (a) user push of `main` (commits 3a9acb0 + the scan are local-only),
+  (b) the serverXR raw-page route so phones/projection get the camera tier, (c) og:image stills
+  as prod assets. Until then /p/newww serves the scan in memory mode.
 - Felt-impact polish: Keeper dialogue depth, sound (real duduk vs synth), letter legibility.
-- On-screen wording: rite shows "v.oooooo 2"; presented as vi.ritual — deliberate.
 - **SECURITY (pending):** rotate the GitHub App private key + webhook secret.
 
 ## Parked (not now)

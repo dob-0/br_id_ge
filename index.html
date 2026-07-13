@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>br_id_ge XR_ Notations:vi.ritual — the rite</title>
-<meta name="description" content="br_id_ge (կամուրջ) — a playable tele-symbiotic rite in five acts. Cross a bridge of Armenian letters, answer the Keeper, inscribe what you carry, and meet those crossing with you. A node of the di.iiii platform.">
+<meta name="description" content="br_id_ge (կամուրջ) — the scan: a rite in five acts. Open the lamp and what it sees enters di.iiii as Armenian letters; answer the Keeper, and your crossing condenses into a digitalkar that stays forever. Nothing is recorded — only your name and one word cross.">
 <!-- Live co-presence + the permanent field — the rite is communal since 2026-07-13. -->
 <meta name="mesh-url" content="wss://di-studio.xyz/serverXR/mesh">
 <meta name="field-url" content="https://di-studio.xyz/serverXR/api/spaces/br_id_ge">
@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Serif+Armenian:wght@300;500;700&family=Outfit:wght@200;300;600&display=swap" rel="stylesheet">
 <style>
-:root{ --void:#050608; --gantegh:#ffb347; --stitch:#5fd0ff; --digitalkar:#cdb98f;
-  --tx:#f4ede0; --dim:#8a8276; --faint:#564f44; }
+:root{ --void:#05080d; --gantegh:#ffb347; --stitch:#00e5ff; --real:#ff2a5f;
+  --digitalkar:#cdb98f; --tx:#f4ede0; --dim:#5f6b7a; --faint:#39424e; }
 *{box-sizing:border-box;margin:0;padding:0}
 ::selection{background:rgba(255,179,71,.25);color:#fff}
 html,body{height:100%}
@@ -24,39 +24,36 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 .arm{font-family:'Noto Serif Armenian',serif}
 #scene{position:fixed; inset:0; width:100vw; height:100vh; z-index:0; display:block}
 #veil{position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 46%, transparent 32%, rgba(5,6,8,.4) 72%, rgba(5,6,8,.88) 100%)}
-#pulse{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity .12s;
-  box-shadow:inset 0 0 220px rgba(255,99,99,.55)}
+  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(5,8,13,.45) 72%, rgba(5,8,13,.9) 100%)}
 #grain{position:fixed; inset:-50%; z-index:2; pointer-events:none; opacity:.045; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:grain 6s steps(6) infinite}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-2%)}75%{transform:translate(-2%,4%)}100%{transform:translate(0,0)}}
 
-#reticle{position:fixed; z-index:35; width:36px; height:36px; margin:-18px 0 0 -18px; pointer-events:none;
-  border:1px solid rgba(255,179,71,.5); border-radius:50%; transition:width .15s,height .15s,border-color .15s;
-  box-shadow:0 0 22px rgba(255,179,71,.35), inset 0 0 14px rgba(255,179,71,.2)}
-#reticle.hot{width:52px;height:52px;border-color:var(--gantegh)}
-#reticle::after{content:''; position:absolute; inset:46%; background:var(--gantegh); border-radius:50%}
+#reticle{position:fixed; z-index:35; width:44px; height:44px; margin:-22px 0 0 -22px; pointer-events:none;
+  border:1px solid rgba(255,179,71,.5); border-radius:50%; transition:width .18s,height .18s,border-color .18s;
+  box-shadow:0 0 26px rgba(255,179,71,.35), inset 0 0 16px rgba(255,179,71,.18)}
+#reticle.hot{width:64px;height:64px;border-color:var(--gantegh)}
+#reticle::after{content:''; position:absolute; inset:47%; background:var(--gantegh); border-radius:50%}
 
 .chrome{position:fixed; z-index:30; left:0; right:0; top:0; pointer-events:none;
   display:flex; justify-content:space-between; align-items:center; padding:1.3rem 1.6rem;
   font-family:'Space Mono',monospace; font-size:.66rem; letter-spacing:.15em; text-transform:uppercase; color:var(--faint)}
 .chrome b{color:var(--tx); letter-spacing:.32em}
 .chrome .dot{color:var(--gantegh); animation:blink 2.6s infinite}
-.chrome .hb{color:#ff6b6b}
+.chrome .re{color:var(--real)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .chrome a{color:var(--dim); text-decoration:none; pointer-events:auto; border-bottom:1px solid transparent; transition:.25s}
-.chrome a:hover{color:var(--gantegh); border-color:var(--gantegh)}
+.chrome a:hover{color:var(--stitch); border-color:var(--stitch)}
 
 .hud{position:fixed; z-index:30; left:0; right:0; bottom:0; pointer-events:none;
   display:flex; justify-content:space-between; align-items:flex-end; padding:1.3rem 1.6rem;
-  font-family:'Space Mono',monospace; font-size:.62rem; letter-spacing:.12em; color:var(--faint)}
+  font-family:'Space Mono',monospace; font-size:.62rem; letter-spacing:.12em; color:var(--dim)}
 .hud .k{color:var(--gantegh)} .hud .s{color:var(--stitch)}
 .hud .mid{flex:1; text-align:center; font-size:.58rem; letter-spacing:.34em; text-transform:uppercase; color:var(--dim); opacity:0; transition:opacity .6s}
 .hud .mid.show{opacity:.85}
-#prog{position:fixed; z-index:30; left:0; bottom:0; height:2px; width:0; background:var(--gantegh); box-shadow:0 0 12px var(--gantegh); transition:width .12s linear}
+#prog{position:fixed; z-index:30; left:0; bottom:0; height:2px; width:0; background:var(--gantegh); box-shadow:0 0 12px var(--gantegh); transition:width .3s linear}
 
-/* act title card */
 #act{position:fixed; z-index:22; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
 #act.in{opacity:1}
@@ -65,65 +62,64 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 #act .e{font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.46em; text-transform:uppercase; color:var(--dim); margin-top:1.4rem}
 #act .n{font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.3em; color:var(--faint); margin-top:.6rem}
 
-/* hero */
 #hero{position:fixed; z-index:21; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
 #hero.in{opacity:1}
 #hero .g{font-family:'Noto Serif Armenian',serif; color:var(--gantegh); font-weight:300; font-size:clamp(2.6rem,9vw,6rem); text-shadow:0 0 44px rgba(255,179,71,.5)}
 #hero .s{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:var(--dim); margin-top:1.2rem}
 
-/* dialogue panels (keeper + inscription) */
 .panel{position:fixed; z-index:25; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; padding:1.5rem; opacity:0; pointer-events:none; transition:opacity .8s;
-  background:radial-gradient(60% 50% at 50% 48%, rgba(5,6,8,.85) 0%, rgba(5,6,8,.55) 52%, transparent 82%)}
+  background:radial-gradient(60% 50% at 50% 48%, rgba(5,8,13,.87) 0%, rgba(5,8,13,.55) 52%, transparent 82%)}
 .panel.show{opacity:1; pointer-events:auto}
 .panel .lbl{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.42em; text-transform:uppercase; margin-bottom:1.3rem}
 .panel.keeper .lbl{color:var(--stitch)} .panel.insc .lbl{color:var(--gantegh)}
-.panel .q{font-family:'Outfit',sans-serif; font-weight:200; font-size:clamp(1.5rem,4.2vw,2.8rem); color:var(--tx); line-height:1.2; max-width:18ch}
+.panel .q{font-family:'Outfit',sans-serif; font-weight:200; font-size:clamp(1.5rem,4.2vw,2.8rem); color:var(--tx); line-height:1.2; max-width:20ch}
 .panel .q .arm{display:block; font-size:.5em; color:var(--dim); margin-top:.9rem; font-weight:300}
 .panel input{margin-top:2rem; background:transparent; border:none; border-bottom:1px solid rgba(205,185,143,.3);
   color:var(--gantegh); font-family:'Noto Serif Armenian',serif; font-size:clamp(1.5rem,5vw,2.8rem); text-align:center;
   width:min(86vw,440px); padding:.4rem .2rem; outline:none; caret-color:var(--gantegh)}
 .panel.keeper input{color:var(--stitch); caret-color:var(--stitch)}
 .panel input::placeholder{color:var(--faint)}
-.panel .hint{font-family:'Space Mono',monospace; font-size:.64rem; letter-spacing:.2em; color:var(--faint); margin-top:1.1rem}
+.panel .hint{font-family:'Space Mono',monospace; font-size:.64rem; letter-spacing:.2em; color:var(--dim); margin-top:1.1rem}
 #enterBtn{margin-top:2.2rem; display:none; pointer-events:auto; font-family:'Space Mono',monospace; font-size:.8rem;
   letter-spacing:.26em; text-transform:uppercase; color:var(--void); background:var(--gantegh); padding:.9rem 2.2rem;
-  border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(255,179,71,.45); transition:.25s}
+  border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(255,179,71,.45); transition:.25s; cursor:pointer}
 #enterBtn:hover{transform:translateY(-2px); box-shadow:0 0 64px rgba(255,179,71,.7)}
 #closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--digitalkar); font-size:clamp(1rem,2.4vw,1.3rem);
-  max-width:34ch; margin-top:1.6rem; min-height:1.4em}
+  max-width:36ch; margin-top:1.6rem; min-height:1.4em}
 
 #intro{position:fixed; z-index:40; inset:0; background:#000; display:flex; align-items:center; justify-content:center;
-  text-align:center; transition:opacity .7s; cursor:pointer}
-#intro .t{font-family:'Space Mono',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); font-size:.76rem}
+  text-align:center; transition:opacity .7s; cursor:pointer; padding:1.5rem}
+#intro .t{font-family:'Space Mono',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); font-size:.76rem; max-width:44ch; line-height:2.1}
 #intro .t b{display:block; font-family:'Outfit',sans-serif; font-weight:200; letter-spacing:.34em; color:var(--tx);
   font-size:clamp(1.4rem,5vw,2.4rem); margin-bottom:1.4rem; text-transform:none}
 #intro .t span{color:var(--gantegh); animation:blink 2s infinite}
+#intro .t .p{display:block; margin-top:1.6rem; font-size:.6rem; letter-spacing:.18em; color:var(--faint); text-transform:none}
 #intro.gone{opacity:0; pointer-events:none}
+@media (prefers-reduced-motion: reduce){#grain{animation:none} .chrome .dot,#intro .t span{animation:none}}
 </style>
 </head>
 <body>
 <canvas id="scene"></canvas>
 <div id="veil"></div>
-<div id="pulse"></div>
 <div id="grain"></div>
 <div id="reticle"></div>
 
 <div class="chrome mono">
-  <span><b>br_id_ge</b> &nbsp;·&nbsp; v.oooooo 2</span>
-  <span><span class="dot">●</span>&nbsp;<span id="lat">lat 174ms</span> &nbsp;·&nbsp; <span class="hb">♥ <span id="bpm">72</span></span></span>
+  <span><b>br_id_ge</b> &nbsp;·&nbsp; v.oooooo 3 — the scan</span>
+  <span id="lampState"><span class="dot">●</span>&nbsp;<span id="lamp">lamp unlit</span></span>
   <a href="https://di-studio.xyz">di.iiii ↗</a>
 </div>
 
 <div class="hud mono">
-  <span>carried <span class="k" id="carried">0</span></span>
-  <span class="mid" id="midhint">move to reveal · click letters to carry them</span>
+  <span>remembered <span class="k" id="remembered">0</span></span>
+  <span class="mid" id="midhint">sweep the lamp slowly · what it touches, it keeps</span>
   <span>the field · <span class="s" id="fieldn">0</span> digitalkars · <span class="s" id="present">solo</span></span>
 </div>
 <div id="prog"></div>
 
-<div id="hero"><div class="g arm">կամուրջ</div><div class="s">a digital rite of transmission · in five acts</div></div>
+<div id="hero"><div class="g arm">կամուրջ</div><div class="s">the scan · a rite of entering · five acts</div></div>
 
 <div id="act"><div class="a arm"></div><div class="e"></div><div class="n"></div></div>
 
@@ -138,14 +134,17 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   <div class="lbl">ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ · inscription</div>
   <div class="q">What do you carry?<span class="arm">Ի՞նչ ես տանում կամրջի վրայով։</span></div>
   <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
-  <div class="hint" id="inscHint">press enter to inscribe it into the digitalkar</div>
+  <div class="hint" id="inscHint">press enter — your world condenses into the stone</div>
   <div id="closing"></div>
-  <a id="enterBtn" href="#">↻ cross again</a>
+  <a id="enterBtn">↻ cross again</a>
 </div>
 
 <div id="intro"><div class="t mono">
   <b class="arm">կամուրջ</b>
-  you are the lamp. <span>●</span> click to light it and begin the rite
+  you are the lamp. <span>●</span> click to open it —
+  the rite asks for your camera, and what the lamp sees
+  enters the bridge as letters.
+  <span class="p">nothing is recorded · no image leaves this device · only your name and one word cross</span>
 </div></div>
 
 <script>
@@ -153,88 +152,105 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 const canvas=document.getElementById('scene');
 if(!window.THREE){document.getElementById('intro').innerHTML='<div class="t mono">WebGL required</div>';return;}
 const M=THREE.MathUtils;
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x050608,0.013);
-const camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,0.1,700);
+scene.fog=new THREE.FogExp2(0x05080d,0.010);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,0.1,400);
+camera.position.set(0,0,0);
 
-const L=480;
-function pathAt(t){return new THREE.Vector3(Math.sin(t*Math.PI*2.0)*7.5, Math.sin(t*Math.PI)*4.5+1.4, -t*L);}
+// ── glyph atlas: the aybuben as one texture, sampled per point ──
+const GLYPHS='ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ·☩'.split(''); // 40 = 8×5
+const AC=8,AR=5,CELL=64;
+function makeAtlas(){const c=document.createElement('canvas');c.width=AC*CELL;c.height=AR*CELL;const x=c.getContext('2d');
+  x.font='500 46px "Noto Serif Armenian",serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#fff';
+  GLYPHS.forEach((ch,i)=>{x.fillText(ch,(i%AC)*CELL+CELL/2,((i/AC)|0)*CELL+CELL/2+3);});
+  const t=new THREE.CanvasTexture(c);t.needsUpdate=true;return t;}
+let atlas=makeAtlas();
+document.fonts&&document.fonts.ready.then(()=>{atlas.dispose();atlas=makeAtlas();wall.material.uniforms.uAtlas.value=atlas;});
 
 function glow(hex){const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
   const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,hex);g.addColorStop(.35,hex);g.addColorStop(1,'rgba(0,0,0,0)');
   x.fillStyle=g;x.beginPath();x.arc(s/2,s/2,s/2,0,7);x.fill();return new THREE.CanvasTexture(c);}
-const lampTex=glow('rgba(255,190,110,.9)'),stitchTex=glow('rgba(95,208,255,.85)');
-const glyphCache={};
-function glyphTex(ch){if(glyphCache[ch])return glyphCache[ch];
-  const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
+const lampTex=glow('rgba(255,190,110,.9)'),stitchTex=glow('rgba(0,229,255,.8)');
+function glyphSpriteTex(ch,color){const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
   x.font='600 86px "Noto Serif Armenian",serif';x.textAlign='center';x.textBaseline='middle';
-  x.shadowColor='rgba(255,179,71,.95)';x.shadowBlur=20;x.fillStyle='#ffe0b0';x.fillText(ch,s/2,s/2+4);
-  const t=new THREE.CanvasTexture(c);glyphCache[ch]=t;return t;}
+  x.shadowColor=color;x.shadowBlur=20;x.fillStyle='#ffe9c9';x.fillText(ch,s/2,s/2+4);return new THREE.CanvasTexture(c);}
 const labelCache={};
 function labelTex(text){const key=(String(text||'')||'…').slice(0,18);if(labelCache[key])return labelCache[key];
   const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');
   x.font='600 30px "Space Mono",monospace';x.textAlign='center';x.textBaseline='middle';
-  x.shadowColor='rgba(95,208,255,.9)';x.shadowBlur=12;x.fillStyle='#cfeaff';x.fillText(key,128,34);
+  x.shadowColor='rgba(0,229,255,.9)';x.shadowBlur=12;x.fillStyle='#cff6ff';x.fillText(key,128,34);
   const t=new THREE.CanvasTexture(c);labelCache[key]=t;return t;}
 
-// ── threshold gate (Act 0): an arch of letters you pass through ──
-const gateGroup=new THREE.Group();scene.add(gateGroup);
-const gp=pathAt(0.06);
-for(let i=0;i<=22;i++){const a=Math.PI*(i/22);
-  const m=new THREE.SpriteMaterial({map:glyphTex('Ա'),transparent:true,opacity:.0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffcf8a});
-  const s=new THREE.Sprite(m);s.position.set(gp.x+Math.cos(a)*9, gp.y-1.5+Math.sin(a)*9, gp.z);s.scale.set(1.5,1.5,1.5);
-  s.userData={door:1,phase:i*0.3};gateGroup.add(s);}
+// ── the wall of the world: a curved shell of letter-points fed by the lamp ──
+const GW=64,GH=36,NP=GW*GH,R0=26;
+const YAW=1.9,PITCH=1.05; // radians of shell coverage
+const pos=new Float32Array(NP*3),aChar=new Float32Array(NP),aBright=new Float32Array(NP),
+  aCrys=new Float32Array(NP),aSeed=new Float32Array(NP),heat=new Float32Array(NP);
+const dir=[];
+for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;
+  const yaw=(i/(GW-1)-0.5)*YAW,pit=(j/(GH-1)-0.5)*PITCH;
+  const d=new THREE.Vector3(Math.sin(yaw)*Math.cos(pit),Math.sin(pit),-Math.cos(yaw)*Math.cos(pit));dir.push(d);
+  pos[k*3]=d.x*R0;pos[k*3+1]=d.y*R0;pos[k*3+2]=d.z*R0;
+  aChar[k]=(Math.random()*36)|0;aBright[k]=0;aCrys[k]=0;aSeed[k]=Math.random()*6.28;}
+const wallGeo=new THREE.BufferGeometry();
+wallGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+wallGeo.setAttribute('aChar',new THREE.BufferAttribute(aChar,1));
+wallGeo.setAttribute('aBright',new THREE.BufferAttribute(aBright,1));
+wallGeo.setAttribute('aCrys',new THREE.BufferAttribute(aCrys,1));
+wallGeo.setAttribute('aSeed',new THREE.BufferAttribute(aSeed,1));
+const wallMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  uniforms:{uAtlas:{value:atlas},uTime:{value:0},uFade:{value:1},uFlick:{value:REDUCED?0.15:1}},
+  vertexShader:`attribute float aChar,aBright,aCrys,aSeed;
+    varying float vChar,vBright,vCrys,vSeed;
+    void main(){vChar=aChar;vBright=aBright;vCrys=aCrys;vSeed=aSeed;
+      vec4 mv=modelViewMatrix*vec4(position,1.0);
+      float sz=(aCrys>0.0?1.35:1.0)*(0.65+aBright*0.9);
+      gl_PointSize=sz*680.0/-mv.z;gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform sampler2D uAtlas;uniform float uTime,uFade,uFlick;
+    varying float vChar,vBright,vCrys,vSeed;
+    void main(){
+      float col=mod(vChar,8.0),row=floor(vChar/8.0);
+      vec2 uv=(vec2(col,4.0-row)+vec2(gl_PointCoord.x,1.0-gl_PointCoord.y))/vec2(8.0,5.0);
+      float a=texture2D(uAtlas,uv).a;
+      if(a<0.05)discard;
+      vec3 live=vec3(0.86,0.90,0.96);
+      vec3 real=vec3(1.0,0.165,0.373);   /* crimson — the real, arriving */
+      vec3 stone=vec3(0.804,0.725,0.561);/* it settles into memory */
+      vec3 amber=vec3(1.0,0.702,0.278);
+      float o;vec3 c;
+      if(vCrys>0.0){float settle=smoothstep(0.0,2.6,uTime-vCrys);
+        c=mix(real,mix(stone,amber,0.5+0.5*sin(vSeed*7.0)),settle);
+        o=vBright*(0.9-settle*0.25)*(0.82+0.18*sin(uTime*0.7+vSeed));
+      }else{
+        c=live;o=vBright*0.5*(0.62+0.38*sin(uTime*(1.2+vSeed*0.4)+vSeed*9.0)*uFlick);
+      }
+      gl_FragColor=vec4(c,o*a*uFade);}`});
+const wall=new THREE.Points(wallGeo,wallMat);scene.add(wall);
 
-// ── corridor of letters ──
-const GLYPHS='ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ'.split('');
-const corridor=new THREE.Group();scene.add(corridor);
-const N=420,sprites=[];
-for(let i=0;i<N;i++){const t=i/N,center=pathAt(t),ang=Math.random()*6.283,rad=4.0+Math.random()*9.0;
-  const mat=new THREE.SpriteMaterial({map:glyphTex(GLYPHS[(Math.random()*GLYPHS.length)|0]),transparent:true,opacity:0,
-    blending:THREE.AdditiveBlending,depthWrite:false,color:Math.random()<0.5?0xffffff:0xc7b48d});
-  const sp=new THREE.Sprite(mat);
-  sp.position.set(center.x+Math.cos(ang)*rad, center.y+Math.sin(ang)*rad*0.7, center.z+(Math.random()-0.5)*3);
-  const sc=0.9+Math.random()*1.7;sp.scale.set(sc,sc,sc);
-  sp.userData={t,phase:Math.random()*6.28,speed:0.5+Math.random()*0.9,base:sc,awoken:0,flare:0};
-  corridor.add(sp);sprites.push(sp);}
-
-// dust + rails + ties
-const DUST=1500,dpos=new Float32Array(DUST*3);
-for(let i=0;i<DUST;i++){const t=Math.random(),c=pathAt(t);dpos[i*3]=c.x+(Math.random()-0.5)*64;dpos[i*3+1]=c.y-9-Math.random()*16;dpos[i*3+2]=c.z+(Math.random()-0.5)*8;}
+// dust below — the unlit void
+const DUST=900,dpos=new Float32Array(DUST*3);
+for(let i=0;i<DUST;i++){dpos[i*3]=(Math.random()-0.5)*90;dpos[i*3+1]=-10-Math.random()*22;dpos[i*3+2]=-Math.random()*80;}
 const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dpos,3));
-const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xcdb98f,size:0.07,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false}));scene.add(dust);
-const railMat=new THREE.LineBasicMaterial({color:0xffb347,transparent:true,opacity:.55,blending:THREE.AdditiveBlending});
-function railLine(off){const pts=[];for(let i=0;i<=180;i++){const t=i/180,c=pathAt(t);pts.push(new THREE.Vector3(c.x+off,c.y-1.7,c.z));}return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),railMat);}
-scene.add(railLine(-2.4));scene.add(railLine(2.4));
-const tieMat=new THREE.LineBasicMaterial({color:0xcdb98f,transparent:true,opacity:.26,blending:THREE.AdditiveBlending});
-for(let i=0;i<100;i++){const t=i/100,c=pathAt(t);const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(c.x-2.4,c.y-1.7,c.z),new THREE.Vector3(c.x+2.4,c.y-1.7,c.z)]);scene.add(new THREE.Line(g,tieMat));}
+const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xcdb98f,size:0.07,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false}));scene.add(dust);
 
-// lamp + halo
-const lamp=new THREE.PointLight(0xffb347,2.6,95);scene.add(lamp);
-scene.add(new THREE.AmbientLight(0x1b2742,0.7));
-const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xffce8c,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));halo.scale.set(7,7,7);scene.add(halo);
+// lamp halo at the reticle's world point
+const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xffce8c,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false}));
+halo.scale.set(6,6,6);scene.add(halo);
+const lampLight=new THREE.PointLight(0xffb347,2.2,80);scene.add(lampLight);
+scene.add(new THREE.AmbientLight(0x101a28,0.7));
 
-// the Stitch — AI keeper presence (blocks the span in Act 3/Witness)
-const stitchPos=pathAt(0.52);
-const stitch=new THREE.Sprite(new THREE.SpriteMaterial({map:stitchTex,color:0x9fe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
-stitch.scale.set(12,12,12);stitch.position.copy(stitchPos);scene.add(stitch);
-// a ring of cool letters orbiting the Keeper
+// the Keeper — a breathing cyan presence with a ring of letters
+const keeperPos=new THREE.Vector3(0,0.5,-18);
+const stitch=new THREE.Sprite(new THREE.SpriteMaterial({map:stitchTex,color:0x9ff0ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+stitch.scale.set(11,11,11);stitch.position.copy(keeperPos);scene.add(stitch);
 const keeperRing=[];
-for(let i=0;i<14;i++){const m=new THREE.SpriteMaterial({map:glyphTex(GLYPHS[(Math.random()*GLYPHS.length)|0]),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0x9fe4ff});
+for(let i=0;i<14;i++){const m=new THREE.SpriteMaterial({map:glyphSpriteTex(GLYPHS[(Math.random()*36)|0],'rgba(0,229,255,.95)'),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0x9ff0ff});
   const s=new THREE.Sprite(m);s.scale.set(1.3,1.3,1.3);s.userData={a:i/14*6.283};scene.add(s);keeperRing.push(s);}
 
-// the mesh — other nodes crossing the bridge (latency-jittered, the N-node concept)
-const CITIES=['gyumri','yerevan','leipzig','munich','spain'];
-const ghosts=[];
-for(let i=0;i<5;i++){const m=new THREE.SpriteMaterial({map:lampTex,color:i%2?0x9fe4ff:0xffce8c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
-  const s=new THREE.Sprite(m);s.scale.set(3.0,3.0,3.0);scene.add(s);
-  ghosts.push({s,t:Math.random(),speed:0.010+Math.random()*0.02,jit:Math.random()*6.28,city:CITIES[i]});}
-
-// ── live co-presence (real mesh) — degrades to the simulated ghosts above when no server ──
-// Endpoint comes from ?mesh=wss://host, <meta name="mesh-url">, or window.BR_MESH_URL.
-// With none set (the default deploy) the rite stays solo and nothing changes.
+// ── live co-presence — peers are lamps sweeping their own rooms ──
 const MESH_URL=(new URLSearchParams(location.search).get('mesh'))||(document.querySelector('meta[name="mesh-url"]')||{}).content||window.BR_MESH_URL||'';
 const ROOM_SECRET=(new URLSearchParams(location.search).get('s'))||window.BR_ROOM_SECRET||'';
 const myNode='n'+Math.random().toString(36).slice(2,8);
@@ -251,248 +267,279 @@ const Mesh={ws:null,live:false,lat:0,peers:new Map(),lastSend:0,lastPing:0,
     if(m.type==='peer:leave'){this.drop(m.nodeId);return;}
     if(m.type==='mesh:event'&&m.channel==='motion'){
       let pr=this.peers.get(m.from);if(!pr){pr=this.makePeer();this.peers.set(m.from,pr);}
-      const pos=(m.meta&&m.meta.predicted)||m.payload||{};            // server's latency-compensated ghost-hand
-      if(typeof pos.x==='number')pr.target.set(pos.x,pos.y,pos.z);
+      const p=(m.meta&&m.meta.predicted)||m.payload||{};
+      if(typeof p.x==='number')pr.target.set(p.x,p.y,p.z);
       const nm=m.payload&&m.payload.name;
       if(nm&&nm!==pr.name){pr.name=nm;pr.label.material.map=labelTex(nm);pr.label.material.needsUpdate=true;}
       pr.seen=performance.now();}},
-  makePeer(){const lamp=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0x9fe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
-    lamp.scale.set(3.4,3.4,3.4);scene.add(lamp);
+  makePeer(){const l=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0x9ff0ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+    l.scale.set(3.2,3.2,3.2);scene.add(l);
     const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('…'),transparent:true,opacity:0,depthWrite:false}));
     label.scale.set(6,1.5,1);scene.add(label);
-    return{lamp,label,target:new THREE.Vector3(0,0,-260),name:'',seen:performance.now()};},
+    return{lamp:l,label,target:new THREE.Vector3(0,0,-30),name:'',seen:performance.now()};},
   drop(id){const pr=this.peers.get(id);if(!pr)return;scene.remove(pr.lamp);scene.remove(pr.label);this.peers.delete(id);},
   clearPeers(){for(const id of[...this.peers.keys()])this.drop(id);},
-  send(p){if(!(this.ws&&this.live&&this.ws.readyState===1))return;const now=performance.now();
-    if(now-this.lastSend>90){this.lastSend=now;const c=pathAt(M.clamp(p,0,1));
-      this.ws.send(JSON.stringify({type:'publish',channel:'motion',pingTs:Date.now(),payload:{x:c.x,y:c.y+1.3,z:c.z,name:(name||'').slice(0,18),p}}));}
+  send(pt,frac){if(!(this.ws&&this.live&&this.ws.readyState===1))return;const now=performance.now();
+    if(now-this.lastSend>90){this.lastSend=now;
+      this.ws.send(JSON.stringify({type:'publish',channel:'motion',pingTs:Date.now(),payload:{x:pt.x,y:pt.y,z:pt.z,name:(name||'').slice(0,18),p:frac}}));}
     if(now-this.lastPing>2000){this.lastPing=now;this.ws.send(JSON.stringify({type:'control',cmd:'ping',sentAt:Date.now()}));}},
-  update(tm,camZ,gather){
+  update(tm,gather){
     for(const[id,pr]of this.peers){
       if(performance.now()-pr.seen>9000){this.drop(id);continue;}
-      const tp=gather?new THREE.Vector3(end.x+Math.cos(id.length+tm*0.3)*8,end.y+2,end.z-8+Math.sin(id.length)*4):pr.target;
+      const tp=gather?new THREE.Vector3(Math.cos(id.length+tm*0.25)*9,1.5+Math.sin(id.length*2.1)*2,-14+Math.sin(id.length+tm*0.25)*4):pr.target;
       pr.lamp.position.lerp(tp,0.12);
-      const dz=Math.abs(pr.lamp.position.z-camZ),vis=M.clamp(1-dz/150,0,1);
-      pr.lamp.material.opacity=vis*0.85*(0.7+0.3*Math.sin(tm*3+id.length));
-      pr.label.position.set(pr.lamp.position.x,pr.lamp.position.y+2.6,pr.lamp.position.z);
-      pr.label.material.opacity=vis*0.7;}
+      pr.lamp.material.opacity=0.8*(0.7+0.3*Math.sin(tm*3+id.length));
+      pr.label.position.set(pr.lamp.position.x,pr.lamp.position.y+2.4,pr.lamp.position.z);
+      pr.label.material.opacity=0.7;}
     return this.peers.size;}
 };
 Mesh.connect();
 
-// the digitalkar + diaspora field
-const end=pathAt(1.0);
-function mark(pos,bright){const m=new THREE.SpriteMaterial({map:glyphTex('☩'),color:0xffd9a0,transparent:true,opacity:bright?0:.3,blending:THREE.AdditiveBlending,depthWrite:false});
-  const s=new THREE.Sprite(m);const sc=bright?9:2.4+Math.random()*1.6;s.scale.set(sc,sc*1.3,1);s.position.copy(pos);scene.add(s);return s;}
-let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]');}catch(e){field=[];}
-const fieldGroup=new THREE.Group();scene.add(fieldGroup);
-function placeInscription(entry,i){const a=i*2.399,r=9+i*1.1;
-  const pos=new THREE.Vector3(end.x+Math.cos(a)*r, end.y+Math.sin(a)*r*0.5, end.z-12-i*1.8);
-  mark(pos,false);
-  const w=(String(entry).split('·').pop()||'').trim();
-  [...w].slice(0,7).forEach((ch,j,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
-    const s=new THREE.Sprite(m);s.position.set(pos.x+(j-(ar.length-1)/2)*1.0,pos.y-2.6,pos.z);s.scale.set(0.85,0.85,0.85);fieldGroup.add(s);});}
-field.forEach(placeInscription);
-const myKh=mark(new THREE.Vector3(end.x,end.y+2,end.z-6),true);
-document.getElementById('fieldn').textContent=field.length;
-// vi.ritual → di.iiii: the shared field lives in a di.iiii space (append-only inscriptions).
-// Endpoint comes from ?field=<space-api-url>, <meta name="field-url">, or window.BR_FIELD_URL.
+// ── the field: what every crossing left behind ──
 const FIELD_URL=((new URLSearchParams(location.search).get('field'))||(document.querySelector('meta[name="field-url"]')||{}).content||window.BR_FIELD_URL||'').replace(/\/+$/,'');
+let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]');}catch(e){field=[];}
+const fieldGroup=new THREE.Group();fieldGroup.visible=false;scene.add(fieldGroup);
+function placeStone(entry,i){const a=i*2.399,r=7+i*0.9;
+  const p=new THREE.Vector3(Math.cos(a)*r,Math.sin(a)*r*0.35-1,-16-i*1.2);
+  const m=new THREE.SpriteMaterial({map:glyphSpriteTex('☩','rgba(255,217,160,.9)'),color:0xffd9a0,transparent:true,opacity:.34,blending:THREE.AdditiveBlending,depthWrite:false});
+  const s=new THREE.Sprite(m);const sc=2.0+Math.random()*1.4;s.scale.set(sc,sc*1.3,1);s.position.copy(p);fieldGroup.add(s);
+  const w=(String(entry).split('·').pop()||'').trim();
+  [...w].slice(0,7).forEach((ch,j,ar)=>{const mm=new THREE.SpriteMaterial({map:glyphSpriteTex(ch,'rgba(205,185,143,.9)'),transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
+    const ss=new THREE.Sprite(mm);ss.position.set(p.x+(j-(ar.length-1)/2)*0.9,p.y-2.2,p.z);ss.scale.set(0.8,0.8,0.8);fieldGroup.add(ss);});}
+field.forEach(placeStone);
+document.getElementById('fieldn').textContent=field.length;
 if(FIELD_URL){fetch(FIELD_URL+'/scene').then(r=>r.ok?r.json():Promise.reject()).then(({scene:sc})=>{
   const remote=(sc&&sc.objects||[]).filter(o=>String(o.id||'').startsWith('insc-')).map(o=>String(o.data||'').trim()).filter(Boolean);
-  remote.forEach(tag=>{if(!field.includes(tag)){field.push(tag);placeInscription(tag,field.length-1);}});
+  remote.forEach(tag=>{if(!field.includes(tag)){field.push(tag);placeStone(tag,field.length-1);}});
   document.getElementById('fieldn').textContent=field.length;
 }).catch(()=>{});}
 
-// ── state ──
-let prog=0,target=0,started=false,carried=0,dialogOpen=false;
-let name='',word='',keeperShown=false,inscribed=false;
-let communion=false,simGhost=1;   // act v — Echo: world gathers after inscription; simGhost fades when live peers connect
-const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
-const ray=new THREE.Raycaster();
-const reticle=document.getElementById('reticle');
-addEventListener('mousemove',e=>{mouse.x=e.clientX/innerWidth-0.5;mouse.y=e.clientY/innerHeight-0.5;mouse.px=e.clientX;mouse.py=e.clientY;reticle.style.left=e.clientX+'px';reticle.style.top=e.clientY+'px';});
-addEventListener('wheel',e=>{target=M.clamp(target+e.deltaY*0.00045,0,1);},{passive:true});
-const keys={};addEventListener('keydown',e=>keys[e.key.toLowerCase()]=1);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+// ── the lamp: camera in, letters out ──
+const VW=64,VH=36;
+const vcan=document.createElement('canvas');vcan.width=VW;vcan.height=VH;const vctx=vcan.getContext('2d',{willReadFrequently:true});
+let video=null,camOn=false,camDenied=false;
+function openLamp(){return (navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:640},height:{ideal:360}},audio:false})
+  :Promise.reject(new Error('no mediaDevices')))
+  .then(stream=>{video=document.createElement('video');video.srcObject=stream;video.muted=true;video.setAttribute('playsinline','');
+    return video.play().then(()=>{camOn=true;});})
+  .catch(()=>{camDenied=true;});}
+// memory mode — when the lamp cannot open, the bridge remembers a room for you
+function dreamBright(i,j,t){const x=i/GW,y=j/GH;
+  return M.clamp(0.5+0.30*Math.sin(x*9+t*0.21)+0.26*Math.sin(y*7-t*0.17+x*4)+0.22*Math.sin((x+y)*13+t*0.11),0,1);}
+const bright=new Float32Array(NP);
+function sampleWorld(t){
+  if(camOn&&video&&video.readyState>=2){
+    vctx.drawImage(video,0,0,VW,VH);
+    const d=vctx.getImageData(0,0,VW,VH).data;
+    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;
+      // mirror x so sweeping feels natural; sample row j from top
+      const px=((GH-1-j)*VW+(VW-1-i))*4;
+      bright[k]=M.clamp((d[px]*0.299+d[px+1]*0.587+d[px+2]*0.114)/255*1.25,0,1);}
+  }else{
+    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;bright[k]=dreamBright(i,j,t);}
+  }
+}
 
-// sound — duduk dam drone
+// ── state ──
+let started=false,name='',word='',keeperShown=false,inscShown=false,inscCued=false,inscribed=false,dialogOpen=false;
+let crysCount=0,remembered=0,communion=false,condensing=0;
+const CRYS_TARGET=Math.round(NP*0.5);
+const KEEPER_AT=0.45,INSCRIBE_AT=0.8;
+const frac=()=>crysCount/CRYS_TARGET;
+const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
+const reticle=document.getElementById('reticle');
+function pointAt(cx,cy){mouse.x=cx/innerWidth-0.5;mouse.y=cy/innerHeight-0.5;mouse.px=cx;mouse.py=cy;
+  reticle.style.left=cx+'px';reticle.style.top=cy+'px';}
+addEventListener('mousemove',e=>pointAt(e.clientX,e.clientY));
+addEventListener('touchstart',e=>{if(e.touches[0])pointAt(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+addEventListener('touchmove',e=>{if(e.touches[0])pointAt(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+
+// ── sound — a dam-drone that breathes, chimes when the world is kept ──
 let drone=null;
 function startDrone(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  const ctx=new AC();const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-  o.type='sine';o.frequency.value=110;o2.type='sine';o2.frequency.value=110.5;g.gain.value=0;
-  o.connect(g);o2.connect(g);g.connect(ctx.destination);o.start();o2.start();
-  g.gain.linearRampToValueAtTime(0.05,ctx.currentTime+4);drone={ctx,g};}catch(e){}}
-const SCALE=[330,371,440,495,557,660];                                  // a luminous pentatonic
-function chime(){if(!drone)return;try{const c=drone.ctx,o=c.createOscillator(),g=c.createGain();
+  const ctx=new AC();const g=ctx.createGain();g.gain.value=0;
+  const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=700;
+  g.connect(lp);lp.connect(ctx.destination);
+  [[110,'sine'],[110.6,'sine'],[164.8,'triangle']].forEach(([f,t])=>{const o=ctx.createOscillator();o.type=t;o.frequency.value=f;
+    const og=ctx.createGain();og.gain.value=f>150?0.25:1;o.connect(og);og.connect(g);o.start();});
+  const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=0.07;lg.gain.value=0.016;
+  lfo.connect(lg);lg.connect(g.gain);lfo.start();
+  g.gain.linearRampToValueAtTime(0.045,ctx.currentTime+5);drone={ctx,g};}catch(e){}}
+const SCALE=[330,371,440,495,557,660];
+let lastChime=0;
+function chime(){if(!drone)return;const now=performance.now();if(now-lastChime<90)return;lastChime=now;
+  try{const c=drone.ctx,o=c.createOscillator(),g=c.createGain();
   o.type='triangle';o.frequency.value=SCALE[(Math.random()*SCALE.length)|0];o.connect(g);g.connect(c.destination);
-  g.gain.value=0;o.start();g.gain.linearRampToValueAtTime(0.09,c.currentTime+0.02);
+  g.gain.value=0;o.start();g.gain.linearRampToValueAtTime(0.07,c.currentTime+0.02);
   g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+0.9);o.stop(c.currentTime+1);}catch(e){}}
 function chord(){if(!drone)return;try{const c=drone.ctx;[220,277,330,440].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();
   o.type='sine';o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.value=0;o.start();
   g.gain.linearRampToValueAtTime(0.05,c.currentTime+0.1+i*0.09);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+3.4);o.stop(c.currentTime+3.6);});}catch(e){}}
 
-function awaken(){ if(!started)return;
-  ray.setFromCamera({x:(mouse.px/innerWidth)*2-1,y:-(mouse.py/innerHeight)*2+1},camera);
-  const hits=ray.intersectObjects(sprites);
-  if(hits.length){const sp=hits[0].object;if(!sp.userData.awoken){sp.userData.awoken=1;carried++;document.getElementById('carried').textContent=carried;chime();}sp.userData.flare=1;}
-}
-addEventListener('click',()=>{if(started)awaken();});
-
-// touch — steer with a finger, tap letters to awaken, hold to cross faster
-let touchHold=false;
-function touchAt(t){mouse.x=t.clientX/innerWidth-0.5;mouse.y=t.clientY/innerHeight-0.5;mouse.px=t.clientX;mouse.py=t.clientY;reticle.style.left=t.clientX+'px';reticle.style.top=t.clientY+'px';}
-addEventListener('touchstart',e=>{if(e.touches[0])touchAt(e.touches[0]);touchHold=true;
-  if(started){midhint.textContent='drag to look · tap letters · hold to cross';}},{passive:true});
-addEventListener('touchmove',e=>{if(e.touches[0])touchAt(e.touches[0]);},{passive:true});
-addEventListener('touchend',()=>{touchHold=false;if(started)awaken();},{passive:true});
-
-const intro=document.getElementById('intro');
-function begin(){if(started)return;started=true;intro.classList.add('gone');target=0.02;startDrone();
-  heroEl.classList.add('in');setTimeout(()=>heroEl.classList.remove('in'),2400);}
+// ── begin ──
+const intro=document.getElementById('intro'),heroEl=document.getElementById('hero'),
+  lampEl=document.getElementById('lamp'),midhint=document.getElementById('midhint');
+function begin(){if(started)return;started=true;startDrone();
+  openLamp().then(()=>{intro.classList.add('gone');
+    lampEl.textContent=camOn?'lamp open — the real enters':'lamp closed — the bridge remembers for you';
+    if(!camOn)lampEl.parentElement.querySelector('.dot').classList.add('re');
+    heroEl.classList.add('in');setTimeout(()=>{heroEl.classList.remove('in');showAct(ACTS[0]);},2400);});}
 intro.addEventListener('click',begin);
-intro.addEventListener('touchstart',e=>{e.preventDefault();begin();});
 
-// act cards
-const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — into the dark',at:0.0},
-  {a:'ԱՆՑՈՒՄ',e:'The Crossing',n:'act ii — paced by the dam',at:0.12},
-  {a:'ՎԿԱ',e:'The Witness',n:'act iii — the keeper of memory',at:0.50},
-  {a:'ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ',e:'Inscription',n:'act iv — continuity',at:0.80}];
-let actIdx=0;const actEl=document.getElementById('act');const heroEl=document.getElementById('hero');
+// act cards — the same liturgy, a new crossing
+const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — open the lamp',at:0.001},
+  {a:'ԱՆՑՈՒՄ',e:'The Crossing',n:'act ii — the world enters as letters',at:0.08},
+  {a:'ՎԿԱ',e:'The Witness',n:'act iii — the keeper of memory',at:KEEPER_AT},
+  {a:'ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ',e:'Inscription',n:'act iv — condense what you carry',at:INSCRIBE_AT}];
+let actIdx=-1;const actEl=document.getElementById('act');
 function showAct(o){actEl.style.transition='';actEl.style.opacity='';
   actEl.querySelector('.a').textContent=o.a;actEl.querySelector('.e').textContent=o.e;actEl.querySelector('.n').textContent=o.n;
-  actEl.classList.add('in');clearTimeout(showAct._t);showAct._t=setTimeout(()=>actEl.classList.remove('in'),2800);}
+  actEl.classList.add('in');clearTimeout(showAct._t);showAct._t=setTimeout(()=>actEl.classList.remove('in'),2800);actIdx++;}
 function hideActNow(){clearTimeout(showAct._t);actEl.classList.remove('in');actEl.style.transition='none';actEl.style.opacity='0';}
 
-// keeper dialogue
+// keeper
 const keeperEl=document.getElementById('keeper'),nameIn=document.getElementById('nameIn'),keeperQ=document.getElementById('keeperQ');
 function openKeeper(){keeperShown=true;dialogOpen=true;hideActNow();
-  keeperQ.innerHTML=(carried>0?('You carry '+carried+' letter'+(carried>1?'s':'')+' into the dark.<br>Who are you?'):'Who are you?')+'<span class="arm">Ո՞վ ես դու։</span>';
+  keeperQ.innerHTML='You bring '+remembered+' letters of your world across.<br>Who are you?<span class="arm">Ո՞վ ես դու։</span>';
   keeperEl.classList.add('show');setTimeout(()=>nameIn.focus(),400);}
 nameIn.addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=(nameIn.value||'').trim();if(!v||name)return;
   nameIn.style.display='none';keeperEl.querySelector('.hint').style.display='none';chord();
-  keeperQ.innerHTML='<span class="arm" style="color:var(--stitch);font-size:1.25em">'+v+'</span><br>the bridge remembers your name.<span class="arm">անցի՛ր · carry it across.</span>';
-  setTimeout(()=>{name=v;keeperEl.classList.remove('show');dialogOpen=false;},2800);});
+  keeperQ.innerHTML='<span class="arm" style="color:var(--stitch);font-size:1.25em">'+v.replace(/</g,'&lt;')+'</span><br>the bridge remembers your name.<span class="arm">շարունակի՛ր · keep sweeping.</span>';
+  setTimeout(()=>{name=v;keeperEl.classList.remove('show');dialogOpen=false;
+    midhint.textContent='the stone waits — keep sweeping';},2600);});
 
-// inscription
+// inscription → condensation into the digitalkar
 const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById('wordIn'),
   enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint');
-let inscShown=false;
 function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
+const targets=new Float32Array(NP*3);
+function stonePoint(){ // a slab of memory: rounded stele proportions, denser toward the heart
+  for(;;){const x=(Math.random()*2-1),y=(Math.random()*2-1),z=(Math.random()*2-1);
+    const e=Math.pow(Math.abs(x),2.6)+Math.pow(Math.abs(y),2.2)+Math.pow(Math.abs(z),2.6);
+    if(e<=1)return[x*1.7,y*3.0+0.6,z*0.55-14];}}
 function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
   // the crossing leaves a mark in di.iiii — fire-and-forget, the rite never blocks on it
   if(FIELD_URL){fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})}).catch(()=>{});}
-  placeInscription(tag,field.length-1);                 // your word joins the drifting field
   document.getElementById('fieldn').textContent=field.length;
-  // build name (amber) + word (calligraphic) glyphs rising from the digitalkar
-  [...name].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
-    const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.3,end.y+4.4,end.z-6);s.scale.set(1.5,1.5,1.5);scene.add(s);});
-  [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
-    const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.2,end.y-1.6,end.z-6);s.scale.set(1.2,1.2,1.2);scene.add(s);});
-  wordIn.style.display='none';inscHint.style.display='none';
-  // ── act v — ԱՐՁԱԳԱՆՔ (Echo): the bridge answers; the field and those present gather ──
+  for(let k=0;k<NP;k++){const t=stonePoint();targets[k*3]=t[0];targets[k*3+1]=t[1];targets[k*3+2]=t[2];}
+  condensing=0.0001;
+  if(video&&video.srcObject){video.srcObject.getTracks().forEach(t=>t.stop());camOn=false;lampEl.textContent='lamp at rest';}
+  // name (amber) above the stone, the word (stone-gold) upon it
+  [...(name||'')].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphSpriteTex(ch,'rgba(255,179,71,.95)'),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
+    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.15,4.6,-14);s.scale.set(1.4,1.4,1.4);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
+  [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphSpriteTex(ch,'rgba(205,185,143,.95)'),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
+    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.05,-3.4,-13.4);s.scale.set(1.15,1.15,1.15);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
+  wordIn.style.display='none';inscHint.style.display='none';inscEl.querySelector('.q').style.display='none';
+  // ── act v — ԱՐՁԱԳԱՆՔ (Echo): the field surfaces; those present gather ──
   inscEl.querySelector('.lbl').innerHTML='ԱՐՁԱԳԱՆՔ · echo · act v';
   const others=field.length-1;
   closing.textContent = Mesh.live
-    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your digitalkar joins '+others+' before you. You are not alone.')
-    : ('Communitas — your digitalkar joins '+others+' before you. You are no longer alone on the bridge.');
+    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your world, condensed, joins '+others+' before you. You are not alone.')
+    : ('Communitas — your world, condensed, joins '+others+' before you. You are no longer alone on the bridge.');
   enterBtn.style.display='inline-block';
-  communion=true;
-  if(drone){try{drone.g.gain.linearRampToValueAtTime(0.09,drone.ctx.currentTime+3);}catch(e){}}   // a swell into the echo
+  communion=true;fieldGroup.visible=true;
+  if(drone){try{drone.g.gain.linearRampToValueAtTime(0.085,drone.ctx.currentTime+3);}catch(e){}}
 }
+const fadeIns=[];
 wordIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doInscribe();}});
 enterBtn.addEventListener('click',e=>{e.preventDefault();location.reload();});
 
-// hud refs
-const midhint=document.getElementById('midhint'),latEl=document.getElementById('lat'),bpmEl=document.getElementById('bpm'),
-  progEl=document.getElementById('prog'),pulse=document.getElementById('pulse'),presentEl=document.getElementById('present');
-let latT=0,bpm=72,nextBeat=0,pulseV=0;
+// strike — a burst of remembering under the lamp
+addEventListener('click',()=>{if(started&&!dialogOpen&&!inscribed)strike=1;});
+addEventListener('touchend',()=>{if(started&&!dialogOpen&&!inscribed)strike=1;},{passive:true});
+let strike=0;
 
+// hud refs
+const rememberedEl=document.getElementById('remembered'),progEl=document.getElementById('prog'),presentEl=document.getElementById('present');
+let hudT=0;
+
+const bAttr=wallGeo.attributes.aBright,cAttr=wallGeo.attributes.aCrys,pAttr=wallGeo.attributes.position;
 const clock=new THREE.Clock();
 function frame(){
   const tm=clock.getElapsedTime();
-  // movement gate: Keeper blocks until you give your name
-  const gate = name?1:0.50;
-  if(started){let v=0.0016*(0.72+0.28*Math.sin(tm*0.8)); // dam pacing
-    if(prog<0.14)v+=0.0030;                              // onboarding glide — step you onto the lit bridge
-    if(touchHold)v+=0.0026;
-    if(keys['w']||keys['arrowup'])v+=0.0030; if(keys['s']||keys['arrowdown'])v-=0.0034;
-    target=M.clamp(target+v,0,gate);}
-  target=M.clamp(target,0,gate);
-  prog+=(target-prog)*0.05;const p=M.clamp(prog,0,0.9999);
+  const sway=REDUCED?0.2:1;
 
-  const cur=pathAt(p),ahead=pathAt(Math.min(p+0.04,1));
-  camera.position.set(cur.x+mouse.x*4.0, cur.y+1.2-mouse.y*2.4+Math.sin(tm*0.6)*0.25, cur.z+6.5);
-  camera.lookAt(ahead.x+mouse.x*3, ahead.y+0.4-mouse.y*2, ahead.z);
+  // the lamp points where you point — angles come straight from the pointer,
+  // never from the (gently swaying) camera, so aim can't feed back into itself
+  const lampYaw=mouse.x*YAW*0.94,lampPit=-mouse.y*PITCH*0.94;
+  const lampDir=new THREE.Vector3(Math.sin(lampYaw)*Math.cos(lampPit),Math.sin(lampPit),-Math.cos(lampYaw)*Math.cos(lampPit));
+  const lampPt=lampDir.clone().multiplyScalar(R0*0.92);
+  halo.position.copy(lampDir.clone().multiplyScalar(10));
+  lampLight.position.copy(lampDir.clone().multiplyScalar(8));
+  lampLight.intensity=2.0+Math.sin(tm*1.8)*0.4;
+  halo.material.opacity=(inscribed?0.35:0.72)+Math.sin(tm*1.8)*0.12;
 
-  const fwd=new THREE.Vector3();camera.getWorldDirection(fwd);
-  const right=new THREE.Vector3().crossVectors(fwd,new THREE.Vector3(0,1,0)).normalize();
-  const up=new THREE.Vector3().crossVectors(right,fwd).normalize();
-  const focus=camera.position.clone().add(fwd.clone().multiplyScalar(13)).add(right.multiplyScalar(mouse.x*16)).add(up.multiplyScalar(-mouse.y*11));
-  lamp.position.copy(focus);lamp.intensity=2.1+Math.sin(tm*1.8)*0.5;
-  halo.position.copy(focus);halo.material.opacity=.7+Math.sin(tm*1.8)*0.15;halo.scale.setScalar(6+Math.sin(tm*1.4)*0.6);
+  camera.position.set(mouse.x*1.2*sway,Math.sin(tm*0.5)*0.22*sway-mouse.y*0.8*sway,0);
+  camera.lookAt(mouse.x*5*sway,-mouse.y*3.5*sway,-12);
 
-  // threshold arch ignites at the start, fades after you pass
-  const doorLit=M.clamp(1-Math.abs(0.06-p)/0.10,0,1);
-  gateGroup.children.forEach(s=>{s.material.opacity=doorLit*(0.5+0.5*Math.sin(tm*1.5+s.userData.phase));});
+  if(started&&!inscribed){
+    sampleWorld(tm);
+    // live brightness + lamp heat → crystallization
+    const ci=M.clamp(Math.round((lampYaw/YAW+0.5)*(GW-1)),0,GW-1),cj=M.clamp(Math.round((lampPit/PITCH+0.5)*(GH-1)),0,GH-1);
+    const RADIUS=strike?9:4.2;
+    let hot=false;
+    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;
+      if(cAttr.array[k]>0){continue;}
+      bAttr.array[k]=bright[k];
+      const dx=i-ci,dy=(j-cj)*1.6,d2=dx*dx+dy*dy;
+      let h=0;
+      if(!dialogOpen&&d2<RADIUS*RADIUS){h=(1-Math.sqrt(d2)/RADIUS);hot=true;
+        if(strike)heat[k]+=0.7*h;}           // a strike keeps this patch at once
+      heat[k]+=(h+0.006+bright[k]*0.010)*0.016;  // dwell + the bridge remembering on its own
+      if(heat[k]>1.05&&bright[k]>0.14){
+        cAttr.array[k]=tm;bAttr.array[k]=Math.max(bright[k],0.35);crysCount++;remembered++;
+        // the kept letter steps toward you by its brightness — the real gains depth
+        const r=R0-bright[k]*7;
+        pAttr.array[k*3]=dir[k].x*r;pAttr.array[k*3+1]=dir[k].y*r;pAttr.array[k*3+2]=dir[k].z*r;
+        pAttr.needsUpdate=true;
+        if((crysCount&3)===0)chime();
+      }}
+    strike=0;
+    reticle.classList.toggle('hot',hot&&!dialogOpen);
+    bAttr.needsUpdate=true;cAttr.needsUpdate=true;
+    rememberedEl.textContent=remembered;
+    const f=M.clamp(frac(),0,1);
+    progEl.style.width=(M.clamp(f/ (inscShown?1:INSCRIBE_AT),0,1)*100)+'%';
+    // act flow
+    if(actIdx===0&&f>=ACTS[1].at)showAct(ACTS[1]);
+    if(actIdx===1&&f>=KEEPER_AT&&!keeperShown){showAct(ACTS[2]);setTimeout(()=>{if(!keeperShown)openKeeper();},2600);}
+    if(name&&!inscCued&&f>=INSCRIBE_AT){inscCued=true;showAct(ACTS[3]);setTimeout(()=>{if(!inscShown)openInscribe();},2400);}
+    midhint.classList.toggle('show',actIdx>=1&&f<0.3&&!dialogOpen);
+  }
 
-  // letters reveal ahead + your lamp pops them
-  let hot=false;
-  sprites.forEach(sp=>{const u=sp.userData;const dt=u.t-p;
-    const aheadV=M.clamp((0.36-dt)/0.42,0,1),behind=M.clamp(1+dt*12,0,1);
-    let o=aheadV*behind*0.6;const df=sp.position.distanceTo(focus);const nl=M.clamp(1-df/14,0,1);
-    if(nl>0.5)hot=true;o=Math.max(o,nl);if(u.awoken)o=Math.max(o,0.78);
-    if(u.flare>0){u.flare*=0.92;o=Math.min(1,o+u.flare);}
-    sp.material.opacity=o*(0.72+0.28*Math.sin(tm*u.speed+u.phase));
-    sp.scale.setScalar(u.base*(1+Math.sin(tm*u.speed+u.phase)*0.06+(u.awoken?0.25:0)+u.flare*0.8));});
-  reticle.classList.toggle('hot',hot);
-  corridor.rotation.z=Math.sin(tm*0.05)*0.02;dust.rotation.y=tm*0.008;
+  // condensation — the remembered world flies into the stone
+  if(condensing>0&&condensing<1){condensing=Math.min(1,condensing+0.006);
+    const e=condensing<0.5?2*condensing*condensing:1-Math.pow(-2*condensing+2,2)/2;
+    for(let k=0;k<NP;k++){
+      if(cAttr.array[k]>0){
+        pAttr.array[k*3]=M.lerp(dir[k].x*(R0-bAttr.array[k]*7),targets[k*3],e);
+        pAttr.array[k*3+1]=M.lerp(dir[k].y*(R0-bAttr.array[k]*7),targets[k*3+1],e);
+        pAttr.array[k*3+2]=M.lerp(dir[k].z*(R0-bAttr.array[k]*7),targets[k*3+2],e);
+      }else{bAttr.array[k]*=0.97;}}
+    pAttr.needsUpdate=true;bAttr.needsUpdate=true;
+    wallMat.uniforms.uFade.value=1;}
+  fadeIns.forEach(s=>{if(s.userData.fadeIn>0){s.material.opacity=Math.min(0.95,s.material.opacity+0.012);}});
 
-  // the Keeper: visible as you approach the span, intense while blocking
-  const nearK=M.clamp(1-Math.abs(p-0.50)/0.16,0,1);
-  const block=name?0:1;
-  stitch.material.opacity=Math.max(nearK,block*M.clamp((p-0.40)/0.1,0,1))*(0.45+0.3*Math.sin(tm*2.2));
-  stitch.scale.setScalar(11+Math.sin(tm*1.6)*1.8);
-  keeperRing.forEach(s=>{const a=s.userData.a+tm*0.5;s.position.set(stitchPos.x+Math.cos(a)*5,stitchPos.y+Math.sin(a*1.3)*3,stitchPos.z+Math.sin(a)*5);
+  // the Keeper breathes while it blocks; recedes once named
+  const nearK=keeperShown&&!name?1:M.clamp(frac()-0.35,0,0.25)*2;
+  stitch.material.opacity=(inscribed?0.12:nearK)*(0.45+0.3*Math.sin(tm*2.2));
+  stitch.scale.setScalar(10+Math.sin(tm*1.6)*1.6);
+  keeperRing.forEach(s=>{const a=s.userData.a+tm*0.5;
+    s.position.set(keeperPos.x+Math.cos(a)*4.6,keeperPos.y+Math.sin(a*1.3)*2.6,keeperPos.z+Math.sin(a)*4.6);
     s.material.opacity=stitch.material.opacity*0.8;});
 
-  // the mesh — live peers if a server is set, else simulated ghost nodes (graceful fallback)
-  Mesh.send(p);
-  simGhost+=((Mesh.live?0:1)-simGhost)*0.05;                 // fade the simulated nodes out once real peers are live
-  ghosts.forEach((g,gi)=>{
-    if(communion){const a=tm*0.32+gi*1.256;                  // act v — gather around the digitalkar
-      g.s.position.set(end.x+Math.cos(a)*8,end.y+2+Math.sin(a*1.2)*2.2,end.z-8+Math.sin(a)*4);
-      g.s.material.opacity=simGhost*0.6*(0.6+0.4*Math.sin(tm*2.2+gi));return;}
-    g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
-    const c=pathAt(g.t);g.s.position.set(c.x+Math.sin(tm*1.3+g.jit)*1.6,c.y+1.3,c.z);
-    const dz=Math.abs(g.s.position.z-camera.position.z);
-    g.s.material.opacity=simGhost*M.clamp(1-dz/130,0,1)*0.5*(0.6+0.4*Math.sin(tm*3+g.jit));});
-  const present=Mesh.update(tm,camera.position.z,communion);
-  fieldGroup.rotation.y=Math.sin(tm*0.1)*0.08;fieldGroup.position.y=Math.sin(tm*0.4)*0.3;
+  // presence
+  Mesh.send(lampPt,frac());
+  const present=Mesh.update(tm,communion);
+  if(communion){fieldGroup.rotation.y=Math.sin(tm*0.08)*0.1;fieldGroup.position.y=Math.sin(tm*0.35)*0.25;}
+  dust.rotation.y=tm*0.006;
+  wall.rotation.z=Math.sin(tm*0.04)*0.012*sway;
 
-  // digitalkar ignites at the end / after inscription
-  const arrive=M.clamp((p-0.82)/0.16,0,1);
-  myKh.material.opacity=inscribed?0.95:arrive*0.85;myKh.scale.setScalar(8+Math.sin(tm*0.8)*0.6);
-
-  // act cards
-  let ai=0;for(let i=0;i<ACTS.length;i++)if(p>=ACTS[i].at)ai=i;
-  if(started&&ai>actIdx&&ai>0&&!dialogOpen&&!heroEl.classList.contains('in')){actIdx=ai;showAct(ACTS[ai]);}
-
-  // dialogue triggers
-  if(started&&!name&&!keeperShown&&p>=0.47)openKeeper();
-  if(started&&name&&!inscShown&&p>=0.86)openInscribe();
-
-  // hud
-  midhint.classList.toggle('show',started&&p<0.42&&carried<3);
-  progEl.style.width=(p*100)+'%';
-  if(tm-latT>0.5){latT=tm;
-    latEl.textContent='lat '+((Mesh.live&&Mesh.lat>0)?Mesh.lat:(121+Math.floor(Math.random()*108)))+'ms';
-    bpm=M.clamp(bpm+(Math.random()-0.5)*4,62,92);bpmEl.textContent=Math.round(bpm);
+  wallMat.uniforms.uTime.value=tm;
+  if(tm-hudT>0.5){hudT=tm;
     presentEl.textContent=Mesh.live?(present>0?(present+' present'):'alone here'):'solo';}
-  // heartbeat → screen pulse (the measurable shadow)
-  if(started&&tm>=nextBeat){nextBeat=tm+60/bpm;pulseV=0.7;}
-  pulseV*=0.86;pulse.style.opacity=(pulseV*0.18).toFixed(3);
-
   renderer.render(scene,camera);requestAnimationFrame(frame);
 }
 function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
