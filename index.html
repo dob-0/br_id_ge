@@ -93,6 +93,13 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 #closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--digitalkar); font-size:clamp(1rem,2.4vw,1.3rem);
   max-width:36ch; margin-top:1.6rem; min-height:1.4em}
 
+/* shown only when the stone could not reach the shared field — the rite must
+   not promise a permanence it did not achieve */
+#unjoined{font-family:'Space Mono',monospace; text-transform:lowercase; letter-spacing:.12em;
+  color:var(--dim); font-size:.66rem; max-width:40ch; margin-top:.9rem; line-height:1.9; opacity:0;
+  transition:opacity 1.4s ease}
+#unjoined.show{opacity:1}
+
 #intro{position:fixed; z-index:40; inset:0; background:#000; display:flex; align-items:center; justify-content:center;
   text-align:center; transition:opacity .7s; cursor:pointer; padding:1.5rem}
 #intro .t{font-family:'Space Mono',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); font-size:.76rem; max-width:44ch; line-height:2.1}
@@ -147,6 +154,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
   <div class="hint" id="inscHint">press enter — your world condenses into the stone</div>
   <div id="closing"></div>
+  <div id="unjoined"></div>
   <a id="enterBtn">↻ cross again</a>
 </div>
 
@@ -450,7 +458,8 @@ nameIn.addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault
 
 // inscription → condensation into the digitalkar
 const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById('wordIn'),
-  enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint');
+  enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint'),
+  unjoined=document.getElementById('unjoined');
 function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
 const targets=new Float32Array(NP*3);
 function stonePoint(){ // a slab of memory: rounded stele proportions, denser toward the heart
@@ -459,8 +468,19 @@ function stonePoint(){ // a slab of memory: rounded stele proportions, denser to
     if(e<=1)return[x*1.7,y*3.0+0.6,z*0.55-14];}}
 function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
-  // the crossing leaves a mark in di.iiii — fire-and-forget, the rite never blocks on it
-  if(FIELD_URL){fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})}).catch(()=>{});}
+  // The crossing leaves a mark in di.iiii. The rite still never blocks on it —
+  // but it no longer pretends the stone landed when it didn't. Act V promises
+  // the word joins the others forever; if the field refuses (space closed to
+  // inscriptions, network gone), the visitor is told, quietly, in the same voice.
+  if(FIELD_URL){
+    fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})})
+      .then(r=>{if(!r.ok)throw new Error(String(r.status));})
+      .catch(()=>{
+        if(!unjoined)return;
+        unjoined.textContent='the far field did not answer — your stone stays here, on this device, and has not yet joined the others.';
+        unjoined.classList.add('show');
+      });
+  }
   document.getElementById('fieldn').textContent=field.length;
   for(let k=0;k<NP;k++){const t=stonePoint();targets[k*3]=t[0];targets[k*3+1]=t[1];targets[k*3+2]=t[2];}
   condensing=0.0001;
