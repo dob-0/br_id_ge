@@ -29,7 +29,7 @@
   .label a{color:inherit;text-decoration:none}
 
   /* floating letterforms — the bridge, dimly present behind everything */
-  #letters{position:fixed;inset:0;pointer-events:none;z-index:0}
+  #letters{position:fixed;inset:0;pointer-events:none;z-index:0;transition:transform .6s ease-out}
   #letters span{position:absolute;font-family:'Space Mono',monospace;color:var(--stone);
     animation:drift var(--t) ease-in-out infinite alternate;will-change:opacity,transform}
   @keyframes drift{
@@ -37,6 +37,19 @@
     to{opacity:.16;transform:translateY(-14px)}
   }
   @media (prefers-reduced-motion: reduce){ #letters span{animation:none;opacity:.08} }
+
+  /* the lamp — a soft amber glow that follows the cursor, gantegh-lamp motif */
+  #lamp{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .4s ease;
+    background:radial-gradient(320px circle at var(--lx,50%) var(--ly,50%),rgba(255,179,71,.08),transparent 70%)}
+  body.lit #lamp{opacity:1}
+  @media (hover:none){ #lamp{display:none} }
+
+  /* hover-reveal transliteration on the Armenian word */
+  .arm{position:relative;cursor:default}
+  .arm .gloss{font-family:'Outfit',sans-serif;color:var(--dim);letter-spacing:0.02em;font-size:12px;
+    max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .5s ease,opacity .3s ease .1s;
+    display:inline-block;vertical-align:middle}
+  .arm:hover .gloss,.arm:focus-within .gloss{max-width:220px;opacity:1}
 
   main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;
        max-width:640px;width:100%;margin:0 auto;padding:28px 24px 40px}
@@ -66,7 +79,7 @@
   .fact:first-child .k{color:var(--amber)}
   .fact p{font-size:13px;line-height:1.5;margin-top:5px}
 
-  footer{position:relative;z-index:1;max-width:640px;width:100%;margin:0 auto;padding:0 24px 26px;
+  footer{position:relative;z-index:1;max-width:640px;width:100%;margin:0 auto;padding:0 24px 64px;
          display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 /* motion — entrance + micro-interactions (skipped under reduced motion) */
@@ -79,6 +92,13 @@
 }
 .cross{transition:box-shadow .25s,letter-spacing .25s,border-color .25s}
 .cross:hover{box-shadow:0 0 34px rgba(0,229,255,.22);letter-spacing:.34em}
+
+/* three doors — quiet secondary paths; "cross the bridge" stays the one primary action */
+.paths{margin-top:18px;display:flex;gap:22px;flex-wrap:wrap}
+.paths a{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:lowercase;
+  color:var(--dim);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.paths a:hover,.paths a:focus-visible{color:var(--txt);border-bottom-color:var(--dim)}
+.paths a b{color:inherit;font-weight:400}
 .fact{transition:border-color .3s}
 .fact:hover{border-top-color:var(--acc)}
 a{transition:color .2s,border-color .2s}
@@ -87,6 +107,7 @@ a{transition:color .2s,border-color .2s}
 <body>
 
 <div id="letters" aria-hidden="true"></div>
+<div id="lamp" aria-hidden="true"></div>
 
 <div class="chrome">
   <span class="label">gevorg aram grigoryan · <a href="https://di-studio.xyz">di.ii</a></span>
@@ -95,7 +116,7 @@ a{transition:color .2s,border-color .2s}
 
 <main>
   <h1>br<span>_</span>id<span>_</span>ge</h1>
-  <div class="arm">կ_ա_մ_ու_ր_ջ</div>
+  <div class="arm" tabindex="0">կ_ա_մ_ու_ր_ջ <span class="gloss">— "kamurj," Armenian for bridge</span></div>
 
   <p class="lede">
     <b>br_id_ge</b> / կ_ա_մ_ու_ր_ջ is a bridge between the real world and a shared
@@ -107,6 +128,12 @@ a{transition:color .2s,border-color .2s}
   </p>
 
   <a class="cross" href="https://di-studio.xyz/br_id_ge/p/newww" target="_top">cross the bridge →</a>
+
+  <nav class="paths">
+    <a href="https://di-studio.xyz/br_id_ge/p/br-id-ge-jam" target="_top">artist? <b>the open jam →</b></a>
+    <a href="https://di-studio.xyz/br_id_ge/p/br-id-ge-hosq" target="_top">hosq / press <b>project + rider →</b></a>
+    <a href="https://di-studio.xyz/br_id_ge/p/br-id-ge-field" target="_top">the field <b>see who's crossed →</b></a>
+  </nav>
 
   <div class="facts">
     <div class="fact"><div class="k">notations #2</div><p>jul 20 – aug 2 2026 · state philharmonia of armenia · hosted by hosq</p></div>
@@ -133,6 +160,23 @@ a{transition:color .2s,border-color .2s}
     s.style.setProperty('--t', (4 + Math.random() * 8) + 's');
     s.style.animationDelay = (-Math.random() * 8) + 's';
     layer.appendChild(s);
+  }
+
+  const prefersMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (prefersMotion && window.matchMedia('(hover: hover)').matches) {
+    document.body.classList.add('lit');
+    let raf = null;
+    window.addEventListener('pointermove', (e) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const xPct = (e.clientX / window.innerWidth) * 100;
+        const yPct = (e.clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--lx', xPct + '%');
+        document.documentElement.style.setProperty('--ly', yPct + '%');
+        layer.style.transform = `translate(${(xPct - 50) * -0.08}px, ${(yPct - 50) * -0.08}px)`;
+        raf = null;
+      });
+    });
   }
 </script>
 
