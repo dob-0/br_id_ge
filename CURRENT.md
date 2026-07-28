@@ -14,7 +14,24 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
 **The hosq collaboration only.** Canonical concept & recap: `docs/MASTER_CONTEXT.md` §0
 (one line / one paragraph / one page — every other about-text derives from it).
 
-## Last session (2026-07-28 — THE SCAN finally shipped, mid-festival)
+## Last session (2026-07-29 — the field was closed the whole time; di-bo built)
+
+- **THE BIG ONE: `openInscriptions` was `false` on the prod space.** Every inscription
+  POST 403'd and the rite's client swallowed it (`.catch(()=>{})`), so Act V played its
+  "your word joins everyone who crossed before you" lines unchanged. **Nine days of
+  festival, zero visitor digitalkars** — the field still holds only gevorg·կամուրջ from
+  Jul 13. Flipped back to `true` on prod (verified in the space meta).
+- **The rite no longer lies:** a failed inscription now shows one quiet line in its own
+  register (`#unjoined`), and only on failure — verified headlessly both ways (403 → line
+  shown, 200 → nothing). Pushed; CI auto-synced to prod (token fix from yesterday works).
+- **di-bo built** → `/home/nooo/di-bo`, deployed to VPS `/opt/di-bo`, systemd unit
+  installed but **not started — needs the BotFather token**. Announces crossings to the
+  di + hosq groups, alerts *you* when prod/mesh/inscriptions break, serves the canonical
+  links, owner-only claude relay (off by default). Tests pass from laptop and VPS.
+- ⚠ **Still unproven end to end:** a live crossing. The write test was blocked, so
+  cross at `/p/newww` yourself — it puts a real stone in the field instead of test junk.
+
+## Previous session (2026-07-28 — THE SCAN finally shipped, mid-festival)
 
 - **The scan + the keeper had been sitting unpushed on local `main` for 14 days.**
   Pushed (`3a9acb0`, `534c5d0`, `1eaea46` + the landing pass `f1277bd`). Until today the
