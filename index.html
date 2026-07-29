@@ -17,28 +17,35 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Serif+Armenian:wght@300;500;700&family=Outfit:wght@200;300;600&display=swap" rel="stylesheet">
 <style>
-/* The rite is cold now: light passing through cloth, not a lamp burning oil. The
-   only warm thing left is the core itself — the sun already baked that. */
-:root{ --void:#05080d; --gantegh:#cfe3ff; --stitch:#00e5ff; --real:#e8f2ff;
-  --digitalkar:#cdb98f; --tx:#eaf2fb; --dim:#5f6b7a; --faint:#39424e; }
+/* Tuff. Yerevan is built from it — volcanic stone the sun already baked, cut into
+   arcades. The wall of letters is whole and matte; the visitor is the void carved
+   out of it. Apricot is the only accent, and it is used sparingly, like light on
+   an edge. Nothing here glows: this is stone, not fire, not phosphor. */
+:root{ --void:#17120f; --deep:#0d0a08; --stone:#8b7466; --cut:#d8cbc0;
+  --gantegh:#e89a4c; --stitch:#7fb2c8; --real:#f0a860;
+  --digitalkar:#cdb98f; --tx:#e4dad1; --dim:#7a6a60; --faint:#463c35; }
 *{box-sizing:border-box;margin:0;padding:0}
-::selection{background:rgba(207,227,255,.25);color:#fff}
+::selection{background:rgba(232,154,76,.28);color:#fff}
 html,body{height:100%}
 body{background:var(--void); color:var(--tx); overflow:hidden;
   font-family:'Outfit',sans-serif; -webkit-font-smoothing:antialiased; cursor:none;}
 .mono{font-family:'Space Mono',monospace}
 .arm{font-family:'Noto Serif Armenian',serif}
 #scene{position:fixed; inset:0; width:100vw; height:100vh; z-index:0; display:block}
+/* No soft vignette. The arcade instead: Republic Square's rhythm, hard vertical
+   bays that the letter wall sits inside. */
 #veil{position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(5,8,13,.45) 72%, rgba(5,8,13,.9) 100%)}
+  background:
+    repeating-linear-gradient(90deg, rgba(13,10,8,.55) 0 2px, transparent 2px 148px),
+    linear-gradient(180deg, rgba(13,10,8,.72) 0 6%, transparent 22% 78%, rgba(13,10,8,.85) 100%)}
 #grain{position:fixed; inset:-50%; z-index:2; pointer-events:none; opacity:.045; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation:grain 6s steps(6) infinite}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-2%)}75%{transform:translate(-2%,4%)}100%{transform:translate(0,0)}}
 
 #reticle{position:fixed; z-index:35; width:44px; height:44px; margin:-22px 0 0 -22px; pointer-events:none;
-  border:1px solid rgba(207,227,255,.5); border-radius:50%; transition:width .18s,height .18s,border-color .18s;
-  box-shadow:0 0 26px rgba(207,227,255,.35), inset 0 0 16px rgba(207,227,255,.18)}
+  border:1px solid rgba(232,154,76,.5); border-radius:50%; transition:width .18s,height .18s,border-color .18s;
+  box-shadow:0 0 26px rgba(232,154,76,.35), inset 0 0 16px rgba(232,154,76,.18)}
 #reticle.hot{width:64px;height:64px;border-color:var(--gantegh)}
 /* the hand the lamp can see — drawn as light, never as video */
 #handcan{position:fixed; z-index:34; inset:0; width:100%; height:100%; pointer-events:none; opacity:.9}
@@ -66,14 +73,14 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
 #act.in{opacity:1}
 #act .a{font-family:'Noto Serif Armenian',serif; font-weight:300; color:var(--gantegh);
-  font-size:clamp(2.4rem,8vw,5.5rem); line-height:1; text-shadow:0 0 44px rgba(207,227,255,.45)}
+  font-size:clamp(2.4rem,8vw,5.5rem); line-height:1; text-shadow:0 0 44px rgba(232,154,76,.45)}
 #act .e{font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.46em; text-transform:uppercase; color:var(--dim); margin-top:1.4rem}
 #act .n{font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.3em; color:var(--faint); margin-top:.6rem}
 
 #hero{position:fixed; z-index:21; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
 #hero.in{opacity:1}
-#hero .g{font-family:'Noto Serif Armenian',serif; color:var(--gantegh); font-weight:300; font-size:clamp(2.6rem,9vw,6rem); text-shadow:0 0 44px rgba(207,227,255,.5)}
+#hero .g{font-family:'Noto Serif Armenian',serif; color:var(--gantegh); font-weight:300; font-size:clamp(2.6rem,9vw,6rem); text-shadow:0 0 44px rgba(232,154,76,.5)}
 #hero .s{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:var(--dim); margin-top:1.2rem}
 
 .panel{position:fixed; z-index:25; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -92,8 +99,8 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 .panel .hint{font-family:'Space Mono',monospace; font-size:.64rem; letter-spacing:.2em; color:var(--dim); margin-top:1.1rem}
 #enterBtn{margin-top:2.2rem; display:none; pointer-events:auto; font-family:'Space Mono',monospace; font-size:.8rem;
   letter-spacing:.26em; text-transform:uppercase; color:var(--void); background:var(--gantegh); padding:.9rem 2.2rem;
-  border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(207,227,255,.45); transition:.25s; cursor:pointer}
-#enterBtn:hover{transform:translateY(-2px); box-shadow:0 0 64px rgba(207,227,255,.7)}
+  border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(232,154,76,.45); transition:.25s; cursor:pointer}
+#enterBtn:hover{transform:translateY(-2px); box-shadow:0 0 64px rgba(232,154,76,.7)}
 #closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--digitalkar); font-size:clamp(1rem,2.4vw,1.3rem);
   max-width:36ch; margin-top:1.6rem; min-height:1.4em}
 
@@ -200,7 +207,7 @@ document.fonts&&document.fonts.ready.then(()=>{atlas.dispose();atlas=makeAtlas()
 function glow(hex){const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
   const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,hex);g.addColorStop(.35,hex);g.addColorStop(1,'rgba(0,0,0,0)');
   x.fillStyle=g;x.beginPath();x.arc(s/2,s/2,s/2,0,7);x.fill();return new THREE.CanvasTexture(c);}
-const lampTex=glow('rgba(190,214,242,.9)'),stitchTex=glow('rgba(0,229,255,.8)');
+const lampTex=glow('rgba(240,168,96,.9)'),stitchTex=glow('rgba(127,178,200,.55)');
 // Every stone in the field used to be drawn as ☩ (U+2629, Cross of Jerusalem) —
 // the khachkar we retired, standing in the middle of Act V. A core instead: hot at
 // the heart, cooling to a defined rim. The one warm thing, because the sun baked it.
@@ -238,13 +245,14 @@ wallGeo.setAttribute('aChar',new THREE.BufferAttribute(aChar,1));
 wallGeo.setAttribute('aBright',new THREE.BufferAttribute(aBright,1));
 wallGeo.setAttribute('aCrys',new THREE.BufferAttribute(aCrys,1));
 wallGeo.setAttribute('aSeed',new THREE.BufferAttribute(aSeed,1));
-const wallMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+// NormalBlending, not Additive: stone does not accumulate light, it occludes.
+const wallMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.NormalBlending,
   uniforms:{uAtlas:{value:atlas},uTime:{value:0},uFade:{value:1},uFlick:{value:REDUCED?0.15:1}},
   vertexShader:`attribute float aChar,aBright,aCrys,aSeed;
     varying float vChar,vBright,vCrys,vSeed;
     void main(){vChar=aChar;vBright=aBright;vCrys=aCrys;vSeed=aSeed;
       vec4 mv=modelViewMatrix*vec4(position,1.0);
-      float sz=(aCrys>0.0?1.35:1.0)*(0.65+aBright*0.9);
+      float sz=(aCrys>0.0?1.08:1.0)*(0.66+aBright*0.72);
       gl_PointSize=sz*680.0/-mv.z;gl_Position=projectionMatrix*mv;}`,
   fragmentShader:`uniform sampler2D uAtlas;uniform float uTime,uFade,uFlick;
     varying float vChar,vBright,vCrys,vSeed;
@@ -253,16 +261,18 @@ const wallMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blendi
       vec2 uv=(vec2(col,4.0-row)+vec2(gl_PointCoord.x,1.0-gl_PointCoord.y))/vec2(8.0,5.0);
       float a=texture2D(uAtlas,uv).a;
       if(a<0.05)discard;
-      /* cold: light through cloth, not fire on stone */
-      vec3 live=vec3(0.42,0.56,0.72);    /* not yet arrived — dim, blue */
-      vec3 real=vec3(0.92,0.97,1.00);    /* the moment of arrival — near-white */
-      vec3 stone=vec3(0.58,0.72,0.88);   /* settled into the body — cool */
+      /* tuff: matte stone. nothing glows, nothing flickers — the lamp only cuts. */
+      vec3 rough=vec3(0.545,0.455,0.400);  /* uncut wall */
+      vec3 fresh=vec3(0.949,0.667,0.298);  /* the instant of cutting — apricot */
+      vec3 cut=vec3(0.660,0.610,0.565);    /* a finished cut — barely lighter than the face */
       float o;vec3 c;
-      if(vCrys>0.0){float settle=smoothstep(0.0,2.6,uTime-vCrys);
-        c=mix(real,stone,settle);
-        o=vBright*(0.95-settle*0.30)*(0.86+0.14*sin(uTime*0.7+vSeed));
+      if(vCrys>0.0){float settle=smoothstep(0.0,2.2,uTime-vCrys);
+        c=mix(fresh,cut,settle);
+        /* the instant of cutting is bright; a healed cut goes quiet again, so a
+           swept wall never becomes the loud thing — the void stays the subject */
+        o=(0.66-settle*0.24)+vBright*0.22;
       }else{
-        c=live;o=vBright*0.30*(0.55+0.45*sin(uTime*(1.2+vSeed*0.4)+vSeed*9.0)*uFlick);
+        c=rough;o=vBright*0.62;
       }
       gl_FragColor=vec4(c,o*a*uFade);}`});
 const wall=new THREE.Points(wallGeo,wallMat);scene.add(wall);
@@ -271,15 +281,16 @@ const wall=new THREE.Points(wallGeo,wallMat);scene.add(wall);
 const DUST=900,dpos=new Float32Array(DUST*3);
 for(let i=0;i<DUST;i++){dpos[i*3]=(Math.random()-0.5)*90;dpos[i*3+1]=-10-Math.random()*22;dpos[i*3+2]=-Math.random()*80;}
 const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dpos,3));
-const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0x7d93ad,size:0.06,transparent:true,opacity:.20,blending:THREE.AdditiveBlending,depthWrite:false}));scene.add(dust);
+const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0x6b5a4e,size:0.06,transparent:true,opacity:.28,blending:THREE.AdditiveBlending,depthWrite:false}));scene.add(dust);
 
 // lamp halo at the reticle's world point
 // The halo was a 6-unit amber sun parked in the middle of the frame — the single
 // loudest thing in the piece, and it swallowed the figure. Now it is a small cold
 // point: light through cloth, not fire.
-const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xbcd6f2,transparent:true,opacity:.30,blending:THREE.AdditiveBlending,depthWrite:false}));
-halo.scale.set(2.4,2.4,2.4);scene.add(halo);
-const lampLight=new THREE.PointLight(0x9fc4ea,1.6,80);scene.add(lampLight);
+// the chisel: a small apricot point, the one light in a stone room
+const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xe89a4c,transparent:true,opacity:.34,blending:THREE.AdditiveBlending,depthWrite:false}));
+halo.scale.set(1.7,1.7,1.7);scene.add(halo);
+const lampLight=new THREE.PointLight(0xe89a4c,1.3,80);scene.add(lampLight);
 scene.add(new THREE.AmbientLight(0x101a28,0.7));
 
 // the Keeper — a breathing cyan presence with a ring of letters
@@ -476,9 +487,9 @@ function readHand(nowMs){
     const W=handCan.width=innerWidth,H=handCan.height=innerHeight;
     hctx.clearRect(0,0,W,H);hctx.globalCompositeOperation='lighter';
     const P=lm.map(p=>[(1-p.x)*W,p.y*H]);
-    hctx.strokeStyle='rgba(207,227,255,.22)';hctx.lineWidth=1;
+    hctx.strokeStyle='rgba(232,154,76,.22)';hctx.lineWidth=1;
     hctx.beginPath();for(const[a,b]of HAND_BONES){hctx.moveTo(P[a][0],P[a][1]);hctx.lineTo(P[b][0],P[b][1]);}hctx.stroke();
-    hctx.fillStyle=pinch?'rgba(232,242,255,.9)':'rgba(207,227,255,.55)';
+    hctx.fillStyle=pinch?'rgba(232,242,255,.9)':'rgba(232,154,76,.55)';
     for(const[x,y]of P){hctx.beginPath();hctx.arc(x,y,pinch?2.6:1.8,0,7);hctx.fill();}
   }
 }
@@ -496,23 +507,27 @@ function dreamBody(i,j,t){
   return M.clamp(0.30+(1-d)*0.85,0,1);
 }
 const bright=new Float32Array(NP);
+const inBody=new Uint8Array(NP);
 function sampleWorld(t){
   const lit=camOn&&video&&video.readyState>=2;
   if(lit){vctx.drawImage(video,0,0,VW,VH);}
   const d=lit?vctx.getImageData(0,0,VW,VH).data:null;
+  // pass one — where is the body
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;
+    inBody[k]=(lit&&segHas)?segGrid[k]:(lit?0:(dreamBody(i,j,t)>0?1:0));}
+  // pass two — the wall is whole except where the body has been taken out of it
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
     const k=j*GW+i;
-    // the silhouette decides IF a letter exists here; light decides how strongly
-    let body;
-    if(lit&&segHas)body=segGrid[k];
-    else if(lit)body=1;               // segmentation not up yet — fall back to the frame
-    else body=dreamBody(i,j,t)>0?1:0;
-    if(!body||stipple[k]>0.52){bright[k]=0;continue;} // the void stays void
-    let v;
+    if(inBody[k]){bright[k]=0;continue;}      // you are the absence
+    // masonry: even and matte, each block its own slight tone
+    let v=0.58+stipple[k]*0.30;
+    // light catches the cut edge — the only brightness the wall is given
+    const l=i>0?inBody[k-1]:0,r=i<GW-1?inBody[k+1]:0,
+          u=j<GH-1?inBody[k+GW]:0,dn=j>0?inBody[k-GW]:0;
+    if(l||r||u||dn)v=1.0;
+    // a camera-lit wall still breathes with the room's light, faintly
     if(lit){const px=((GH-1-j)*VW+(VW-1-i))*4;
-      v=(d[px]*0.299+d[px+1]*0.587+d[px+2]*0.114)/255;
-      v=0.42+v*0.75;                  // inside the body, never fully dark
-    }else v=dreamBody(i,j,t);
+      v*=0.86+((d[px]*0.299+d[px+1]*0.587+d[px+2]*0.114)/255)*0.28;}
     bright[k]=M.clamp(v,0,1);
   }
 }
