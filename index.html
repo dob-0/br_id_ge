@@ -125,6 +125,29 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 #whisper.show{opacity:.92}
 #whisper .w{color:var(--dim); letter-spacing:.3em; text-transform:uppercase; font-size:.58rem; margin-right:.9em}
 @media (prefers-reduced-motion: reduce){#grain{animation:none} .chrome .dot,#intro .t span{animation:none}}
+
+/* Phones. The chrome is a three-column flex row; at this width the middle column
+   wrapped straight through the space-name chip the viewer overlays top-left, and
+   the HUD collided with the "made with di.iiii" badge bottom-left. */
+@media (max-width:560px){
+  .chrome{padding:1rem .9rem; align-items:flex-start}
+  /* the viewer overlays its own space-name chip top-left, right on top of ours */
+  .chrome>span:first-child{display:none}
+  .chrome{justify-content:flex-end}
+  /* one line, clipped — it is a status, not a headline, and it was running under
+     the di.iiii link on the right */
+  .chrome #lampState{font-size:.56rem; max-width:42vw; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis}
+  .hud{padding:1rem .9rem 3.1rem; font-size:.56rem}
+  .hud .mid{display:none}
+  #act .a{font-size:clamp(1.9rem,11vw,3.2rem)}
+  #reticle{width:34px;height:34px;margin:-17px 0 0 -17px}
+  #reticle.hot{width:48px;height:48px}
+  /* the arcade bays are too wide to read on a narrow screen */
+  #veil{background:
+    repeating-linear-gradient(90deg, rgba(13,10,8,.5) 0 2px, transparent 2px 84px),
+    linear-gradient(180deg, rgba(13,10,8,.72) 0 8%, transparent 24% 74%, rgba(13,10,8,.88) 100%)}
+}
 </style>
 </head>
 <body>
@@ -496,12 +519,18 @@ function readHand(nowMs){
 // memory mode — no camera (every visitor inside the sandboxed viewer). The bridge
 // dreams a body instead of a room: a standing figure, breathing. Same silhouette
 // language as the lamp-lit version, so the piece reads the same either way.
+// A portrait phone shows a narrower slice of the shell, so the same figure swells
+// to fill the frame and stops reading as a body. Shrink it to match the viewport.
+let bodyK=1;
+function fitBody(){const a=innerWidth/Math.max(1,innerHeight);bodyK=a<0.75?0.58:(a<1.1?0.76:1);}
+fitBody();addEventListener('resize',fitBody);
 function dreamBody(i,j,t){
   const x=(i/(GW-1)-0.5)*2,y=j/(GH-1),br=1+0.035*Math.sin(t*0.8);
-  const tx=x/(0.30*br),ty=(y-0.40)/(0.40*br),torso=tx*tx+ty*ty;
-  const hx=x/0.125,hy=(y-0.865)/0.105,head=hx*hx+hy*hy;
+  const w=0.30*bodyK,h=0.40*bodyK,cy=0.40;
+  const tx=x/(w*br),ty=(y-cy)/(h*br),torso=tx*tx+ty*ty;
+  const hx=x/(0.125*bodyK),hy=(y-(cy+0.465*bodyK))/(0.105*bodyK),head=hx*hx+hy*hy;
   // arms, hung a little away from the body
-  const ax=(Math.abs(x)-0.34)/0.085,ay=(y-0.46)/0.26,arms=ax*ax+ay*ay;
+  const ax=(Math.abs(x)-0.34*bodyK)/(0.085*bodyK),ay=(y-(cy+0.06))/(0.26*bodyK),arms=ax*ax+ay*ay;
   const d=Math.min(torso,head,arms);
   if(d>=1)return 0;
   return M.clamp(0.30+(1-d)*0.85,0,1);
