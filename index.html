@@ -462,10 +462,14 @@ const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById(
   unjoined=document.getElementById('unjoined');
 function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
 const targets=new Float32Array(NP*3);
-function stonePoint(){ // a slab of memory: rounded stele proportions, denser toward the heart
+function corePoint(){ // not a stele — a core. round as a planet's, flattened because the sun
+                      // already baked it, densest at the heart where it is still hot.
   for(;;){const x=(Math.random()*2-1),y=(Math.random()*2-1),z=(Math.random()*2-1);
-    const e=Math.pow(Math.abs(x),2.6)+Math.pow(Math.abs(y),2.2)+Math.pow(Math.abs(z),2.6);
-    if(e<=1)return[x*1.7,y*3.0+0.6,z*0.55-14];}}
+    const r=Math.sqrt(x*x+y*y); if(r>1)continue;
+    // reject outward, so mass gathers at the centre instead of spreading evenly
+    if(Math.random()>Math.pow(1-r*0.82,1.5))continue;
+    const lens=Math.sqrt(1-r*r); // thick through the middle, thinning to nothing at the rim
+    return[x*2.35,y*2.35+0.3,z*0.5*lens-14];}}
 function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
   const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
   // The crossing leaves a mark in di.iiii. The rite still never blocks on it —
@@ -482,14 +486,14 @@ function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;
       });
   }
   document.getElementById('fieldn').textContent=field.length;
-  for(let k=0;k<NP;k++){const t=stonePoint();targets[k*3]=t[0];targets[k*3+1]=t[1];targets[k*3+2]=t[2];}
+  for(let k=0;k<NP;k++){const t=corePoint();targets[k*3]=t[0];targets[k*3+1]=t[1];targets[k*3+2]=t[2];}
   condensing=0.0001;
   if(video&&video.srcObject){video.srcObject.getTracks().forEach(t=>t.stop());camOn=false;lampEl.textContent='lamp at rest';}
   // name (amber) above the stone, the word (stone-gold) upon it
   [...(name||'')].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphSpriteTex(ch,'rgba(255,179,71,.95)'),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
-    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.15,4.6,-14);s.scale.set(1.4,1.4,1.4);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
+    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.15,3.9,-14);s.scale.set(1.4,1.4,1.4);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
   [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphSpriteTex(ch,'rgba(205,185,143,.95)'),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
-    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.05,-3.4,-13.4);s.scale.set(1.15,1.15,1.15);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
+    const s=new THREE.Sprite(m);s.position.set((i-(ar.length-1)/2)*1.05,-0.85,-13.4);s.scale.set(1.15,1.15,1.15);s.userData.fadeIn=1;scene.add(s);fadeIns.push(s);});
   wordIn.style.display='none';inscHint.style.display='none';inscEl.querySelector('.q').style.display='none';
   // ── act v — ԱՐՁԱԳԱՆՔ (Echo): the field surfaces; those present gather ──
   inscEl.querySelector('.lbl').innerHTML='ԱՐՁԱԳԱՆՔ · echo · act v';
