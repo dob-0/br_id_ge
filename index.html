@@ -38,6 +38,8 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
   border:1px solid rgba(255,179,71,.5); border-radius:50%; transition:width .18s,height .18s,border-color .18s;
   box-shadow:0 0 26px rgba(255,179,71,.35), inset 0 0 16px rgba(255,179,71,.18)}
 #reticle.hot{width:64px;height:64px;border-color:var(--gantegh)}
+/* the hand the lamp can see — drawn as light, never as video */
+#handcan{position:fixed; z-index:34; inset:0; width:100%; height:100%; pointer-events:none; opacity:.9}
 #reticle::after{content:''; position:absolute; inset:47%; background:var(--gantegh); border-radius:50%}
 
 .chrome{position:fixed; z-index:30; left:0; right:0; top:0; pointer-events:none;
@@ -121,6 +123,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 <div id="veil"></div>
 <div id="grain"></div>
 <div id="reticle"></div>
+<canvas id="handcan" aria-hidden="true"></canvas>
 
 <div class="chrome mono">
   <span><b>br_id_ge</b> &nbsp;·&nbsp; v.oooooo 3 — the scan</span>
@@ -364,12 +367,68 @@ if(FIELD_URL){fetch(FIELD_URL+'/scene').then(r=>r.ok?r.json():Promise.reject()).
 const VW=64,VH=36;
 const vcan=document.createElement('canvas');vcan.width=VW;vcan.height=VH;const vctx=vcan.getContext('2d',{willReadFrequently:true});
 let video=null,camOn=false,camDenied=false;
+// Facing the visitor by default: the rite asks for a dark room, and a rear camera
+// aimed into that darkness returns nothing to crystallize — you never see yourself
+// arrive. ?cam=environment for an installation camera pointed at the space instead.
+const CAM_FACING=(new URLSearchParams(location.search).get('cam')||'user');
 function openLamp(){return (navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:640},height:{ideal:360}},audio:false})
+  navigator.mediaDevices.getUserMedia({video:{facingMode:CAM_FACING,width:{ideal:640},height:{ideal:360}},audio:false})
   :Promise.reject(new Error('no mediaDevices')))
   .then(stream=>{video=document.createElement('video');video.srcObject=stream;video.muted=true;video.setAttribute('playsinline','');
-    return video.play().then(()=>{camOn=true;});})
+    return video.play().then(()=>{camOn=true;openHands();});})
   .catch(()=>{camDenied=true;});}
+
+// ── the hand is the lamp (MediaPipe) ──
+// Without this the camera is scenery: it tints the letters and nothing you do
+// changes anything, because the lamp was aimed by the mouse. Now the lamp follows
+// your hand and a pinch strikes it. Entirely optional — if the CDN, the GPU or the
+// model is unavailable the pointer keeps working exactly as before.
+let hands=null,handSeen=0,handPt={x:0,y:0},handHas=false,pinch=false,pinchWas=false;
+const handCan=document.getElementById('handcan'),hctx=handCan?handCan.getContext('2d'):null;
+const HAND_CDN='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+async function openHands(){
+  if(hands||new URLSearchParams(location.search).get('hands')==='0')return;
+  try{
+    const vision=await import(HAND_CDN+'/vision_bundle.mjs');
+    const files=await vision.FilesetResolver.forVisionTasks(HAND_CDN+'/wasm');
+    hands=await vision.HandLandmarker.createFromOptions(files,{
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},
+      numHands:1,runningMode:'VIDEO'});
+    if(lampEl)lampEl.textContent='lamp open — your hand carries it';
+  }catch(e){hands=null;} // silent: the rite never depends on the network
+}
+// 21 landmarks, drawn as small lights — proof the lamp sees you
+const HAND_BONES=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+let handLast=0;
+function readHand(nowMs){
+  if(!hands||!camOn||!video||video.readyState<2)return;
+  if(nowMs-handLast<33)return; // ~30Hz is plenty for a hand; the render stays at 60
+  handLast=nowMs;
+  let res;try{res=hands.detectForVideo(video,nowMs);}catch(e){return;}
+  const lm=res&&res.landmarks&&res.landmarks[0];
+  if(!lm){handHas=false;if(hctx)hctx.clearRect(0,0,handCan.width,handCan.height);return;}
+  handHas=true;handSeen=nowMs;
+  // mirror x: a front camera shows you your reflection, so reach right → go right
+  const px=(1-lm[9].x)*innerWidth,py=lm[9].y*innerHeight;
+  handPt.x=handPt.x?handPt.x+(px-handPt.x)*0.35:px;   // smooth, or the lamp jitters
+  handPt.y=handPt.y?handPt.y+(py-handPt.y)*0.35:py;
+  pointAt(handPt.x,handPt.y);
+  // pinch = strike, the gesture equivalent of the click
+  const dx=lm[4].x-lm[8].x,dy=lm[4].y-lm[8].y,sx=lm[0].x-lm[9].x,sy=lm[0].y-lm[9].y;
+  const span=Math.hypot(sx,sy)||1;pinch=Math.hypot(dx,dy)/span<0.45;
+  if(pinch&&!pinchWas&&started&&!dialogOpen&&!inscribed)strike=1;
+  pinchWas=pinch;
+  if(hctx){
+    const W=handCan.width=innerWidth,H=handCan.height=innerHeight;
+    hctx.clearRect(0,0,W,H);hctx.globalCompositeOperation='lighter';
+    const P=lm.map(p=>[(1-p.x)*W,p.y*H]);
+    hctx.strokeStyle='rgba(255,179,71,.22)';hctx.lineWidth=1;
+    hctx.beginPath();for(const[a,b]of HAND_BONES){hctx.moveTo(P[a][0],P[a][1]);hctx.lineTo(P[b][0],P[b][1]);}hctx.stroke();
+    hctx.fillStyle=pinch?'rgba(255,230,191,.85)':'rgba(255,179,71,.55)';
+    for(const[x,y]of P){hctx.beginPath();hctx.arc(x,y,pinch?2.6:1.8,0,7);hctx.fill();}
+  }
+}
 // memory mode — when the lamp cannot open, the bridge remembers a room for you
 function dreamBright(i,j,t){const x=i/GW,y=j/GH;
   return M.clamp(0.5+0.30*Math.sin(x*9+t*0.21)+0.26*Math.sin(y*7-t*0.17+x*4)+0.22*Math.sin((x+y)*13+t*0.11),0,1);}
@@ -397,7 +456,7 @@ const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
 const reticle=document.getElementById('reticle');
 function pointAt(cx,cy){mouse.x=cx/innerWidth-0.5;mouse.y=cy/innerHeight-0.5;mouse.px=cx;mouse.py=cy;
   reticle.style.left=cx+'px';reticle.style.top=cy+'px';}
-addEventListener('mousemove',e=>pointAt(e.clientX,e.clientY));
+addEventListener('mousemove',e=>{if(handHas)return;pointAt(e.clientX,e.clientY);});
 addEventListener('touchstart',e=>{if(e.touches[0])pointAt(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
 addEventListener('touchmove',e=>{if(e.touches[0])pointAt(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
 
@@ -525,6 +584,8 @@ const clock=new THREE.Clock();
 function frame(){
   const tm=clock.getElapsedTime();
   const sway=REDUCED?0.2:1;
+
+  readHand(performance.now());
 
   // the lamp points where you point — angles come straight from the pointer,
   // never from the (gently swaying) camera, so aim can't feed back into itself
