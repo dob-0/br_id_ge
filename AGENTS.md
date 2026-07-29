@@ -4,7 +4,7 @@ Short routing guide for AI agents working in `br_id_ge`.
 
 ## What This Project Is
 
-`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Inscription → Echo), single-file Three.js in `index.html` — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
+`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Notation → Echo), single-file Three.js in `index.html` — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
 
 Current focus: **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq) — theme "Rituals"/Communitas. Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
 

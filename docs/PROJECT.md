@@ -34,10 +34,9 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
    *duduk* dam-drone.
 3. **Witness** — the Keeper (archivist, not oracle) blocks the span and asks who
    you are and what you carry.
-4. **Inscription** — a **digitalkar**, the digital stone: your name in rigid
-   *Erkatagir* at its base, your word in decorative *Trchnagir* woven through
-   its body.
-5. **Echo** — the shared field: every inscribed stone persists; with the live
+4. **Notation** (ՆՈԹԱԳՐՈՒԹՅՈՒՆ) — a **digitalkar**, the digital stone: your name in
+   rigid *Erkatagir*, your word in decorative *Trchnagir* upon the face of the core.
+5. **Echo** — the shared field: every core persists; with the live
    co-presence mesh, others crossing now are present with you.
 
 ## 2. Notations #2 · hosted by hosq

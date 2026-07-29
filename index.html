@@ -149,7 +149,7 @@ body{background:var(--void); color:var(--tx); overflow:hidden;
 </div>
 
 <div class="panel insc" id="inscribe">
-  <div class="lbl">ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ · inscription</div>
+  <div class="lbl">ՆՈԹԱԳՐՈՒԹՅՈՒՆ · notation</div>
   <div class="q">What do you carry?<span class="arm">Ի՞նչ ես տանում կամրջի վրայով։</span></div>
   <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
   <div class="hint" id="inscHint">press enter — your world condenses into the stone</div>
@@ -437,7 +437,7 @@ intro.addEventListener('click',begin);
 const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — open the lamp',at:0.001},
   {a:'ԱՆՑՈՒՄ',e:'The Crossing',n:'act ii — the world enters as letters',at:0.08},
   {a:'ՎԿԱ',e:'The Witness',n:'act iii — the keeper of memory',at:KEEPER_AT},
-  {a:'ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ',e:'Inscription',n:'act iv — condense what you carry',at:INSCRIBE_AT}];
+  {a:'ՆՈԹԱԳՐՈՒԹՅՈՒՆ',e:'Notation',n:'act iv — condense what you carry',at:INSCRIBE_AT}];
 let actIdx=-1;const actEl=document.getElementById('act');
 function showAct(o){actEl.style.transition='';actEl.style.opacity='';
   actEl.querySelector('.a').textContent=o.a;actEl.querySelector('.e').textContent=o.e;actEl.querySelector('.n').textContent=o.n;

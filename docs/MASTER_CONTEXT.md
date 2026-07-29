@@ -33,7 +33,7 @@ THE RECAP — seven organs, where each one stands (2026-07-29, festival day 10 o
 | organ | in one sentence | status |
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Inscription → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/p/newww (memory mode inside the viewer; camera tier needs a top-level route) |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/p/newww (memory mode inside the viewer; camera tier needs a top-level route) |
 | the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /p/br-id-ge-field |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — restored 2026-07-28 after 8 silent days down |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · ⚠ waiting on slot dates |
@@ -130,7 +130,7 @@ changes. Nothing in this section is done by remembering.
 - **Light is the medium** (see §6).
 - Communitas — the goal of the ritual; the solo rite resolves into a shared,
   persistent field (Act V "Echo" + live co-presence mesh).
-- The five acts: Threshold → Crossing → Witness → Inscription → Echo.
+- The five acts: Threshold → Crossing → Witness → Notation → Echo.
 
 5. Research → Practice (what the research commits the piece to)
 
