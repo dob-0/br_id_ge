@@ -188,22 +188,37 @@ function dreamed(i,j,t){
 // ── the outline, and the letters that live on it ──────────────────────────
 // Each edge cell holds one glyph. Unread it is a faint point; read it is a letter.
 // Nothing else is ever drawn.
-const marks=[]           // {x,y,g,read,t}
-let markAt=new Int32Array(GW*GH).fill(-1)
+// A live camera moves the mask edge every frame. The first version kept every cell
+// that had EVER been an edge, so a real body walking around accreted into a solid
+// mass of letters — 1156 of them in a minute. The outline must TRACK the body:
+// unread points belong to the current edge only. Read letters persist, because they
+// are what the lamp has taken, but they are capped so the screen can never fill.
+const marks=new Map()    // cellIndex -> {i,j,g,read,t}
+const MAX_READ=300
 function rebuildOutline(t){
-  const seen=markAt
+  const cur=new Set()
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
     const k=j*GW+i
-    const on=bodyMask[k]
-    if(!on){continue}
+    if(!bodyMask[k])continue
     const l=i>0?bodyMask[k-1]:0, r=i<GW-1?bodyMask[k+1]:0
     const u=j>0?bodyMask[k-GW]:0, d=j<GH-1?bodyMask[k+GW]:0
-    const edge=!(l&&r&&u&&d)
-    if(!edge){continue}
-    if(STEP>1&&((i%STEP)||(j%STEP))){continue}
-    if(seen[k]===-1){
-      seen[k]=marks.length
-      marks.push({i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0})
+    if(l&&r&&u&&d)continue
+    if(STEP>1&&((i%STEP)||(j%STEP)))continue
+    cur.add(k)
+    if(!marks.has(k))marks.set(k,{i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0})
+  }
+  let readCount=0
+  for(const [k,m] of marks){
+    if(m.read){readCount++;continue}
+    if(!cur.has(k))marks.delete(k)          // the body moved on
+  }
+  // oldest read letters give way, so the reading stays a contour and never a field
+  if(readCount>MAX_READ){
+    let over=readCount-MAX_READ
+    for(const [k,m] of marks){
+      if(!m.read)continue
+      marks.delete(k)
+      if(--over<=0)break
     }
   }
 }
@@ -489,7 +504,7 @@ door.addEventListener('touchend',e=>{e.preventDefault();begin()},{passive:false}
 // Three things reach the screen: unread points, read letters, and — at the end —
 // the core. That is the entire visual vocabulary.
 const t0=performance.now()
-let coreCX=0,coreCY=0,coreR=0
+let coreCX=0,coreCY=0,coreR=0,quiet=1
 
 function frame(now){
   const t=(now-t0)/1000
@@ -500,11 +515,13 @@ function frame(now){
   }
   if(started&&!inscribed){
     rebuildOutline(t)
-    target=Math.max(24,Math.round(marks.length*0.55))
+    // a fixed target, not a share of the outline: with a live camera the outline
+    // size swings wildly frame to frame, which made progress lurch and stall
+    target=W<560?110:180
     // reading: the lamp passes over the outline and the letters arrive
     if(P.has){
-      const R=Math.max(46,Math.min(W,H)*0.09), R2=R*R
-      for(const m of marks){
+      const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
+      for(const [,m] of marks){
         if(m.read)continue
         const [x,y]=markScreen(m)
         const dx=x-P.x,dy=y-P.y
@@ -525,7 +542,13 @@ function frame(now){
   coreCX=W*0.5;coreCY=H*0.40;coreR=Math.min(W,H)*0.17
   const ease=condense<0.5?2*condense*condense:1-Math.pow(-2*condense+2,2)/2
 
-  for(const m of marks){
+  // When the Keeper asks, the world goes quiet. This is the fix for the question
+  // being unreadable through the letters, and it is also the right dramaturgy:
+  // the reading stops while you are being addressed.
+  const askOpen=asking!==null
+  quiet+=((askOpen?0.14:1)-quiet)*(REDUCED?1:0.08)
+
+  for(const [,m] of marks){
     let [x,y]=markScreen(m)
     if(inscribed){
       // spiral inward to the rim of the core, flattened
@@ -536,13 +559,13 @@ function frame(now){
     }
     if(m.read){
       const age=Math.min(1,(t-m.t)/1.1)
-      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)
+      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)*quiet
       ctx.fillStyle='#f2efe9'
       ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
     }else{
-      ctx.globalAlpha=0.13
+      ctx.globalAlpha=0.13*quiet
       ctx.fillStyle='#f2efe9'
       ctx.fillRect(x-0.6,y-0.6,1.2,1.2)
     }
@@ -565,7 +588,7 @@ function frame(now){
   // the others, one faint point each — no labels, no lamps, no rings
   if(Mesh.peers.size){
     for(const[,pr]of Mesh.peers){
-      ctx.globalAlpha=0.34
+      ctx.globalAlpha=0.34*quiet
       ctx.fillStyle='#f2efe9'
       ctx.beginPath();ctx.arc((1-pr.x)*W,pr.y*H,2.2,0,6.2832);ctx.fill()
     }
@@ -573,10 +596,10 @@ function frame(now){
 
   // the lamp itself: a single ring. One mark, not three.
   if(started&&!inscribed&&P.has){
-    ctx.globalAlpha=0.5
+    ctx.globalAlpha=0.5*quiet
     ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
-    ctx.globalAlpha=0.9
+    ctx.globalAlpha=0.9*quiet
     ctx.beginPath();ctx.arc(P.x,P.y,1.4,0,6.2832);ctx.fill()
   }
 
