@@ -72,10 +72,11 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 .end .again:hover,.end .again:focus-visible{color:var(--ink);border-bottom-color:var(--dim)}
 
 /* LAYER 3 — one status line, bottom left. Nothing else. */
-#state{position:fixed;z-index:3;left:0;bottom:0;
-  padding:1.1rem max(1.1rem,env(safe-area-inset-left));
+/* right-hand side: the di.iiii viewer overlays its own badge bottom-left */
+#state{position:fixed;z-index:3;right:0;bottom:0;
+  padding:1.1rem max(1.1rem,env(safe-area-inset-right));
   font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
-  pointer-events:none;display:flex;gap:1.4rem;flex-wrap:wrap}
+  pointer-events:none;display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
 #state b{font-weight:400;color:var(--dim)}
 
 /* the door */
@@ -91,6 +92,10 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 
 @media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}}
 @media (pointer:coarse){body{cursor:auto}}
+@media (max-width:560px){
+  #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
+  #door .t{letter-spacing:.2em;line-height:2}
+}
 </style>
 </head>
 <body>
@@ -156,10 +161,16 @@ addEventListener('resize',resize)
 const GW=96,GH=54
 const bodyMask=new Uint8Array(GW*GH)
 let figW=0.26,figH=0.40,figY=0.50
+// STEP thins the outline on narrow screens: at 96 columns across a phone the cells
+// are ~4px apart while a letter is ~13px, so every glyph collided with its
+// neighbours. FS keeps the letter proportional to the space it actually has.
+let STEP=1,FS=13
 function fitFigure(){
   const a=W/Math.max(1,H)
   figW=a<0.75?0.20:(a<1.2?0.24:0.17)
   figH=a<0.75?0.34:0.40
+  STEP=W<560?2:1
+  FS=clamp((W/GW)*STEP*1.35,10,17)
 }
 
 // memory mode — no camera (every visitor inside the sandboxed viewer). A standing
@@ -189,6 +200,7 @@ function rebuildOutline(t){
     const u=j>0?bodyMask[k-GW]:0, d=j<GH-1?bodyMask[k+GW]:0
     const edge=!(l&&r&&u&&d)
     if(!edge){continue}
+    if(STEP>1&&((i%STEP)||(j%STEP))){continue}
     if(seen[k]===-1){
       seen[k]=marks.length
       marks.push({i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0})
@@ -526,7 +538,7 @@ function frame(now){
       const age=Math.min(1,(t-m.t)/1.1)
       ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)
       ctx.fillStyle='#f2efe9'
-      ctx.font='300 '+(13+age*3).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
     }else{
