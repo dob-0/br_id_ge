@@ -600,17 +600,37 @@ function buildSharedBody(){
   for(const [,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y}
   const top=H*0.05, bot=H*0.74, span=Math.max(1,hi-lo)
   for(const p of pts)p[1]=top+((p[1]-lo)/span)*(bot-top)
-  // every crossing contributes the letters of the word it carried
-  const pool=[]
+  // Order the outline as a contour, not in scan order, so words laid along it read
+  // as words. Angular sort around the centroid is enough for a standing figure.
+  let cx=0,cy=0
+  for(const [x,y] of pts){cx+=x;cy+=y}
+  cx/=pts.length;cy/=pts.length
+  pts.sort((a,b)=>Math.atan2(a[1]-cy,a[0]-cx)-Math.atan2(b[1]-cy,b[0]-cx))
+
+  // Every crossing gives both of its words — the name someone answered with and the
+  // word they carried. They are written around the body whole, so the figure can be
+  // read rather than merely seen.
+  const words=[]
   field.forEach((tag,idx)=>{
-    const w=(String(tag).split('·').pop()||'').trim()
-    for(const ch of [...w].slice(0,10))pool.push({ch,mine:idx===field.length-1})
+    const mine=idx===field.length-1
+    const parts=String(tag).split('·').map(s=>s.trim()).filter(s=>s&&s!=='—')
+    for(const w of parts)words.push({w:[...w].slice(0,14),mine})
   })
-  if(!pool.length)return
-  shared={pts,letters:pts.map((p,n)=>{
-    const src=pool[n%pool.length]
-    return {x:coreCX,y:coreCY,tx:p[0],ty:p[1],ch:src.ch,mine:src.mine,d:Math.random()*0.5}
-  }),t:0}
+  if(!words.length)return
+
+  // lay them end to end around the contour, one letter per point, a gap between
+  const letters=[]
+  let slot=0, wi=0
+  while(slot<pts.length){
+    const src=words[wi%words.length]; wi++
+    for(const ch of src.w){
+      if(slot>=pts.length)break
+      const p=pts[slot++]
+      letters.push({x:coreCX,y:coreCY,tx:p[0],ty:p[1],ch,mine:src.mine,d:Math.random()*0.45})
+    }
+    slot++ // one empty point between words, so they do not run together
+  }
+  shared={pts,letters,t:0}
   const n=field.length
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
