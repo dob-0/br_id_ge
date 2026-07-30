@@ -369,7 +369,7 @@ function drawTracking(){
   }
   if(handLM){
     const P2=handLM.map(l=>[(1-l.x)*W,l.y*H])
-    ctx.globalAlpha=0.30*quiet
+    ctx.globalAlpha=0.5*quiet
     ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
     ctx.beginPath()
     for(const [a,b] of HAND_BONES){ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])}
@@ -814,6 +814,16 @@ function frame(now){
       }
     }
     $('#sRead').textContent=readN
+  // The lamp says what it can actually see, so "is it working?" is never a guess.
+  // A mask that swallows the frame has no edge to read — the only honest advice
+  // is distance.
+  if(embodied){
+    let cover=0;for(let k=0;k<GW*GH;k++)cover+=bodyMask[k]
+    cover/=GW*GH
+    $('#sLamp').textContent=cover>0.9
+      ? 'step back — the lamp needs your edge'
+      : 'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+  }
     advance()
     Mesh.send(clamp(P.x/W,0,1),clamp(P.y/H,0,1),frac())
     if(((now/1000)|0)%3===0)Mesh.sweep()
