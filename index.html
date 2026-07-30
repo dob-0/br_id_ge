@@ -683,11 +683,16 @@ function buildSharedBody(){
     pts.push([(1-(i+0.5)/GW)*W,((j+0.5)/GH)*H])
   }
   if(!pts.length)return
-  // the closing words live at the bottom of the frame; the body sits above them
-  let lo=Infinity,hi=-Infinity
-  for(const [,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y}
-  const top=H*0.05, bot=H*0.74, span=Math.max(1,hi-lo)
-  for(const p of pts)p[1]=top+((p[1]-lo)/span)*(bot-top)
+  // Fill the frame. The dreamed figure is narrow, and at its natural size the shared
+  // body read as a clot in the middle of a large black screen.
+  let lo=Infinity,hi=-Infinity,xlo=Infinity,xhi=-Infinity
+  for(const [x,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y;if(x<xlo)xlo=x;if(x>xhi)xhi=x}
+  const top=H*0.04, bot=H*0.76, span=Math.max(1,hi-lo)
+  const cxm=(xlo+xhi)/2, wide=Math.min(1.55, (W*0.62)/Math.max(1,xhi-xlo))
+  for(const p of pts){
+    p[1]=top+((p[1]-lo)/span)*(bot-top)
+    p[0]=cxm+(p[0]-cxm)*wide
+  }
   // Order the outline as a contour, not in scan order, so words laid along it read
   // as words. Angular sort around the centroid is enough for a standing figure.
   let cx=0,cy=0
@@ -743,6 +748,20 @@ door.addEventListener('touchend',e=>{e.preventDefault();begin()},{passive:false}
 // the core. That is the entire visual vocabulary.
 const t0=performance.now()
 let coreCX=0,coreCY=0,coreR=0,quiet=1,lastT=0
+// where you are, in the frame — the centroid of whatever the lamp can see of you.
+// Falls back to the pointer when there is no camera, so the ending is interactive
+// either way.
+let presX=-1,presY=-1
+function presence(){
+  let sx=0,sy=0,n=0
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;if(bodyMask[k]){sx+=i;sy+=j;n++}}
+  if(n>8&&camOn&&segHas){
+    const tx=(1-((sx/n)+0.5)/GW)*W, ty=(((sy/n)+0.5)/GH)*H
+    presX=presX<0?tx:presX+(tx-presX)*0.18
+    presY=presY<0?ty:presY+(ty-presY)*0.18
+  }else if(P.has){presX=P.x;presY=P.y}
+  else{presX=-1;presY=-1}
+}
 
 function frame(now){
   const t=(now-t0)/1000
@@ -753,6 +772,7 @@ function frame(now){
     for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
   }
   const dt=Math.min(0.1,t-lastT); lastT=t
+  presence()
   // With a front camera your own silhouette reads the letters. Without one there is
   // nothing to move, so the pointer stands in — which is what the sandboxed viewer
   // and every desktop without permission will use.
@@ -834,16 +854,29 @@ function frame(now){
   // the shared body — the core opens and its letters travel out to the figure
   // everyone who ever crossed is holding up
   if(shared){
-    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.011))
+    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.014))
     const S=shared.t
+    // The crossing does not end in a picture. You are still in front of the lamp, and
+    // the body you joined answers where you stand: the words nearest you brighten and
+    // are pushed aside as you move through them.
+    const R=Math.min(W,H)*0.26, live=presX>=0
     ctx.textAlign='center';ctx.textBaseline='middle'
     for(const L of shared.letters){
       const e=clamp((S-L.d)/(1-L.d),0,1)
       const g=e<0.5?2*e*e:1-Math.pow(-2*e+2,2)/2
-      const x=L.x+(L.tx-L.x)*g, y=L.y+(L.ty-L.y)*g
-      ctx.globalAlpha=(L.mine?0.95:0.42)*g
+      let x=L.x+(L.tx-L.x)*g, y=L.y+(L.ty-L.y)*g
+      let near=0
+      if(live&&g>0.6){
+        const dx=x-presX, dy=y-presY, d=Math.hypot(dx,dy)
+        if(d<R){
+          near=1-d/R
+          const push=near*near*26
+          x+=(dx/(d||1))*push; y+=(dy/(d||1))*push
+        }
+      }
+      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.52)+near*0.48)*g)
       ctx.fillStyle='#f2efe9'
-      ctx.font='300 '+(L.mine?FS*1.15:FS).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.font='300 '+((L.mine?FS*1.15:FS)*(1+near*0.35)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.fillText(L.ch,x,y)
     }
   }
