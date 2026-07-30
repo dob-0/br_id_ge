@@ -204,7 +204,7 @@ function dreamed(i,j,t){
 const marks=new Map()    // cellIndex -> {i,j,g,read,t}
 let everSeen=0           // distinct cells the outline has ever offered
 const MAX_READ=300
-function rebuildOutline(t){
+function rebuildOutline(t,dt,embodied){
   const cur=new Set()
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
     const k=j*GW+i
@@ -214,7 +214,16 @@ function rebuildOutline(t){
     if(l&&r&&u&&d)continue
     if(STEP>1&&((i%STEP)||(j%STEP)))continue
     cur.add(k)
-    if(!marks.has(k)){marks.set(k,{i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0});everSeen++}
+    let m=marks.get(k)
+    if(!m){m={i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0,heat:0};marks.set(k,m);everSeen++}
+    // THE BODY IS THE LAMP. When the camera can see you, your own edge does the
+    // reading: hold your outline over a place and it gives up its letter. Standing
+    // still exhausts what you are covering, so the rite is finished by moving —
+    // which is the whole point of standing in front of a camera.
+    if(embodied&&!m.read){
+      m.heat+=dt
+      if(m.heat>=0.5){m.read=1;m.t=t;readN++}
+    }
   }
   let readCount=0
   for(const [k,m] of marks){
@@ -421,8 +430,77 @@ function frac(){return clamp(readN/target,0,1)}
 const KEEPER_URL=(Q.get('keeper')||($('meta[name="keeper-url"]')||{}).content||'').replace(/\/+$/,'')
 const KEEPER_MODEL=Q.get('keeperModel')||($('meta[name="keeper-model"]')||{}).content||'llama3.1:8b'
 const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a carved inscription. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.'
-function askKeeper(prompt){
-  if(!KEEPER_URL)return Promise.resolve('')
+// ── the keeper's own words — written, not generated ───────────────────────
+// A live keeper needs a machine that is switched on, and a festival does not
+// guarantee one: the rig sleeps, the venue's network dies, prod has no model at
+// all. These lines are the keeper when nothing answers, which on prod is always.
+// Written once and read before the show — the rite never says a sentence nobody
+// has seen. {name} is what the visitor gave, {word} what they carried, {n} how
+// many crossed before them.
+const KEEPER_GREET=[
+  '{name}. The bridge waited. Cross, and it will remember the weight of you.',
+  'You come as {name}. The կամուրջ holds. It has held heavier.',
+  '{name} arrives. Nothing is recorded here except the fact of arriving.',
+  'Step, {name}. The far side is not far. It is only other.',
+  '{name}. Others stood exactly here and were also afraid. Go on.',
+  'The bridge knows no {name} yet. In a moment it will.',
+  '{name}, you are expected. Not by anyone — by the crossing itself.',
+  'Come, {name}. Bring your name and one word. Leave the rest.',
+  '{name}. What you carry across is the only thing that stays.',
+  'The lamp has read you, {name}. Now the bridge would like your name.',
+  '{name} at the threshold. A threshold is only a door that waits.',
+  'Welcome, {name}. This side and that side are the same water.',
+  '{name}. Walk slowly. The bridge is old and made of letters.',
+  'Your name is {name}, and that is already enough to begin.',
+  '{name}, the crossing does not test you. It only remembers.',
+  'Here is {name}, come to the կամուրջ, which was built by crossing.',
+  '{name}. No one crosses twice. Take your time with the first.',
+  'Good, {name}. The bridge prefers those who arrive uncertain.',
+  '{name} steps up, and the letters shift to make room.',
+  '{name}, the light on the far side is not for you. It is you.',
+  '{name}. Say your name again, quietly. That is the first half.',
+  'The bridge greets {name} and asks nothing further of the name.',
+  '{name} — the դուռ is open, and openness is all a door can do.',
+  'Slowly, {name}. Even a bridge is a kind of standing still.',
+]
+const KEEPER_BLESS=[
+  '{name} carried {word} across. The word stays where it was set.',
+  '{word}. The bridge is one word heavier, {name} one word lighter.',
+  '{name} brought {word} over, and the քար took it without asking why.',
+  'What {name} carried was {word}. It will outlast the carrying.',
+  '{word} is set. {n} came before, and none of them brought this.',
+  'The bridge accepts {word} from {name}. Acceptance is the whole rite.',
+  '{name} let go of {word} here. Letting go is how it stays.',
+  '{word}, carried by {name}, now stands with {n} others in the field.',
+  'It is done. {name} is across, and {word} is in the stone.',
+  '{word} crossed with {name} and did not come back. That is correct.',
+  'The field takes {word}. {name} may go; the word may not.',
+  '{name} gave {word} to the կամուրջ, which keeps everything and returns nothing.',
+  '{word} is written now — not by hand, but by having been carried.',
+  'Among {n} words, {word} takes its place, and the body grows.',
+  '{name} arrived carrying {word} and leaves carrying nothing. Good.',
+  '{word} remains. {name} does not. This is the arrangement.',
+  'Here lies {word}, brought by {name}, in the company of {n}.',
+  'The bridge has taken {word}. It will not be asked for again.',
+  '{name} crossed, {word} stayed, and the bridge is a little more real.',
+  '{word} joins the others. Nothing was recorded. Everything was kept.',
+  'The {word} of {name} is in the field now, indistinguishable from it.',
+  'Set down, {word} becomes հիշատակ — remembrance that needs no one to remember.',
+  '{n} before, {name} now, and {word} the shape of the difference.',
+  'The crossing of {name} is finished. What is unfinished is {word}.',
+]
+// A visitor hears at most two lines; never let them be the same one twice.
+const spoken=new Set()
+function written(pool,vars){
+  const free=pool.filter((l)=>!spoken.has(l))
+  const from=free.length?free:pool
+  const line=from[Math.floor(Math.random()*from.length)]
+  spoken.add(line)
+  return line.replace(/\{(\w+)\}/g,(_,k)=>(vars[k]==null?'':String(vars[k])))
+}
+
+function askKeeper(prompt,pool,vars){
+  if(!KEEPER_URL)return Promise.resolve(written(pool,vars))
   const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000)
   return fetch(KEEPER_URL+'/api/generate',{method:'POST',signal:ctl.signal,
     headers:{'Content-Type':'application/json'},
@@ -437,8 +515,10 @@ function askKeeper(prompt){
         const cut=Math.max(s.lastIndexOf('։'),s.lastIndexOf('.'),s.lastIndexOf('!'),s.lastIndexOf('…'),s.lastIndexOf(','))
         s=cut>12?s.slice(0,cut+1).replace(/,$/,'…'):s.slice(0,s.lastIndexOf(' '))+'…'
       }
-      return s.slice(0,180)
-    }).catch(()=>{clearTimeout(t);return ''})
+      // An empty or one-word answer is the model failing quietly — the written
+      // line is better than the silence the visitor would otherwise get.
+      return s.length>8?s.slice(0,180):written(pool,vars)
+    }).catch(()=>{clearTimeout(t);return written(pool,vars)})
 }
 
 // ── the field ─────────────────────────────────────────────────────────────
@@ -528,7 +608,8 @@ function submit(){
   if(!v)return
   if(asking==='name'){
     name=v.slice(0,40);asking=null;show(null)
-    askKeeper('The visitor gives their name: '+name+'. Greet them in one line as they cross the bridge.')
+    askKeeper('The visitor gives their name: '+name+'. Greet them in one line as they cross the bridge.',
+      KEEPER_GREET,{name})
       .then(l=>{if(l&&!done)said(l)})
   }else{
     word=v.slice(0,60);asking=null;inscribe()
@@ -569,7 +650,8 @@ function inscribe(){
         'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'})
   }
   askKeeper('The visitor has crossed. Their name: '+(name||'a nameless one')+'. They carried the word: '+word+
-    '. Their outline became a core, joining '+others+' before them. Bless it in one line.')
+    '. Their outline became a core, joining '+others+' before them. Bless it in one line.',
+    KEEPER_BLESS,{name:name||'the nameless one',word,n:others})
     .then(l=>{if(l)end.querySelector('.said').textContent=l})
   // the core holds for a moment, then opens into the body everyone shares
   setTimeout(buildSharedBody,7000)
