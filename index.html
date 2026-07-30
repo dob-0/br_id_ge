@@ -135,7 +135,8 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   <div>
     <div class="w arm">կամուրջ</div>
     <div class="t">a bridge between the real world and a shared one.<br>
-      the lamp reads your outline into letters. answer once.<br>
+      stand where the lamp can see you. move, and your outline<br>
+      is read into letters. then answer once.<br>
       <em>touch to open the lamp</em></div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
   </div>
@@ -209,8 +210,12 @@ function rebuildOutline(t,dt,embodied){
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
     const k=j*GW+i
     if(!bodyMask[k])continue
-    const l=i>0?bodyMask[k-1]:0, r=i<GW-1?bodyMask[k+1]:0
-    const u=j>0?bodyMask[k-GW]:0, d=j<GH-1?bodyMask[k+GW]:0
+    // Outside the frame counts as more body, never as background. Otherwise someone
+    // standing close — or a segmenter that calls the whole frame a person — turns the
+    // screen border itself into an "outline" and the letters ring the window instead
+    // of tracing anyone.
+    const l=i>0?bodyMask[k-1]:1, r=i<GW-1?bodyMask[k+1]:1
+    const u=j>0?bodyMask[k-GW]:1, d=j<GH-1?bodyMask[k+GW]:1
     if(l&&r&&u&&d)continue
     if(STEP>1&&((i%STEP)||(j%STEP)))continue
     cur.add(k)
@@ -261,7 +266,7 @@ async function openLamp(){
 // MediaPipe, entirely optional: without it (no GPU, no CDN, ?body=0) the dreamed
 // figure stands in and every mechanic behaves identically.
 const MP='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14'
-let seg=null,segAt=0
+let seg=null,segAt=0,segHas=false
 async function openSeg(){
   if(Q.get('body')==='0')return
   try{
@@ -270,7 +275,7 @@ async function openSeg(){
     seg=await v.ImageSegmenter.createFromOptions(files,{
       baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite',delegate:'GPU'},
       runningMode:'VIDEO',outputCategoryMask:true,outputConfidenceMasks:false})
-    $('#sLamp').textContent='lamp open — it sees you'
+    $('#sLamp').textContent='lamp open — move, and it reads you'
   }catch(e){seg=null}
 }
 function readSeg(now){
@@ -283,6 +288,7 @@ function readSeg(now){
     for(let j=0;j<GH;j++){const sy=Math.min(h-1,((j+0.5)/GH*h)|0)
       for(let i=0;i<GW;i++){const sx=Math.min(w-1,((i+0.5)/GW*w)|0)
         bodyMask[j*GW+i]=d[sy*w+sx]>0?1:0}}
+    segHas=true   // a real silhouette has landed — from here your body does the reading
     m.close&&m.close();res.close&&res.close()
   })}catch(e){}
   return true
@@ -671,7 +677,7 @@ function buildSharedBody(){
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
     const k=j*GW+i
     if(!mask[k])continue
-    const l=i>0?mask[k-1]:0,r=i<GW-1?mask[k+1]:0,u=j>0?mask[k-GW]:0,d=j<GH-1?mask[k+GW]:0
+    const l=i>0?mask[k-1]:1,r=i<GW-1?mask[k+1]:1,u=j>0?mask[k-GW]:1,d=j<GH-1?mask[k+GW]:1
     if(l&&r&&u&&d)continue
     if(STEP>1&&((i%STEP)||(j%STEP)))continue
     pts.push([(1-(i+0.5)/GW)*W,((j+0.5)/GH)*H])
@@ -736,7 +742,7 @@ door.addEventListener('touchend',e=>{e.preventDefault();begin()},{passive:false}
 // Three things reach the screen: unread points, read letters, and — at the end —
 // the core. That is the entire visual vocabulary.
 const t0=performance.now()
-let coreCX=0,coreCY=0,coreR=0,quiet=1
+let coreCX=0,coreCY=0,coreR=0,quiet=1,lastT=0
 
 function frame(now){
   const t=(now-t0)/1000
@@ -746,15 +752,20 @@ function frame(now){
   if(!lit||!camOn){
     for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
   }
+  const dt=Math.min(0.1,t-lastT); lastT=t
+  // With a front camera your own silhouette reads the letters. Without one there is
+  // nothing to move, so the pointer stands in — which is what the sandboxed viewer
+  // and every desktop without permission will use.
+  const embodied=camOn&&segHas
   if(started&&!inscribed){
-    rebuildOutline(t)
+    rebuildOutline(t,dt,embodied)
     // The target has to be reachable. A fixed 180 was not: the dreamed figure only
     // ever offers ~162 distinct cells at this size, so the final act sat just under
     // the threshold, and on a smaller frame the rite could not be finished at all.
     // Scale to what the outline has actually offered — it grows as you sweep.
     target=clamp(Math.round(everSeen*0.62),32,220)
-    // reading: the lamp passes over the outline and the letters arrive
-    if(P.has){
+    // the pointer only reads when the body cannot
+    if(P.has&&!embodied){
       const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
       for(const [,m] of marks){
         if(m.read)continue
@@ -849,7 +860,7 @@ function frame(now){
   if(started&&!inscribed)drawTracking()
 
   // the lamp itself: a single ring. One mark, not three.
-  if(started&&!inscribed&&P.has){
+  if(started&&!inscribed&&P.has&&!(camOn&&segHas)){
     ctx.globalAlpha=0.5*quiet
     ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
