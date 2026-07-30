@@ -169,6 +169,25 @@ addEventListener('resize',resize)
 // 2304 points every frame whether they meant anything or not.
 const GW=96,GH=54
 const bodyMask=new Uint8Array(GW*GH)
+// The mask, made visible. Without this the tracking is real but mute — the camera
+// opens and a human sees nothing answer them. A faint filled ghost, upscaled from
+// the same grid the outline reads, is the mirror: you appear the moment the lamp
+// finds you. Still no video on screen — the silhouette is all that is shown.
+const silCv=document.createElement('canvas');silCv.width=GW;silCv.height=GH
+const silCtx=silCv.getContext('2d')
+const silImg=silCtx.createImageData(GW,GH)
+function drawSilhouette(alpha){
+  const d=silImg.data
+  for(let k=0;k<GW*GH;k++){const o=k*4
+    d[o]=242;d[o+1]=239;d[o+2]=233;d[o+3]=bodyMask[k]?255:0}
+  silCtx.putImageData(silImg,0,0)
+  ctx.save()
+  ctx.globalAlpha=alpha
+  ctx.imageSmoothingEnabled=true
+  ctx.translate(W,0);ctx.scale(-1,1)      // the front camera shows your reflection
+  ctx.drawImage(silCv,0,0,W,H)
+  ctx.restore()
+}
 let figW=0.26,figH=0.40,figY=0.50
 // STEP thins the outline on narrow screens: at 96 columns across a phone the cells
 // are ~4px apart while a letter is ~13px, so every glyph collided with its
@@ -802,6 +821,11 @@ function frame(now){
   if(inscribed)condense=Math.min(1,condense+(REDUCED?0.02:0.006))
 
   ctx.clearRect(0,0,W,H)
+
+  // you, first — the ghost under everything. Brighter when it is really you,
+  // fainter for the dreamed stand-in; gone once the crossing condenses.
+  if(started&&!inscribed)
+    drawSilhouette((embodied?0.13:0.055)*quiet*(shared?1-shared.t:1))
 
   // the core: everything read gathers into one flat disc — hot at the heart,
   // the one solid form in the piece
