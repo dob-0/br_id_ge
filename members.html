@@ -23,22 +23,18 @@ main{max-width:44rem;margin:0 auto;padding:clamp(2rem,7vh,4.5rem) 1.5rem 6rem}
 
 header .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2rem,8vw,3.6rem);letter-spacing:.06em}
 header .lat{font-size:.62rem;letter-spacing:.44em;text-transform:uppercase;color:var(--faint);margin-top:.9rem}
-.thesis{margin-top:2.6rem;font-size:.78rem;line-height:1.9;color:var(--ink);max-width:36rem}
-.thesis em{font-style:normal;color:var(--faint)}
+.thesis{margin-top:2.4rem;font-size:.74rem;line-height:1.9;color:var(--faint);max-width:34rem}
 
-.scale{margin-top:3.4rem}
-.scale>.tag{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--faint);
-  border-bottom:1px solid var(--ghost);padding-bottom:.7rem}
-ul.names{list-style:none;margin-top:.4rem}
-ul.names li{border-bottom:1px solid var(--ghost)}
-ul.names a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
-  padding:1rem 0;text-decoration:none}
-ul.names a:hover .nm,ul.names a:focus-visible .nm{color:var(--ink)}
-.nm{font-family:var(--arm);font-weight:300;font-size:1.15rem;color:var(--ink)}
-.rl{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);text-align:right;flex-shrink:0}
+.scale{margin-top:4.2rem}
+.scale>.tag{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--faint)}
+ul.names{list-style:none;margin-top:1.4rem}
+ul.names a{display:block;padding:.55rem 0;text-decoration:none}
+.nm{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,4.5vw,2rem);
+  line-height:1.3;color:var(--ink);opacity:.85;transition:opacity .2s}
+ul.names a:hover .nm,ul.names a:focus-visible .nm{opacity:1}
 
-.unnamed{margin-top:1.6rem;font-size:.72rem;line-height:1.9;color:var(--faint)}
-.unnamed b{color:var(--ink);font-weight:400}
+.unnamed{margin-top:1.4rem;font-family:var(--arm);font-weight:300;
+  font-size:clamp(1.5rem,4.5vw,2rem);line-height:1.3;color:var(--faint)}
 
 /* one member — the page */
 #page{display:none}
@@ -53,7 +49,7 @@ body.paged #page{display:block;max-width:44rem;margin:0 auto;
   line-height:1.15;margin-top:1rem;text-wrap:balance}
 #page .role{font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);margin-top:1rem}
 #page .carry{margin-top:1.2rem;font-size:.82rem;line-height:1.95;max-width:36rem}
-#page .proj{margin-top:1.4rem;border-left:1px solid var(--ghost);padding-left:1.2rem}
+#page .proj{margin-top:2.2rem}
 #page .proj .pt{font-family:var(--arm);font-weight:400;font-size:1.2rem}
 #page .proj .pd{margin-top:.6rem;font-size:.76rem;line-height:1.9;color:var(--ink)}
 #page .proj a{display:inline-block;margin-top:1rem;font-size:.64rem;letter-spacing:.28em;
@@ -74,16 +70,13 @@ footer a:hover{color:var(--ink);border-color:var(--faint)}
   </header>
 
   <p class="thesis">
-    Everyone here is inside the same rite. A visitor crosses small — a name, a word,
-    one core in the field. An artist crosses with a body of work — the same two
-    questions, answered at project scale: <em>who are you</em> is a name,
-    <em>what do you carry</em> is the work. This page holds the artist-scale
-    crossings of Notations #2. Every member is a page; every page is a core.
+    Everyone here crosses the same bridge. Visitors cross small — a name, a word,
+    one core. Artists cross with a body of work. Every member is a page.
   </p>
 
-  <section class="scale" id="hosts"><div class="tag">the host</div><ul class="names"></ul></section>
-  <section class="scale" id="curators"><div class="tag">the curators — crossed with a practice</div><ul class="names"></ul></section>
-  <section class="scale" id="participants"><div class="tag">the lab — crossing now</div><ul class="names"></ul>
+  <section class="scale" id="hosts"><div class="tag">host</div><ul class="names"></ul></section>
+  <section class="scale" id="curators"><div class="tag">curators</div><ul class="names"></ul></section>
+  <section class="scale" id="participants"><div class="tag">the lab</div><ul class="names"></ul>
     <p class="unnamed" id="await-note"></p>
   </section>
 
@@ -111,32 +104,10 @@ footer a:hover{color:var(--ink);border-color:var(--faint)}
 </section>
 
 <script>
-// The roster. Only verified people are named — hosq has not published the 65
-// participant names for #2, so the lab section fills in as each name is confirmed
-// (paste them into MEMBERS; the page needs nothing else).
-const MEMBERS=[
- {slug:'hosq',scale:'hosts',name:'hosq',arm:'հոսք',
-  role:'collective · host of notations',
-  carry:'The frame itself. hosq builds the Notations Laboratory — twelve days of collective work in the State Philharmonia, closed by a two-day public festival. This year the material is Rituals: structured, repeatable actions that shape how we hold time, space, and each other.',
-  project:{title:'Notations #2 — Rituals',desc:'65 artists · Jul 20–31 laboratory · Aug 1–2 festival · State Philharmonia + National Gallery, Yerevan.',url:'https://hosq.co',label:'hosq.co →'}},
- {slug:'gevorg',scale:'curators',name:'Gevorg Aram Grigoryan',arm:'Գևորգ',
-  role:'video art curation · multimedia artist · di. studio',
-  carry:'The bridge you are standing on. br_id_ge is his crossing: the rite, the field, the platform beneath them — di.iiii — where every crossing becomes permanent shared space. The vi.ritual is his notation for Rituals.',
-  project:{title:'br_id_ge XR_ Notations:vi.ritual',desc:'Cross a bridge of Armenian letters, answer the Keeper, leave your core. Every visitor of the festival is a small part of this work; every artist here is a large one.',url:'https://di-studio.xyz/br_id_ge/rite',label:'cross the bridge →'}},
- {slug:'arman-peshtmaljyan',scale:'curators',name:'Arman Peshtmaljyan',
-  role:'composer · pianist · songwriter',
-  carry:'Composition as a living practice — his work with the Armenian Navy Band received the BBC Radio 3 Award for World Music.'},
- {slug:'ben-wheeler',scale:'curators',name:'Ben Wheeler',
-  role:'ethnomusicologist · mountains of tongues',
-  carry:'Listening as fieldwork — co-founder of the Mountains of Tongues label, carrying the Caucasus’ musical languages across borders.'},
- {slug:'hayk-karoyi',scale:'curators',name:'Hayk Karoyi',
-  role:'multi-instrumentalist · dj · producer',
-  carry:'The instrument as a ritual object — from traditional Armenian instruments to the Terraforma stage.'},
- {slug:'venera-kazarova',scale:'curators',name:'Venera Kazarova',
-  role:'costume · performance',
-  carry:'The body dressed as somewhere else — costume-centric performance shown at K21 Düsseldorf and NAXOS Frankfurt.'},
-]
-const LAB_COUNT=65
+// Do not edit the roster here — members.json in the repo is the info center;
+// scripts/build-members.mjs injects it between the members-data markers.
+/*<members-data>*/const DATA={"labCount":65,"members":[{"slug":"hosq","scale":"hosts","name":"hosq","arm":"հոսք","role":"collective · host of notations","carry":"The frame itself. hosq builds the Notations Laboratory — twelve days of collective work in the State Philharmonia, closed by a two-day public festival. This year the material is Rituals: structured, repeatable actions that shape how we hold time, space, and each other.","project":{"title":"Notations #2 — Rituals","desc":"65 artists · Jul 20–31 laboratory · Aug 1–2 festival · State Philharmonia + National Gallery, Yerevan.","url":"https://hosq.co","label":"hosq.co →"}},{"slug":"gevorg","scale":"curators","name":"Gevorg Aram Grigoryan","arm":"Գևորգ","role":"video art curation · multimedia artist · di. studio","carry":"The bridge you are standing on. br_id_ge is his crossing: the rite, the field, the platform beneath them — di.iiii — where every crossing becomes permanent shared space. The vi.ritual is his notation for Rituals.","project":{"title":"br_id_ge XR_ Notations:vi.ritual","desc":"Cross a bridge of Armenian letters, answer the Keeper, leave your core. Every visitor of the festival is a small part of this work; every artist here is a large one.","url":"https://di-studio.xyz/br_id_ge/rite","label":"cross the bridge →"}},{"slug":"arman-peshtmaljyan","scale":"curators","name":"Arman Peshtmaljyan","role":"composer · pianist · songwriter","carry":"Composition as a living practice — his work with the Armenian Navy Band received the BBC Radio 3 Award for World Music."},{"slug":"ben-wheeler","scale":"curators","name":"Ben Wheeler","role":"ethnomusicologist · mountains of tongues","carry":"Listening as fieldwork — co-founder of the Mountains of Tongues label, carrying the Caucasus’ musical languages across borders."},{"slug":"hayk-karoyi","scale":"curators","name":"Hayk Karoyi","role":"multi-instrumentalist · dj · producer","carry":"The instrument as a ritual object — from traditional Armenian instruments to the Terraforma stage."},{"slug":"venera-kazarova","scale":"curators","name":"Venera Kazarova","role":"costume · performance","carry":"The body dressed as somewhere else — costume-centric performance shown at K21 Düsseldorf and NAXOS Frankfurt."}]}/*</members-data>*/
+const MEMBERS=DATA.members, LAB_COUNT=DATA.labCount
 
 const $=(s,r)=>(r||document).querySelector(s)
 const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))
@@ -144,14 +115,11 @@ const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;
 for(const m of MEMBERS){
   const ul=$('#'+m.scale+' ul.names'); if(!ul)continue
   const li=document.createElement('li')
-  li.innerHTML='<a href="#/'+esc(m.slug)+'"><span class="nm">'+esc(m.name)+'</span>'
-    +'<span class="rl">'+esc(m.role.split('·')[0].trim())+'</span></a>'
+  li.innerHTML='<a href="#/'+esc(m.slug)+'"><span class="nm">'+esc(m.name)+'</span></a>'
   ul.appendChild(li)
 }
 const named=MEMBERS.filter(m=>m.scale==='participants').length
-$('#await-note').innerHTML='<b>'+(LAB_COUNT-named)+' artists</b> are in the laboratory now, unnamed here yet. '
-  +'The lab runs Jul 20–31; each name lands on this page as their crossing is confirmed, '
-  +'and their work follows at the festival, Aug 1–2.'
+$('#await-note').textContent=(LAB_COUNT-named)+' artists, crossing now'
 
 function route(){
   const slug=(location.hash.match(/^#\/(.+)$/)||[])[1]
