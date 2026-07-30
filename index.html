@@ -9,9 +9,12 @@
 <meta name="mesh-url" content="wss://di-studio.xyz/serverXR/mesh">
 <meta name="field-url" content="https://di-studio.xyz/serverXR/api/spaces/br_id_ge">
 <!-- The keeper — local LLM, layer 1 of the installation. Uncomment on the show rig
-     (or pass ?keeper=http://127.0.0.1:11434&keeperModel=dob-fast). Rite never blocks on it.
+     (or pass ?keeper=http://127.0.0.1:11434&keeperModel=llama3.1:8b). Rite never blocks on it.
+     Model matters more than size here: dob-fast answers the greeting entirely in
+     Armenian and sometimes echoes the prompt back, both of which break the one
+     line of English the keeper is supposed to speak. llama3.1:8b holds the form.
 <meta name="keeper-url" content="http://127.0.0.1:11434">
-<meta name="keeper-model" content="dob-fast"> -->
+<meta name="keeper-model" content="llama3.1:8b"> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
@@ -73,10 +76,8 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   line-height:1.45;max-width:26ch;color:var(--ink)}
 .end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
   color:var(--dim);max-width:34ch;text-transform:lowercase}
-.end .again{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--dim);border-bottom:1px solid var(--faint);padding-bottom:.3rem;
-  pointer-events:auto;cursor:pointer;text-decoration:none}
-.end .again:hover,.end .again:focus-visible{color:var(--ink);border-bottom-color:var(--dim)}
+.end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--dim)}
 
 /* LAYER 3 — one status line, bottom left. Nothing else. */
 /* right-hand side: the di.iiii viewer overlays its own badge bottom-left */
@@ -119,7 +120,7 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   <div class="end" id="end">
     <div class="said"></div>
     <div class="note"></div>
-    <a class="again" id="again" href="#">cross again</a>
+    <div class="body-line" id="bodyLine"></div>
   </div>
 </div>
 
@@ -201,6 +202,7 @@ function dreamed(i,j,t){
 // unread points belong to the current edge only. Read letters persist, because they
 // are what the lamp has taken, but they are capped so the screen can never fill.
 const marks=new Map()    // cellIndex -> {i,j,g,read,t}
+let everSeen=0           // distinct cells the outline has ever offered
 const MAX_READ=300
 function rebuildOutline(t){
   const cur=new Set()
@@ -212,7 +214,7 @@ function rebuildOutline(t){
     if(l&&r&&u&&d)continue
     if(STEP>1&&((i%STEP)||(j%STEP)))continue
     cur.add(k)
-    if(!marks.has(k))marks.set(k,{i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0})
+    if(!marks.has(k)){marks.set(k,{i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0});everSeen++}
   }
   let readCount=0
   for(const [k,m] of marks){
@@ -289,8 +291,63 @@ addEventListener('touchmove',e=>{
   e.preventDefault()
 },{passive:false})
 
+// ── what the lamp can see, drawn ──────────────────────────────────────────
+// The tracking used to be invisible: it moved the lamp and nothing told you the
+// machine had found you. Now the hand's 21 landmarks and the body's pose are drawn
+// as light — never as video, so "no image leaves this device" still holds.
+const HAND_BONES=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]]
+const POSE_BONES=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],
+  [23,25],[25,27],[24,26],[26,28],[15,17],[16,18]]
+let handLM=null, poseLM=null
+let pose=null, poseAt=0
+async function openPose(){
+  if(Q.get('pose')==='0')return
+  try{
+    const v=await import(MP+'/vision_bundle.mjs')
+    const files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
+    pose=await v.PoseLandmarker.createFromOptions(files,{
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',delegate:'GPU'},
+      numPoses:1,runningMode:'VIDEO'})
+  }catch(e){pose=null}
+}
+function readPose(now){
+  if(!pose||!camOn||!video||video.readyState<2)return
+  if(now-poseAt<66)return          // ~15Hz; a body is not faster than that
+  poseAt=now
+  let r;try{r=pose.detectForVideo(video,now)}catch(e){return}
+  poseLM=(r&&r.landmarks&&r.landmarks[0])||null
+}
+function drawTracking(){
+  ctx.lineCap='round'
+  if(poseLM){
+    const P2=poseLM.map(l=>[(1-l.x)*W,l.y*H])
+    ctx.globalAlpha=0.20*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath()
+    for(const [a,b] of POSE_BONES){
+      if(!P2[a]||!P2[b])continue
+      ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])
+    }
+    ctx.stroke()
+    ctx.globalAlpha=0.34*quiet;ctx.fillStyle='#f2efe9'
+    for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,1.5,0,6.2832);ctx.fill()}
+  }
+  if(handLM){
+    const P2=handLM.map(l=>[(1-l.x)*W,l.y*H])
+    ctx.globalAlpha=0.30*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath()
+    for(const [a,b] of HAND_BONES){ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])}
+    ctx.stroke()
+    ctx.globalAlpha=(pinch?0.95:0.55)*quiet;ctx.fillStyle='#f2efe9'
+    for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,pinch?2.4:1.7,0,6.2832);ctx.fill()}
+  }
+}
+
 // the hand, if MediaPipe can find one. Confirmed working on device 2026-07-30.
 const hand={has:false,x:0,y:0}
+let pinch=false,pinchWas=false
 let hl=null,hlAt=0
 async function openHands(){
   if(Q.get('hands')==='0')return
@@ -308,12 +365,28 @@ function readHand(now){
   hlAt=now
   let r;try{r=hl.detectForVideo(video,now)}catch(e){return}
   const lm=r&&r.landmarks&&r.landmarks[0]
-  if(!lm){hand.has=false;return}
-  hand.has=true
+  if(!lm){hand.has=false;handLM=null;return}
+  hand.has=true;handLM=lm
   const tx=(1-lm[9].x)*W, ty=lm[9].y*H
   hand.x=hand.x?hand.x+(tx-hand.x)*0.3:tx
   hand.y=hand.y?hand.y+(ty-hand.y)*0.3:ty
   point(hand.x,hand.y)
+  // pinch: thumb tip to index tip, measured against the hand's own size so it
+  // works at any distance from the lamp
+  const dx=lm[4].x-lm[8].x, dy=lm[4].y-lm[8].y
+  const span=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||1
+  pinch=Math.hypot(dx,dy)/span<0.45
+  if(pinch&&!pinchWas&&started&&!inscribed){
+    // a pinch reaches further than the open hand — it takes a whole handful
+    const R=Math.min(W,H)*0.13, R2=R*R
+    for(const [,m] of marks){
+      if(m.read)continue
+      const [x,y]=markScreen(m)
+      const ddx=x-P.x, ddy=y-P.y
+      if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++}
+    }
+  }
+  pinchWas=pinch
 }
 
 // ── the liturgy. Unchanged: five acts, two questions, the same thresholds. ─
@@ -346,7 +419,7 @@ function frac(){return clamp(readN/target,0,1)}
 
 // ── the keeper — a local LLM if one is running, scripted lines if not ─────
 const KEEPER_URL=(Q.get('keeper')||($('meta[name="keeper-url"]')||{}).content||'').replace(/\/+$/,'')
-const KEEPER_MODEL=Q.get('keeperModel')||($('meta[name="keeper-model"]')||{}).content||'dob-fast'
+const KEEPER_MODEL=Q.get('keeperModel')||($('meta[name="keeper-model"]')||{}).content||'llama3.1:8b'
 const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a carved inscription. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.'
 function askKeeper(prompt){
   if(!KEEPER_URL)return Promise.resolve('')
@@ -498,8 +571,52 @@ function inscribe(){
   askKeeper('The visitor has crossed. Their name: '+(name||'a nameless one')+'. They carried the word: '+word+
     '. Their outline became a core, joining '+others+' before them. Bless it in one line.')
     .then(l=>{if(l)end.querySelector('.said').textContent=l})
+  // the core holds for a moment, then opens into the body everyone shares
+  setTimeout(buildSharedBody,7000)
 }
-$('#again').addEventListener('click',e=>{e.preventDefault();location.reload()})
+
+// ── the shared body ───────────────────────────────────────────────────────
+// A crossing does not end with an invitation to cross again. It ends by showing
+// what you have joined: one body whose outline is made from the words everyone
+// carried across. No new data is stored to do this — the field already holds every
+// name and word, so the body is literally composed of the crossings themselves.
+let shared=null
+function buildSharedBody(){
+  // the canonical standing figure, sampled as an outline
+  const pts=[]
+  const mask=new Uint8Array(GW*GH)
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)mask[j*GW+i]=dreamed(i,j,0)
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
+    const k=j*GW+i
+    if(!mask[k])continue
+    const l=i>0?mask[k-1]:0,r=i<GW-1?mask[k+1]:0,u=j>0?mask[k-GW]:0,d=j<GH-1?mask[k+GW]:0
+    if(l&&r&&u&&d)continue
+    if(STEP>1&&((i%STEP)||(j%STEP)))continue
+    pts.push([(1-(i+0.5)/GW)*W,((j+0.5)/GH)*H])
+  }
+  if(!pts.length)return
+  // the closing words live at the bottom of the frame; the body sits above them
+  let lo=Infinity,hi=-Infinity
+  for(const [,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y}
+  const top=H*0.05, bot=H*0.74, span=Math.max(1,hi-lo)
+  for(const p of pts)p[1]=top+((p[1]-lo)/span)*(bot-top)
+  // every crossing contributes the letters of the word it carried
+  const pool=[]
+  field.forEach((tag,idx)=>{
+    const w=(String(tag).split('·').pop()||'').trim()
+    for(const ch of [...w].slice(0,10))pool.push({ch,mine:idx===field.length-1})
+  })
+  if(!pool.length)return
+  shared={pts,letters:pts.map((p,n)=>{
+    const src=pool[n%pool.length]
+    return {x:coreCX,y:coreCY,tx:p[0],ty:p[1],ch:src.ch,mine:src.mine,d:Math.random()*0.5}
+  }),t:0}
+  const n=field.length
+  end.querySelector('.said').textContent='you are part of it now.'
+  end.querySelector('.body-line').textContent=
+    n+' crossing'+(n===1?'':'s')+' · one body'
+  show(end)
+}
 
 // ── the door ──────────────────────────────────────────────────────────────
 const door=$('#door')
@@ -507,7 +624,7 @@ function begin(){
   if(started)return
   started=true
   door.classList.add('gone')
-  openLamp().then(openHands)
+  openLamp().then(()=>{openHands();openPose()})
   showCard(ACTS[0])
 }
 door.addEventListener('click',begin)
@@ -522,15 +639,18 @@ let coreCX=0,coreCY=0,coreR=0,quiet=1
 function frame(now){
   const t=(now-t0)/1000
   readHand(now)
+  readPose(now)
   const lit=readSeg(now)
   if(!lit||!camOn){
     for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
   }
   if(started&&!inscribed){
     rebuildOutline(t)
-    // a fixed target, not a share of the outline: with a live camera the outline
-    // size swings wildly frame to frame, which made progress lurch and stall
-    target=W<560?110:180
+    // The target has to be reachable. A fixed 180 was not: the dreamed figure only
+    // ever offers ~162 distinct cells at this size, so the final act sat just under
+    // the threshold, and on a smaller frame the rite could not be finished at all.
+    // Scale to what the outline has actually offered — it grows as you sweep.
+    target=clamp(Math.round(everSeen*0.62),32,220)
     // reading: the lamp passes over the outline and the letters arrive
     if(P.has){
       const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
@@ -572,20 +692,20 @@ function frame(now){
     }
     if(m.read){
       const age=Math.min(1,(t-m.t)/1.1)
-      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)*quiet
+      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)*quiet*(shared?1-shared.t:1)
       ctx.fillStyle='#f2efe9'
       ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
     }else{
-      ctx.globalAlpha=0.13*quiet
+      ctx.globalAlpha=0.13*quiet*(shared?1-shared.t:1)
       ctx.fillStyle='#f2efe9'
       ctx.fillRect(x-0.6,y-0.6,1.2,1.2)
     }
   }
 
   if(inscribed&&condense>0.55){
-    const a=(condense-0.55)/0.45
+    const a=((condense-0.55)/0.45)*(shared?1-shared.t:1)
     ctx.globalAlpha=0.14*a
     ctx.fillStyle='#f2efe9'
     ctx.beginPath();ctx.ellipse(coreCX,coreCY,coreR*0.98,coreR*0.47,0,0,6.2832);ctx.fill()
@@ -598,6 +718,23 @@ function frame(now){
     ctx.fillText(name,coreCX,coreCY-coreR*0.72)
   }
 
+  // the shared body — the core opens and its letters travel out to the figure
+  // everyone who ever crossed is holding up
+  if(shared){
+    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.011))
+    const S=shared.t
+    ctx.textAlign='center';ctx.textBaseline='middle'
+    for(const L of shared.letters){
+      const e=clamp((S-L.d)/(1-L.d),0,1)
+      const g=e<0.5?2*e*e:1-Math.pow(-2*e+2,2)/2
+      const x=L.x+(L.tx-L.x)*g, y=L.y+(L.ty-L.y)*g
+      ctx.globalAlpha=(L.mine?0.95:0.42)*g
+      ctx.fillStyle='#f2efe9'
+      ctx.font='300 '+(L.mine?FS*1.15:FS).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.fillText(L.ch,x,y)
+    }
+  }
+
   // the others, one faint point each — no labels, no lamps, no rings
   if(Mesh.peers.size){
     for(const[,pr]of Mesh.peers){
@@ -606,6 +743,8 @@ function frame(now){
       ctx.beginPath();ctx.arc((1-pr.x)*W,pr.y*H,2.2,0,6.2832);ctx.fill()
     }
   }
+
+  if(started&&!inscribed)drawTracking()
 
   // the lamp itself: a single ring. One mark, not three.
   if(started&&!inscribed&&P.has){
