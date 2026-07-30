@@ -61,7 +61,7 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 ## Deployment
 
-- Canonical (the only URLs ever linked or shared): di.iiii space `br_id_ge` — door `di-studio.xyz/br_id_ge`, rite `di-studio.xyz/br_id_ge/p/newww`, field `/p/br-id-ge-field`
+- Canonical (the only URLs ever linked or shared): di.iiii space `br_id_ge` — door `di-studio.xyz/br_id_ge`, rite `di-studio.xyz/br_id_ge/p/rite`, field `/p/field`
 - GitHub Pages still deploys on push to `main` (`.github/workflows/pages.yml`) but is backend/mirror only — never link it anywhere
 
 ## Validation

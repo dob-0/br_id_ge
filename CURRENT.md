@@ -2,7 +2,7 @@
 
 Read first. Updated at end of each session. Replace, don't append.
 
-active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the landing: https://di-studio.xyz/br_id_ge
+active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/rite · the landing: https://di-studio.xyz/br_id_ge
 **Notations #2 is RUNNING — Jul 20–Aug 2 2026** (State Philharmonia, hosted by **hosq**) · day 9 of 14 as of 2026-07-28
 
 **Title:** `br_id_ge XR_ Notations:vi.ritual` (vi = virtual; plural vi.rituals, plain s).
@@ -29,14 +29,14 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
   di + hosq groups, alerts *you* when prod/mesh/inscriptions break, serves the canonical
   links, owner-only claude relay (off by default). Tests pass from laptop and VPS.
 - ⚠ **Still unproven end to end:** a live crossing. The write test was blocked, so
-  cross at `/p/newww` yourself — it puts a real stone in the field instead of test junk.
+  cross at `/p/rite` yourself — it puts a real stone in the field instead of test junk.
 
 ## Previous session (2026-07-28 — THE SCAN finally shipped, mid-festival)
 
 - **The scan + the keeper had been sitting unpushed on local `main` for 14 days.**
   Pushed (`3a9acb0`, `534c5d0`, `1eaea46` + the landing pass `f1277bd`). Until today the
   festival audience was crossing the *old corridor rite*. Verified in a real browser on prod:
-  `/p/newww` serves "you are the lamp", privacy line intact; landing shows the lamp glow,
+  `/p/rite` serves "you are the lamp", privacy line intact; landing shows the lamp glow,
   parallax letters, kamurj gloss, three doors, badge/footer overlap gone.
 - **CI space-sync is broken and stayed broken:** the `Sync di.iiii Space` workflow 401s because
   its repo secret `LIVE_API_TOKEN` holds the **staging** token while the workflow targets prod.
@@ -61,14 +61,14 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
   completes. Privacy stated on the intro: no image leaves the device. HUD is honest now (no fake
   bpm/latency). Verified end-to-end headless (fake cam + denied cam): full loop, POST lands, 0 errors.
 - **LINKS CANON (user command): di.iiii URLs ONLY — no GitHub links ever again.** Rite =
-  `/br_id_ge/p/newww`, field = `/p/br-id-ge-field`, hosq/jam = `/p/br-id-ge-hosq|jam` (the
+  `/br_id_ge/p/rite`, field = `/p/field`, hosq/jam = `/p/hosq|jam` (the
   `/:space/p/:id` public viewer). Both repos rewritten; graduate.sh prints di.iiii links;
   Pages/repo = backend mirror only. Remaining github URLs: og:image jpgs (3 stills need one
   prod asset upload, then patch) + package.json machinery + field.html hostname check (functional).
 - **Camera-in-viewer finding:** `/p/` viewer iframes are sandboxed srcDoc (opaque origin) →
   getUserMedia impossible there BY DESIGN. Full scan needs a top-level di.iiii URL — proposed:
   small serverXR raw-page route, owner/admin-gated per space (NOT built yet). Inside the viewer
-  the rite auto-falls back to memory mode, so /p/newww still completes.
+  the rite auto-falls back to memory mode, so /p/rite still completes.
 - **the core is the canonical name (2026-07-30); "digitalkar" is retired and the khachkar
   lineage with it — see MASTER_CONTEXT §4. Rider status unchanged (see hosq track).**
   Prod was patched the same day through the document API — `newww` ×6, `br-id-ge-field` ×3,
@@ -83,8 +83,8 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
 
 ## What works
 
-- The full loop LIVE on the internet: cross at di-studio.xyz/br_id_ge/p/newww → mesh co-presence
-  → the core lands in prod space `br_id_ge` → visible in the field (/p/br-id-ge-field) and in Act V.
+- The full loop LIVE on the internet: cross at di-studio.xyz/br_id_ge/p/rite → mesh co-presence
+  → the core lands in prod space `br_id_ge` → visible in the field (/p/field) and in Act V.
 - ONE space holds everything (landing · rite · field scene · board · map · guide · drafts · beta lab).
 - CI: push main → Pages + space sync; ops sync via `sync-ops.sh` (or the /sync skill).
 

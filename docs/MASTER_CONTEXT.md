@@ -33,8 +33,8 @@ THE RECAP — seven organs, where each one stands (2026-07-29, festival day 10 o
 | organ | in one sentence | status |
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/p/newww (memory mode inside the viewer; camera tier needs a top-level route) |
-| the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /p/br-id-ge-field |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/p/rite (memory mode inside the viewer; camera tier needs a top-level route) |
+| the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /p/field |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — restored 2026-07-28 after 8 silent days down |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · ⚠ waiting on slot dates |
 | the constellation | The map where the whole system is seen and managed — a project inside the same space. | LIVE on all tiers |

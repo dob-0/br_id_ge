@@ -39,10 +39,16 @@ const MESH = SERVER.replace(/^http/, 'ws') + '/mesh'
 
 // the space, as di.iiii serves it
 const SPACE = '/br_id_ge'
+// Both the public slug and the internal project id, because prod resolves both:
+// the viewer looks a segment up as a slug first and falls back to the project
+// id, so every link ever shared keeps working. Mirroring that here means a URL
+// that works on localhost works on prod, and vice versa.
 const PROJECTS = {
   '': 'bridge.html',                       // the published face — the door
-  'newww': 'index.html',                   // the rite
-  'br-id-ge-field': 'field.html',          // the field viewer
+  'rite': 'index.html',                    // the rite
+  'newww': 'index.html',                   // …its project id, the old link
+  'field': 'field.html',                   // the field viewer
+  'br-id-ge-field': 'field.html',          // …its project id, the old link
   'v-oooooo': 'v.oooooo.html',             // legacy
 }
 
@@ -127,8 +133,8 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log(`    ${base}${SPACE}`)
   console.log('')
   console.log(`  the door      ${base}${SPACE}`)
-  console.log(`  the rite      ${base}${SPACE}/p/newww          ← camera works here`)
-  console.log(`  the field     ${base}${SPACE}/p/br-id-ge-field`)
+  console.log(`  the rite      ${base}${SPACE}/p/rite          ← camera works here`)
+  console.log(`  the field     ${base}${SPACE}/p/field`)
   console.log('')
   console.log(`  field + mesh: ${TO}${TO === 'prod' ? '  ⚠ crossings land in the LIVE field' : '  (crossings stay off prod)'}`)
   console.log('')
