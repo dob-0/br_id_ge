@@ -376,6 +376,12 @@ function drawTracking(){
     ctx.stroke()
     ctx.globalAlpha=(pinch?0.95:0.55)*quiet;ctx.fillStyle='#f2efe9'
     for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,pinch?2.4:1.7,0,6.2832);ctx.fill()}
+    // the index fingertip is the reaching point — ringed so the hand reads as an
+    // instrument, and the pinch visibly closes around what it takes
+    const [ix,iy]=P2[8]
+    ctx.globalAlpha=(pinch?0.9:0.45)*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath();ctx.arc(ix,iy,pinch?11:7,0,6.2832);ctx.stroke()
   }
 }
 
@@ -835,7 +841,7 @@ function frame(now){
   // you, first — the ghost under everything. Brighter when it is really you,
   // fainter for the dreamed stand-in; gone once the crossing condenses.
   if(started&&!inscribed)
-    drawSilhouette((embodied?0.13:0.055)*quiet*(shared?1-shared.t:1))
+    drawSilhouette((embodied?0.17:0.055)*quiet*(shared?1-shared.t:1))
 
   // the core: everything read gathers into one flat disc — hot at the heart,
   // the one solid form in the piece
@@ -864,10 +870,29 @@ function frame(now){
       ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
+      // the taking, seen: a brief ring where a letter was just read
+      if(!inscribed&&!REDUCED){
+        const fa=t-m.t
+        if(fa<0.5){
+          ctx.globalAlpha=(1-fa/0.5)*0.3*quiet
+          ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+          ctx.beginPath();ctx.arc(x,y,5+fa*44,0,6.2832);ctx.stroke()
+        }
+      }
     }else{
-      ctx.globalAlpha=0.13*quiet*(shared?1-shared.t:1)
+      // a letter WARMS into being under your edge — the reading is watchable,
+      // not a switch. Cold cells stay quiet points.
+      const warm=m.heat?clamp(m.heat/0.5,0,1):0
       ctx.fillStyle='#f2efe9'
-      ctx.fillRect(x-0.6,y-0.6,1.2,1.2)
+      if(warm>0.05){
+        ctx.globalAlpha=(0.10+0.6*warm)*quiet*(shared?1-shared.t:1)
+        ctx.font='300 '+(FS*(0.7+0.3*warm)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+        ctx.textAlign='center';ctx.textBaseline='middle'
+        ctx.fillText(m.g,x,y)
+      }else{
+        ctx.globalAlpha=0.2*quiet*(shared?1-shared.t:1)
+        ctx.fillRect(x-0.8,y-0.8,1.6,1.6)
+      }
     }
   }
 
