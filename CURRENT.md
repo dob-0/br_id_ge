@@ -19,7 +19,7 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
 - **THE BIG ONE: `openInscriptions` was `false` on the prod space.** Every inscription
   POST 403'd and the rite's client swallowed it (`.catch(()=>{})`), so Act V played its
   "your word joins everyone who crossed before you" lines unchanged. **Nine days of
-  festival, zero visitor digitalkars** — the field still holds only gevorg·կամուրջ from
+  festival, zero visitor cores** — the field still holds only gevorg·կամուրջ from
   Jul 13. Flipped back to `true` on prod (verified in the space meta).
 - **The rite no longer lies:** a failed inscription now shows one quiet line in its own
   register (`#unjoined`), and only on failure — verified headlessly both ways (403 → line
@@ -56,7 +56,7 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
   sees enters the bridge as Armenian letters (glyph-atlas point shader, 64×36 shell). Sweep to
   crystallize — the real arrives CRIMSON, settles to stone/amber. Same liturgy: five acts,
   Keeper's two questions, inscription POST + mesh presence unchanged. At inscription the whole
-  remembered world CONDENSES into the digitalkar (name above, word upon it) → Echo shows the
+  remembered world CONDENSES into the core (name above, word upon it) → Echo shows the
   field. No camera / sandboxed → "memory mode": the bridge dreams a room, same mechanic, still
   completes. Privacy stated on the intro: no image leaves the device. HUD is honest now (no fake
   bpm/latency). Verified end-to-end headless (fake cam + denied cam): full loop, POST lands, 0 errors.
@@ -69,12 +69,13 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
   getUserMedia impossible there BY DESIGN. Full scan needs a top-level di.iiii URL — proposed:
   small serverXR raw-page route, owner/admin-gated per space (NOT built yet). Inside the viewer
   the rite auto-falls back to memory mode, so /p/newww still completes.
-- **digitalkar / khachkar-implicit canon unchanged; rider status unchanged (see hosq track).**
+- **the core is the canonical name (2026-07-30); "digitalkar" is retired and the khachkar
+  lineage with it — see MASTER_CONTEXT §4. Rider status unchanged (see hosq track).**
 
 ## What works
 
 - The full loop LIVE on the internet: cross at di-studio.xyz/br_id_ge/p/newww → mesh co-presence
-  → digitalkar lands in prod space `br_id_ge` → visible in the field (/p/br-id-ge-field) and in Act V.
+  → the core lands in prod space `br_id_ge` → visible in the field (/p/br-id-ge-field) and in Act V.
 - ONE space holds everything (landing · rite · field scene · board · map · guide · drafts · beta lab).
 - CI: push main → Pages + space sync; ops sync via `sync-ops.sh` (or the /sync skill).
 

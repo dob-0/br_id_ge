@@ -20,10 +20,10 @@ Everything real that wants to live in di.iiii crosses this bridge, through one o
 three doors. Places enter as 3D scans (depth cameras, LiDAR). People enter through
 a short rite: you cross a bridge built of glowing Armenian letters and answer two
 questions — who are you, and what do you carry? Artists enter through an open jam,
-curated in by Gevorg. Every entry leaves a permanent mark — a digitalkar (kar is
-Armenian for stone): not a monument, a core. The sun baked this rock once; the
-same mineral sat in water a few billion years and stood up as us, and now we make
-light again. The field of cores is never erased. And the bridge runs both ways:
+curated in by Gevorg. Every entry leaves a permanent mark — a core: not a
+monument, not a stone laid down and finished, but a core taken from something
+still forming. The sun baked this rock once; the same mineral sat in water a few
+billion years and stood up as us, and now we make light again. The field of cores is never erased. And the bridge runs both ways:
 what is built inside di.iiii can be carried back out across it. br_id_ge opens
 publicly at Notations #2 (July 20 – August 2, 2026, State Philharmonia, Yerevan,
 hosted by hosq) and keeps growing after it.
@@ -110,9 +110,8 @@ changes. Nothing in this section is done by remembering.
   asks "Who are you, and what do you carry across the bridge?" — not a spiritual
   entity. Since 2026-07-13 it can be a real local LLM running on site (layer 1 of
   the rig); when it is silent the scripted lines stand.
-- **"digitalkar"** — the digital stone (kar = քար, Armenian for stone). The canonical
-  name of what a crossing leaves behind: the visitor's name in rigid Erkatagir, their
-  chosen word in decorative Trchnagir.
+- **"core"** — the canonical name of what a crossing leaves behind: the visitor's
+  name in rigid Erkatagir, their chosen word in decorative Trchnagir.
 
   **Not a monument. A core.** The sun baked this rock once already; the same mineral
   sat in water for a few billion years and stood up as us. We are cooled stone that
@@ -120,12 +119,19 @@ changes. Nothing in this section is done by remembering.
   backwards: the lamp gathers light, the light arrives as letters, and it settles
   into stone again. Every crossing adds one core to the field.
 
-  RETIRED (2026-07-29): the digitalkar does **not** descend from the khachkar, and the
-  earlier "deep lineage, felt not spoken" note is withdrawn. A khachkar is a memorial —
-  it points backwards, it is grave-adjacent, and it belongs to a living faith that will
-  read it its own way. This work is about continuation, not commemoration; the khachkar
-  was quietly arguing the opposite. The word stays out of every surface, as before —
-  but now because it is not the ancestor, not because it is a secret one.
+  RETIRED (2026-07-30): **"digitalkar"**, the previous name (digital + kar = քար,
+  Armenian for stone). Retiring it finishes a job started a day earlier, when the
+  khachkar was withdrawn as the ancestor: a khachkar is a memorial — it points
+  backwards, it is grave-adjacent, and it belongs to a living faith that will read
+  it its own way, while this work is about continuation, not commemoration. But
+  striking the lineage from a document did not stop the *word* sounding like one.
+  A name argues its own case every time it is said, and "digitalkar" kept arguing
+  for the memorial the paragraph above spends five lines denying.
+
+  The rite had already decided this on its own: it says **core** to the visitor and
+  has never once said digitalkar. "Core" also carries the geology the concept
+  actually wants — drilled, continuous, taken from something still forming — where
+  a stone laid in a field is finished. The description now matches the work.
 
 - **Light is the medium** (see §6).
 - Communitas — the goal of the ritual; the solo rite resolves into a shared,
@@ -140,7 +146,7 @@ changes. Nothing in this section is done by remembering.
   conscious transmission → no transactional UI; progress is breathing-paced,
   synchronized with the duduk drone.
 - Stone inscription traditions demand continuation, users want semantic agency →
-  the digitalkar carries both (name + chosen word).
+  the core carries both (name + chosen word).
 - "Passive Informational Drift" isolates → the ending reveals the shared field of
   cores (occlusion 100% → 0%): the diaspora made visible.
 - MSDF text rendering (multi-channel signed distance fields) keeps Erkatagir and
