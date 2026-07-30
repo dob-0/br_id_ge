@@ -71,6 +71,15 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/p/newww · the l
   the rite auto-falls back to memory mode, so /p/newww still completes.
 - **the core is the canonical name (2026-07-30); "digitalkar" is retired and the khachkar
   lineage with it — see MASTER_CONTEXT §4. Rider status unchanged (see hosq track).**
+  Prod was patched the same day through the document API — `newww` ×6, `br-id-ge-field` ×3,
+  `br-id-ge-jam` ×1, `br-id-ge-hosq` ×1, word-only, byte delta verified. Every live page and
+  every stored document now reads clean.
+- ⚠ **PROD `newww` IS AN OLDER BUILD THAN THIS REPO.** ~59 KB stored vs 43 KB local, and it has
+  none of 2026-07-30's work: no shared body, no written keeper pool, no mobile read-target or
+  reload fixes. The word patch above deliberately touched only the word — deploying the repo
+  would push a day of unreviewed changes into a piece running mid-festival, which belongs on
+  staging first (`scripts/serve.mjs` defaults field + mesh to staging so a test crossing cannot
+  land in the live field). Not deployed; user's call.
 
 ## What works
 
