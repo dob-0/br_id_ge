@@ -21,7 +21,7 @@ source and its GitHub Pages mirror.
 ## Quick Links
 
 - **The door (share this):** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge)
-- **The rite:** [di-studio.xyz/br_id_ge/p/rite](https://di-studio.xyz/br_id_ge/p/rite) · **the field:** [di-studio.xyz/br_id_ge/p/field](https://di-studio.xyz/br_id_ge/p/field)
+- **The rite:** [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) · **the field:** [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field)
 - **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://di-studio.xyz)
 - [DEVELOPMENT.md](DEVELOPMENT.md) — contributor setup, deploy pipeline
 

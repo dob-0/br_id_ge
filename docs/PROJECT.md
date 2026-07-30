@@ -20,8 +20,8 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 | part | in one sentence | where |
 |---|---|---|
 | **the landing** | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
-| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [di-studio.xyz/br_id_ge/p/rite](https://di-studio.xyz/br_id_ge/p/rite) |
-| **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/p/field](https://di-studio.xyz/br_id_ge/p/field) · the `br_id_ge` space |
+| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
+| **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field) · the `br_id_ge` space |
 | **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
 | **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
 | **the constellation** | The map where the whole system is seen and managed. | a project inside the same space |
@@ -63,7 +63,7 @@ the bridge of letters reads as a score the visitor performs.
 
 | Tier | Environment | URL |
 |---|---|---|
-| Production | di.iiii — the rite | [di-studio.xyz/br_id_ge/p/rite](https://di-studio.xyz/br_id_ge/p/rite) |
+| Production | di.iiii — the rite | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
 | Production | di.iiii space | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) |
 | Staging | Preview lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) |
 | Dev | Source repo (backend — never linked publicly) | `dob-0/br_id_ge` |

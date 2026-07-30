@@ -49,6 +49,7 @@ const PROJECTS = {
   'newww': 'index.html',                   // …its project id, the old link
   'field': 'field.html',                   // the field viewer
   'br-id-ge-field': 'field.html',          // …its project id, the old link
+  'members': 'members.html',               // the members — artist-scale crossings
   'v-oooooo': 'v.oooooo.html',             // legacy
 }
 
@@ -86,9 +87,14 @@ async function sendFile(res, file, { rewrite = false } = {}) {
   res.end(body)
 }
 
+// The document API addresses projects by id, not by public slug, so a canonical
+// link has to be translated back before it can be fetched.
+const REMOTE_IDS = { jam: 'br-id-ge-jam', hosq: 'br-id-ge-hosq', rite: 'newww', field: 'br-id-ge-field' }
+
 // Studio-authored projects live only in the space; fetch and serve them here so the
 // links on the door all work locally.
-async function sendRemote(res, id) {
+async function sendRemote(res, slugOrId) {
+  const id = REMOTE_IDS[slugOrId] || slugOrId
   try {
     const r = await fetch(`${SERVER}/api/projects/${encodeURIComponent(id)}/document`,
       { signal: AbortSignal.timeout(15000) })
@@ -112,13 +118,18 @@ const server = http.createServer(async (req, res) => {
   if (p === '/' ) { res.writeHead(302, { Location: SPACE }).end(); return }
   if (p === SPACE) return sendFile(res, PROJECTS[''], { rewrite: true })
 
-  if (p.startsWith(`${SPACE}/p/`)) {
-    const id = p.slice(`${SPACE}/p/`.length)
-    const file = PROJECTS[id]
+  // Two shapes, because prod serves two. `/br_id_ge/<slug>` is the canonical
+  // public link — only that one resolves a project's slug. `/br_id_ge/p/<id>`
+  // takes the project id verbatim and is what every older link uses.
+  const segment = p.startsWith(`${SPACE}/p/`) ? p.slice(`${SPACE}/p/`.length)
+    : p.startsWith(`${SPACE}/`) ? p.slice(`${SPACE}/`.length)
+    : null
+  if (segment && !segment.includes('/')) {
+    const file = PROJECTS[segment]
     if (file) return sendFile(res, file, { rewrite: true })
     // Projects with no repo file — hosq, the jam — are authored in Studio. Pull the
     // document from the space so the whole space really is reachable from one link.
-    return sendRemote(res, id)
+    return sendRemote(res, segment)
   }
 
   // everything else (assets, the raw html files) straight from the repo
@@ -133,8 +144,8 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log(`    ${base}${SPACE}`)
   console.log('')
   console.log(`  the door      ${base}${SPACE}`)
-  console.log(`  the rite      ${base}${SPACE}/p/rite          ← camera works here`)
-  console.log(`  the field     ${base}${SPACE}/p/field`)
+  console.log(`  the rite      ${base}${SPACE}/rite            ← camera works here`)
+  console.log(`  the field     ${base}${SPACE}/field`)
   console.log('')
   console.log(`  field + mesh: ${TO}${TO === 'prod' ? '  ⚠ crossings land in the LIVE field' : '  (crossings stay off prod)'}`)
   console.log('')

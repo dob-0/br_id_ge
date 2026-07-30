@@ -28,15 +28,28 @@ what is built inside di.iiii can be carried back out across it. br_id_ge opens
 publicly at Notations #2 (July 20 – August 2, 2026, State Philharmonia, Yerevan,
 hosted by hosq) and keeps growing after it.
 
+TWO SCALES, ONE RITE (2026-07-30 — the concept's current growth).
+The vi.ritual is not a piece beside the festival; the festival is inside it.
+Everyone at Notations #2 crosses the same bridge, at one of two scales.
+A **visitor crosses small**: name, word, one core — a small part of the vi.ritual
+who affects it and leaves data. An **artist crosses at project scale**: the same
+two questions, answered bigger — *who are you* is a name, *what do you carry* is
+a body of work. So the members of Notations #2 are not an audience or a credits
+list — they are crossings, and every member gets a page (/p/members), which is
+their core at artist scale. Both scales land in the one field; both generate the
+space. The work and the people who make it are the same material at two
+magnifications.
+
 THE RECAP — seven organs, where each one stands (2026-07-29, festival day 10 of 14).
 
 | organ | in one sentence | status |
 |---|---|---|
 | the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/p/rite (memory mode inside the viewer; camera tier needs a top-level route) |
-| the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /p/field |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/rite (memory mode inside the viewer; camera tier needs a top-level route) |
+| the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /field |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — restored 2026-07-28 after 8 silent days down |
 | the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · ⚠ waiting on slot dates |
+| the members | Every Notations #2 member as an artist-scale crossing — one page per member, seeded with the verified curators; the 65 lab names land as confirmed. | NEW — /p/members (staging first) |
 | the constellation | The map where the whole system is seen and managed — a project inside the same space. | LIVE on all tiers |
 | the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready · ⚠ blocked: the /p/ viewer is a sandboxed iframe, so the camera tier needs a top-level di.iiii route (not built) |
 
