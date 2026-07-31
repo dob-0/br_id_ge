@@ -1,8 +1,7 @@
 {
   "name": "br_id_ge",
   "version": "1.0.0",
-  "description": "``` ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ░                                                              ░ ░   br_id_ge  ·  BETA  ·  di.iiii PLATFORM v0.2.0            ░ ░   ──────────────────────────────────────────────────────    ░ ░   NODE OF THE di.iiii PLATFORM                               ░ ░   TELE-SYMBIOTIC XR PERFORMANCE PROTOTYPE                   ░ ░   Munich ←[ AI: STITCH ]→ Gyumri                           ░ ░                                                              ░ ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▒▓ ```",
-  "main": "index.js",
+  "description": "br_id_ge — an Armenian XR rite on di.iiii: cross the bridge, leave a core. Landing + rite + field + members, repo-synced into the br-id-ge space.",
   "directories": {
     "doc": "docs"
   },
@@ -30,8 +29,5 @@
   "bugs": {
     "url": "https://github.com/dob-0/br_id_ge/issues"
   },
-  "homepage": "https://di-studio.xyz/br_id_ge",
-  "dependencies": {
-    "ws": "^8.21.0"
-  }
+  "homepage": "https://di-studio.xyz/br_id_ge"
 }

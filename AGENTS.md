@@ -32,8 +32,6 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 | File | Role |
 |------|------|
 | `index.html` | The rite (`v.oooooo 2`) — five acts, Three.js, WebAudio drone, optional co-presence via `?mesh=`/`<meta name="mesh-url">` |
-| `v.oooooo.html` | Legacy Space Node (renders `docs/PROJECT.md` live) |
-| `serverXR/wsMesh.js` | Local/offline mesh server (hosting superseded by di.iiii `serverXR/src/meshHub.js`) |
 | `docs/PROJECT.md` | Canonical project docs |
 | `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
@@ -49,13 +47,11 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 ## Known Draft Status
 
-- `serverXR/wsMesh.js` — local/offline only (no auth, single process); production mesh is di.iiii `serverXR/src/meshHub.js`.
 - No test suite, no lint configuration.
 
 ## Default Safe Actions
 
 - edit `index.html` for UI/visual changes
-- edit `serverXR/wsMesh.js` only for local/offline mesh runs (hosting lives in di.iiii meshHub.js)
 - edit `docs/MASTER_CONTEXT.md` for curatorial updates (do not let it drift from `docs/PROJECT.md`)
 - do not commit `.env` or any API keys — secret scan in `auto-push-readme.sh` will block it
 
@@ -88,5 +84,4 @@ No automated test/lint pipeline. Before committing:
 
 ```bash
 bash -n scripts/auto-push-readme.sh    # syntax check shell scripts
-node --check serverXR/wsMesh.js        # syntax check Node.js
 ```

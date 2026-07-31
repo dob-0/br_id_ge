@@ -73,3 +73,15 @@ active_branch: main · the rite: https://di-studio.xyz/br_id_ge/rite · the land
 publish pointer is admin-set). Ops: `bash scripts/sync-ops.sh`. Local: `node scripts/serve.mjs`
 (staging tier; `--to prod` when you mean it). Mesh + inscriptions deploy with di.iiii
 (`dev`→staging, `main`→prod).
+
+## Declutter pass (2026-07-31)
+
+- One public face: the door (`landing`) is the single published entry; rite /
+  field / jam / members are its clean links (`/br_id_ge/<name>`).
+- Removed from repo: `serverXR/wsMesh.js` (mesh lives in di.iiii meshHub),
+  legacy `v.oooooo.html` + `di-space.v1.json` (CI line dropped), stale
+  copilot-instructions; `ws` dep gone. dash (show-rig planning) folded into
+  main from the old needs-dash worktree — worktree removed.
+- Space-side archive (user-run): delete `ops-board`, `br-id-ge-guide`,
+  `br-id-ge-lab`, `br-id-ge-graph`, `v-oooooo` from prod br-id-ge; snapshots
+  live in di-spaces git. `br-id-ge-hosq` kept (possibly shared with press).

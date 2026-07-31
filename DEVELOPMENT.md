@@ -78,8 +78,6 @@ br_id_ge/
 ├── scripts/
 │   ├── auto-push-readme.sh      # README-only auto-push watcher
 │   └── auto-push-space.sh       # Multi-file repo sync watcher
-├── serverXR/
-│   └── wsMesh.js                # Local/offline WebSocket mesh server (draft)
 ├── references/                  # Reference media assets
 ├── index.html                   # Live project interface (main SPA)
 └── .vscode/

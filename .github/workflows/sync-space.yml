@@ -10,10 +10,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
-      - 'v.oooooo.html'
       - 'bridge.html'
       - 'di-space.json'
-      - 'di-space.v1.json'
       - 'di-space.landing.json'
       - 'di-space.members.json'
       - 'members.html'
@@ -48,13 +46,12 @@ jobs:
           fi
 
       # Repo is the single source of truth for ALL projects in the space.
-      # The landing (bridge.html) is the published face; the rite (v.oooooo 2)
-      # and legacy v.oooooo sync with publish:false so they never steal the pointer.
+      # The landing (bridge.html) is the published face; the rite and members
+      # sync with publish:false so they never steal the pointer.
       - name: Sync all projects to di.iiii space
         env:
           LIVE_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
         run: |
           node scripts/sync-space.mjs --repo .                                    # v.oooooo 2 (rite)   → newww
-          node scripts/sync-space.mjs --repo . --manifest di-space.v1.json        # v.oooooo (legacy)   → v-oooooo
           node scripts/sync-space.mjs --repo . --manifest di-space.landing.json   # the landing (face)  → landing (published)
           node scripts/sync-space.mjs --repo . --manifest di-space.members.json   # the members         → members

@@ -29,7 +29,6 @@ source and its GitHub Pages mirror.
 
 | Name | What it is | Repo file | Space project |
 |------|-----------|-----------|---------------|
-| **`v.oooooo`** | the original "Space Node" (legacy) | `v.oooooo.html` | `v-oooooo` |
 | **`v.oooooo 2`** | the current five-act rite | `index.html` *(Pages entry)* | `newww` |
 
 Source of truth is **this repo**; the space syncs from it on push (`pages.yml` +
