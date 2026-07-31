@@ -24,7 +24,7 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 1. `README.md` — project overview, live links, team
 2. `docs/PROJECT.md` — full technical and curatorial documentation
-3. `docs/MASTER_CONTEXT.md` — hosq collaboration, Notations #2, notation concept, aesthetic baseline (Void theme)
+3. `docs/MASTER_CONTEXT.md` — hosq collaboration, Notations #2, notation concept, design tokens (§6)
 4. `DEVELOPMENT.md` — dev workflow, auto-push setup, secret scanning
 
 ## File Map
