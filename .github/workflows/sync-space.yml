@@ -13,9 +13,6 @@ on:
       - 'bridge.html'
       - 'di-space.json'
       - 'di-space.landing.json'
-      - 'di-space.members.json'
-      - 'members.html'
-      - 'members.json'
       - 'assets/**'
       - 'scripts/sync-space.mjs'
       - '.github/workflows/sync-space.yml'
@@ -46,12 +43,11 @@ jobs:
           fi
 
       # Repo is the single source of truth for ALL projects in the space.
-      # The landing (bridge.html) is the published face; the rite and members
-      # sync with publish:false so they never steal the pointer.
+      # The landing (bridge.html) is the published face; the rite syncs with
+      # publish:false so it never steals the pointer.
       - name: Sync all projects to di.iiii space
         env:
           LIVE_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
         run: |
           node scripts/sync-space.mjs --repo .                                    # v.oooooo 2 (rite)   → newww
           node scripts/sync-space.mjs --repo . --manifest di-space.landing.json   # the landing (face)  → landing (published)
-          node scripts/sync-space.mjs --repo . --manifest di-space.members.json   # the members         → members

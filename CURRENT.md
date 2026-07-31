@@ -76,8 +76,9 @@ publish pointer is admin-set). Ops: `bash scripts/sync-ops.sh`. Local: `node scr
 
 ## Declutter pass (2026-07-31)
 
-- One public face: the door (`landing`) is the single published entry; rite /
-  field / jam / members are its clean links (`/br_id_ge/<name>`).
+- One public face: the door (`landing`) is the single published entry; rite and
+  field are its clean links (`/br_id_ge/<name>`). members / jam / hosq removed
+  2026-07-31 (stale info) — snapshots in di-spaces git.
 - Removed from repo: `serverXR/wsMesh.js` (mesh lives in di.iiii meshHub),
   legacy `v.oooooo.html` + `di-space.v1.json` (CI line dropped), stale
   copilot-instructions; `ws` dep gone. dash (show-rig planning) folded into

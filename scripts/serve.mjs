@@ -49,7 +49,6 @@ const PROJECTS = {
   'newww': 'index.html',                   // …its project id, the old link
   'field': 'field.html',                   // the field viewer
   'br-id-ge-field': 'field.html',          // …its project id, the old link
-  'members': 'members.html',               // the members — artist-scale crossings
   'v-oooooo': 'v.oooooo.html',             // legacy
 }
 
