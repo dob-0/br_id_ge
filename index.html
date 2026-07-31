@@ -17,31 +17,36 @@
 <meta name="keeper-model" content="llama3.1:8b"> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Grotesk:wght@300;500&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-/* ONE ground, ONE ink, ONE dim. No accent until the core, which is the only solid
-   form in the piece. The previous version stacked twenty-two simultaneous layers —
-   three noise fields, three pointer marks, six text layers — and no palette could
-   fix that. This is the edit, not a repaint. */
+/* PAPER AND INK. The rite leaves the void: warm paper ground, one ink, one
+   graphite, one live blue. The silhouette is typeset, not haunted — a body
+   becoming a line of text. The only "effect" in the piece is the core: a
+   single chrome object on the flat page. Everything else is print. */
 :root{
-  --ground:#000; --ink:#f2efe9; --dim:#5f5952; --faint:#2a2724;
+  --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
+  --live:#1d4bff;
   --arm:'Noto Serif Armenian',Georgia,serif;
+  --grot:'Space Grotesk',system-ui,sans-serif;
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-/* The rite is drag-driven, and on a phone dragging down is the browser's reload
-   gesture — so reading your own outline reloaded the page. overflow:hidden does not
-   stop overscroll; overscroll-behavior and touch-action do. */
-html,body{height:100%;overflow:hidden;background:var(--ground);
+html,body{height:100%;overflow:hidden;background:var(--paper);
   overscroll-behavior:none;touch-action:none;-webkit-overflow-scrolling:auto}
 body{color:var(--ink);font-family:var(--mono);cursor:none;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-/* the one element that must still accept native touch */
 .ask input{touch-action:auto;-webkit-user-select:text;user-select:text}
 
-/* LAYER 1 — the reading */
+/* the frame — a printed sheet's edge */
+#frame{position:fixed;inset:10px;border:1px solid var(--hairline);z-index:1;pointer-events:none}
+@media (max-width:560px){#frame{inset:8px}}
+
+/* LAYER 1 — the reading (2D ink) and the core (WebGL, mounted late) */
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
+#g3{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity 2.4s ease}
+#g3.on{opacity:1}
 
 /* LAYER 2 — the words */
 #type{position:fixed;inset:0;z-index:2;display:grid;place-items:center;
@@ -49,66 +54,73 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 #type>*{grid-area:1/1;opacity:0;transition:opacity .9s ease}
 #type>.on{opacity:1}
 
-.card .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2.1rem,9vw,4.4rem);
-  line-height:1;letter-spacing:.02em}
-.card .lat{font-family:var(--mono);font-size:.62rem;letter-spacing:.44em;
-  text-transform:uppercase;color:var(--dim);margin-top:1.5rem}
+.card .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2.1rem,9vw,4.6rem);
+  line-height:1;letter-spacing:.02em;color:var(--ink)}
+.card .lat{font-family:var(--mono);font-size:.6rem;letter-spacing:.44em;
+  text-transform:uppercase;color:var(--graphite);margin-top:1.5rem}
 
 .ask{display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none}
 .ask.on{pointer-events:auto}
 .ask .q{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,5.4vw,2.5rem);
-  line-height:1.25;max-width:22ch}
+  line-height:1.25;max-width:22ch;color:var(--ink)}
 .ask .sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--dim);margin-top:1.1rem}
-.ask input{margin-top:2.6rem;background:none;border:0;border-bottom:1px solid var(--faint);
+  color:var(--graphite);margin-top:1.1rem}
+.ask input{margin-top:2.6rem;background:none;border:0;border-bottom:1px solid var(--hairline);
   color:var(--ink);font-family:var(--arm);font-weight:300;font-size:clamp(1.6rem,6vw,2.6rem);
-  text-align:center;width:min(90vw,26ch);padding:.2rem 0 .5rem;outline:none;caret-color:var(--ink)}
-.ask input::placeholder{color:var(--faint)}
-.ask input:focus{border-bottom-color:var(--dim)}
+  text-align:center;width:min(90vw,26ch);padding:.2rem 0 .5rem;outline:none;caret-color:var(--live)}
+.ask input::placeholder{color:var(--hairline)}
+.ask input:focus{border-bottom-color:var(--live)}
 .ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--faint);margin-top:1.3rem}
+  color:var(--graphite);margin-top:1.3rem}
 
-/* anchored low: the core occupies the middle of the frame, and the words must not
-   sit on top of it */
 .end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
   align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
 .end .said{font-family:var(--arm);font-weight:300;font-size:clamp(1.1rem,3.6vw,1.6rem);
   line-height:1.45;max-width:26ch;color:var(--ink)}
 .end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
-  color:var(--dim);max-width:34ch;text-transform:lowercase}
+  color:var(--graphite);max-width:34ch;text-transform:lowercase}
 .end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
-  text-transform:uppercase;color:var(--dim)}
+  text-transform:uppercase;color:var(--graphite)}
 
-/* LAYER 3 — one status line, bottom left. Nothing else. */
-/* right-hand side: the di.iiii viewer overlays its own badge bottom-left */
-#state{position:fixed;z-index:3;right:0;bottom:0;
-  padding:1.1rem max(1.1rem,env(safe-area-inset-right));
-  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
-  pointer-events:none;display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
-#state b{font-weight:400;color:var(--dim)}
+/* LAYER 3 — the HUD: data pinned to the frame's corners. Everything it says is true. */
+.hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--graphite);pointer-events:none}
+#hudTitle{top:0;left:0;padding:1.35rem max(1.35rem,env(safe-area-inset-left));color:var(--ink)}
+#hudTitle b{font-weight:400}
+#hudAct{top:0;right:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));text-align:right}
+#state{right:0;bottom:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));
+  display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
+#state b{font-weight:400;color:var(--ink)}
+#sHere b{color:var(--live)}
 
-/* the door */
-#door{position:fixed;inset:0;z-index:9;background:var(--ground);display:grid;place-items:center;
+/* the door — a printed cover page */
+#door{position:fixed;inset:0;z-index:9;background:var(--paper);display:grid;place-items:center;
   padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:opacity 1.1s ease}
 #door.gone{opacity:0;pointer-events:none}
-#door .w{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,12vw,5.5rem);line-height:1}
-#door .t{font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;line-height:2.2;
-  color:var(--dim);max-width:40ch;margin-top:2.2rem;text-transform:lowercase}
-#door .t em{font-style:normal;color:var(--ink)}
-#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--faint);
-  margin-top:2rem;line-height:1.9;text-transform:lowercase}
+#door .w{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,12vw,5.8rem);line-height:1;color:var(--ink)}
+#door .t{font-family:var(--grot);font-weight:300;font-size:clamp(.82rem,2.6vw,1rem);letter-spacing:.02em;line-height:1.9;
+  color:var(--graphite);max-width:44ch;margin-top:2.2rem}
+#door .t em{font-style:normal;color:var(--live)}
+#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--graphite);
+  margin-top:2.4rem;line-height:1.9;text-transform:lowercase}
 
-@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}}
+@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#g3{transition:none}}
 @media (pointer:coarse){body{cursor:auto}}
 @media (max-width:560px){
   #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
-  #door .t{letter-spacing:.2em;line-height:2}
+  #hudTitle,#hudAct{padding:1.1rem}
+  #state{padding:1.1rem}
 }
 </style>
 </head>
 <body>
 
+<div id="frame"></div>
 <canvas id="c"></canvas>
+<canvas id="g3"></canvas>
+
+<div class="hud" id="hudTitle"><b>br_id_ge</b> · vi.ritual</div>
+<div class="hud" id="hudAct"></div>
 
 <div id="type">
   <div class="card" id="card"><div class="arm"></div><div class="lat"></div></div>
@@ -124,7 +136,7 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   </div>
 </div>
 
-<div id="state">
+<div class="hud" id="state">
   <span><b id="sRead">0</b> read</span>
   <span><b id="sField">0</b> in the field</span>
   <span id="sHere" hidden><b id="sHereN">0</b> here now</span>
@@ -134,19 +146,140 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 <div id="door">
   <div>
     <div class="w arm">կամուրջ</div>
-    <div class="t">a bridge between the real world and a shared one.<br>
-      stand where the lamp can see you. move, and your outline<br>
-      is read into letters. then answer once.<br>
+    <div class="t">a bridge between the real world and a shared one.
+      stand where the lamp can see you — move, and your outline is read into
+      letters. then answer once.<br>
       <em>touch to open the lamp</em></div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
   </div>
 </div>
 
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
+"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}
+</script>
 <script type="module">
 const $=(s)=>document.querySelector(s)
 const clamp=(v,a,b)=>v<a?a:(v>b?b:v)
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches
 const Q=new URLSearchParams(location.search)
+
+// ── ink. The canvas speaks the page's own palette. ────────────────────────
+const INK='#131313', GRAPHITE='#8f8b83', LIVE='#1d4bff'
+
+// ── the sound of reading. No files: every tone is synthesized. ────────────
+// The piece is audible the way it is visible — through its own events. Each
+// letter read is one glass grain (pitch from where on the body it was read),
+// the room holds a barely-there breathing tone that follows the acts, and
+// everything hushes when the Keeper speaks. Unlocked by the door touch.
+const SND=(()=>{
+  let ac=null,master,drone,droneG,filt,pad=null
+  let grainAt=0,grainN=0,grainWin=0
+  const SCALE=[0,2,4,7,9,12,14,16]           // bright pentatonic, two octaves
+  const BASE=293.66                           // D4 — the rite's root
+  const now=()=>ac.currentTime
+  function unlock(){
+    if(ac)return ac.resume&&ac.resume()
+    try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}
+    master=ac.createGain();master.gain.value=0.85
+    const comp=ac.createDynamicsCompressor()
+    comp.threshold.value=-24;comp.knee.value=18;comp.ratio.value=4
+    master.connect(comp);comp.connect(ac.destination)
+    // the room tone: two low detuned triangles behind a closed filter
+    filt=ac.createBiquadFilter();filt.type='lowpass';filt.frequency.value=170;filt.Q.value=0.4
+    droneG=ac.createGain();droneG.gain.value=0.0
+    filt.connect(droneG);droneG.connect(master)
+    drone=[73.42,110.09].map((f,i)=>{
+      const o=ac.createOscillator();o.type='triangle'
+      o.frequency.value=f;o.detune.value=i?4:-3
+      o.connect(filt);o.start();return o})
+    droneG.gain.linearRampToValueAtTime(0.05,now()+6)
+    document.addEventListener('visibilitychange',()=>{
+      if(!ac)return
+      if(document.hidden)ac.suspend&&ac.suspend();else ac.resume&&ac.resume()
+    })
+  }
+  function grain(x,y,vel){
+    if(!ac||ac.state!=='running')return
+    const t=now()
+    // budget: the reading can fire dozens of cells a frame — sound stays sparse
+    if(t-grainWin>1){grainWin=t;grainN=0}
+    if(grainN>=10||t-grainAt<0.045)return
+    grainAt=t;grainN++
+    const step=SCALE[clamp(Math.round((1-y/H)*(SCALE.length-1)),0,SCALE.length-1)]
+    const f=BASE*Math.pow(2,step/12)
+    const o=ac.createOscillator(),o2=ac.createOscillator()
+    o.type='sine';o.frequency.value=f
+    o2.type='sine';o2.frequency.value=f*2.997   // a glass partial, slightly off
+    const g=ac.createGain(),g2=ac.createGain()
+    const v=(0.05+0.045*(vel||0))
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+0.008)
+    g.gain.exponentialRampToValueAtTime(0.0004,t+0.62)
+    g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(v*0.24,t+0.006)
+    g2.gain.exponentialRampToValueAtTime(0.0003,t+0.3)
+    let out=g
+    if(ac.createStereoPanner){const p=ac.createStereoPanner();p.pan.value=clamp(x/W*2-1,-1,1)*0.7
+      g.connect(p);g2.connect(p);p.connect(master);out=null}
+    if(out){g.connect(master);g2.connect(master)}
+    o.connect(g);o2.connect(g2)
+    o.start(t);o2.start(t);o.stop(t+0.7);o2.stop(t+0.35)
+  }
+  function chord(n){
+    if(!ac||ac.state!=='running')return
+    const t=now()
+    for(let i=0;i<Math.min(4,n);i++){
+      const step=SCALE[(i*2+1)%SCALE.length]
+      const f=BASE*Math.pow(2,step/12)
+      const o=ac.createOscillator();o.type='sine';o.frequency.value=f
+      const g=ac.createGain()
+      g.gain.setValueAtTime(0,t+i*0.055);g.gain.linearRampToValueAtTime(0.055,t+i*0.055+0.01)
+      g.gain.exponentialRampToValueAtTime(0.0004,t+i*0.055+0.9)
+      o.connect(g);g.connect(master);o.start(t+i*0.055);o.stop(t+i*0.055+1)
+    }
+  }
+  function actSwell(i){
+    if(!ac||ac.state!=='running')return
+    const t=now()
+    droneG.gain.cancelScheduledValues(t)
+    droneG.gain.setValueAtTime(droneG.gain.value,t)
+    droneG.gain.linearRampToValueAtTime(0.085,t+1.2)
+    droneG.gain.linearRampToValueAtTime(0.05,t+5)
+  }
+  function settle(){
+    if(!ac||ac.state!=='running')return
+    const t=now()
+    const o=ac.createOscillator();o.type='sine';o.frequency.value=BASE/4
+    const o2=ac.createOscillator();o2.type='sine';o2.frequency.value=BASE/2*1.5
+    const g=ac.createGain(),g2=ac.createGain()
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.16,t+0.03)
+    g.gain.exponentialRampToValueAtTime(0.0004,t+3.4)
+    g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(0.04,t+0.03)
+    g2.gain.exponentialRampToValueAtTime(0.0003,t+1.6)
+    o.connect(g);o2.connect(g2);g.connect(master);g2.connect(master)
+    o.start(t);o2.start(t);o.stop(t+3.6);o2.stop(t+1.8)
+  }
+  function sharedPad(){
+    if(!ac||ac.state!=='running'||pad)return
+    const t=now()
+    pad=[0,4,7,14].map((st)=>{
+      const o=ac.createOscillator();o.type='sine'
+      o.frequency.value=BASE/2*Math.pow(2,st/12)
+      const g=ac.createGain()
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.014,t+7)
+      o.connect(g);g.connect(master);o.start(t);return o})
+  }
+  function tick(quiet,f){
+    if(!ac||ac.state!=='running')return
+    // the room follows the crossing: the filter opens with progress, the
+    // whole bed breathes, and the Keeper's question quiets everything
+    const t=now()
+    const breathe=1+0.18*Math.sin(t*0.5)
+    filt.frequency.value=(150+f*560)*breathe
+    const base=(pad?0.02:0.05+f*0.035)
+    droneG.gain.value+=((base*(0.15+0.85*quiet))-droneG.gain.value)*0.02
+  }
+  return {unlock,grain,chord,actSwell,settle,sharedPad,tick}
+})()
 
 // ── the alphabet. Armenian letterforms and Armenian punctuation only. ──────
 const GLYPHS=[...'ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ']
@@ -179,7 +312,7 @@ const silImg=silCtx.createImageData(GW,GH)
 function drawSilhouette(alpha){
   const d=silImg.data
   for(let k=0;k<GW*GH;k++){const o=k*4
-    d[o]=242;d[o+1]=239;d[o+2]=233;d[o+3]=bodyMask[k]?255:0}
+    d[o]=19;d[o+1]=19;d[o+2]=19;d[o+3]=bodyMask[k]?255:0}
   silCtx.putImageData(silImg,0,0)
   ctx.save()
   ctx.globalAlpha=alpha
@@ -246,7 +379,8 @@ function rebuildOutline(t,dt,embodied){
     // which is the whole point of standing in front of a camera.
     if(embodied&&!m.read){
       m.heat+=dt
-      if(m.heat>=0.5){m.read=1;m.t=t;readN++}
+      if(m.heat>=0.5){m.read=1;m.t=t;readN++
+        const [gx,gy]=markScreen(m);SND.grain(gx,gy,1)}
     }
   }
   let readCount=0
@@ -356,31 +490,31 @@ function drawTracking(){
   ctx.lineCap='round'
   if(poseLM){
     const P2=poseLM.map(l=>[(1-l.x)*W,l.y*H])
-    ctx.globalAlpha=0.20*quiet
-    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.globalAlpha=0.28*quiet
+    ctx.strokeStyle=GRAPHITE;ctx.lineWidth=1
     ctx.beginPath()
     for(const [a,b] of POSE_BONES){
       if(!P2[a]||!P2[b])continue
       ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])
     }
     ctx.stroke()
-    ctx.globalAlpha=0.34*quiet;ctx.fillStyle='#f2efe9'
+    ctx.globalAlpha=0.4*quiet;ctx.fillStyle=GRAPHITE
     for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,1.5,0,6.2832);ctx.fill()}
   }
   if(handLM){
     const P2=handLM.map(l=>[(1-l.x)*W,l.y*H])
-    ctx.globalAlpha=0.5*quiet
-    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.globalAlpha=0.55*quiet
+    ctx.strokeStyle=GRAPHITE;ctx.lineWidth=1
     ctx.beginPath()
     for(const [a,b] of HAND_BONES){ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])}
     ctx.stroke()
-    ctx.globalAlpha=(pinch?0.95:0.55)*quiet;ctx.fillStyle='#f2efe9'
+    ctx.globalAlpha=(pinch?0.95:0.6)*quiet;ctx.fillStyle=pinch?LIVE:GRAPHITE
     for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,pinch?2.4:1.7,0,6.2832);ctx.fill()}
     // the index fingertip is the reaching point — ringed so the hand reads as an
     // instrument, and the pinch visibly closes around what it takes
     const [ix,iy]=P2[8]
-    ctx.globalAlpha=(pinch?0.9:0.45)*quiet
-    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.globalAlpha=(pinch?0.9:0.5)*quiet
+    ctx.strokeStyle=pinch?LIVE:INK;ctx.lineWidth=1
     ctx.beginPath();ctx.arc(ix,iy,pinch?11:7,0,6.2832);ctx.stroke()
   }
 }
@@ -419,12 +553,14 @@ function readHand(now){
   if(pinch&&!pinchWas&&started&&!inscribed){
     // a pinch reaches further than the open hand — it takes a whole handful
     const R=Math.min(W,H)*0.13, R2=R*R
+    let taken=0
     for(const [,m] of marks){
       if(m.read)continue
       const [x,y]=markScreen(m)
       const ddx=x-P.x, ddy=y-P.y
-      if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++}
+      if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++;taken++}
     }
+    if(taken)SND.chord(taken)
   }
   pinchWas=pinch
 }
@@ -450,6 +586,7 @@ let cardUntil=0
 function showCard(a){
   card.querySelector('.arm').textContent=a.arm
   card.querySelector('.lat').textContent=a.lat
+  $('#hudAct').textContent=a.lat
   cardUntil=performance.now()+2800
   show(card)
   clearTimeout(showCard._t)
@@ -612,7 +749,7 @@ Mesh.connect()
 function advance(){
   const f=frac()
   for(let i=ACTS.length-1;i>=0;i--){
-    if(f>=ACTS[i].at&&act<i){act=i;if(!asking)showCard(ACTS[i]);break}
+    if(f>=ACTS[i].at&&act<i){act=i;SND.actSwell(i);$('#hudAct').textContent=ACTS[i].lat;if(!asking)showCard(ACTS[i]);break}
   }
   if(asking||done||performance.now()<cardUntil)return
   if(!name&&f>=KEEPER_AT)openAsk('name')
@@ -659,6 +796,8 @@ function said(line){
 // ── the core ──────────────────────────────────────────────────────────────
 function inscribe(){
   inscribed=true;done=true
+  SND.settle()
+  CORE3.mount()
   const tag=(name||'—')+' · '+word
   field.push(tag)
   try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
@@ -749,6 +888,9 @@ function buildSharedBody(){
     slot++ // one empty point between words, so they do not run together
   }
   shared={pts,letters,t:0}
+  $('#hudAct').textContent='echo \u00b7 act v'
+  SND.sharedPad()
+  CORE3.recede()
   const n=field.length
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
@@ -756,11 +898,64 @@ function buildSharedBody(){
   show(end)
 }
 
+// ── the core, in glass and chrome ─────────────────────────────────────────
+// The one Three.js moment in the piece. The whole page is flat print; what a
+// crossing leaves behind is the only thing with depth: a slowly turning
+// iridescent form, floating where the letters gather. If WebGL or the CDN is
+// missing, the flat ink disc below stands in and the rite loses nothing.
+const CORE3={ok:false,dying:false,
+  async mount(){
+    if(this.ok||REDUCED)return
+    try{
+      const THREE=await import('three')
+      const {RoomEnvironment}=await import('three/addons/environments/RoomEnvironment.js')
+      const cnv=document.getElementById('g3')
+      const r=new THREE.WebGLRenderer({canvas:cnv,alpha:true,antialias:true})
+      r.setPixelRatio(Math.min(2,devicePixelRatio||1))
+      r.setSize(innerWidth,innerHeight)
+      r.setClearColor(0x000000,0)
+      const scene=new THREE.Scene()
+      scene.environment=new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(),0.04).texture
+      const cam=new THREE.PerspectiveCamera(35,innerWidth/innerHeight,0.1,50)
+      cam.position.set(0,0,7)
+      const geo=new THREE.TorusKnotGeometry(0.85,0.34,260,40)
+      const mat=new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:1,roughness:0.16,
+        iridescence:1,iridescenceIOR:1.55,envMapIntensity:1.15,transparent:true})
+      const core=new THREE.Mesh(geo,mat)
+      scene.add(core)
+      // the core sits where the 2D letters spiral to: x centre, y at 0.40H
+      const place=()=>{
+        const t=Math.tan(cam.fov*Math.PI/360)*cam.position.z
+        core.position.y=(0.5-0.40)*2*t
+        // the object floats on the page — it must never fill it
+        const px=Math.min(innerWidth,innerHeight)
+        core.scale.setScalar(clamp(px/1400,0.34,0.52))
+      }
+      place()
+      const onR=()=>{r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();place()}
+      addEventListener('resize',onR)
+      const tick=()=>{
+        if(this.dying){mat.opacity=Math.max(0,mat.opacity-0.02)
+          if(mat.opacity<=0){cnv.classList.remove('on');return}}
+        core.rotation.y+=0.0035;core.rotation.x+=0.0011
+        core.position.x=Math.sin(performance.now()*0.00022)*0.06
+        r.render(scene,cam)
+        requestAnimationFrame(tick)
+      }
+      this.ok=true
+      cnv.classList.add('on')
+      tick()
+    }catch(e){this.ok=false}
+  },
+  recede(){this.dying=true}
+}
+
 // ── the door ──────────────────────────────────────────────────────────────
 const door=$('#door')
 function begin(){
   if(started)return
   started=true
+  SND.unlock()
   door.classList.add('gone')
   openLamp().then(()=>{openHands();openPose()})
   showCard(ACTS[0])
@@ -816,7 +1011,7 @@ function frame(now){
         if(m.read)continue
         const [x,y]=markScreen(m)
         const dx=x-P.x,dy=y-P.y
-        if(dx*dx+dy*dy<R2){m.read=1;m.t=t;readN++}
+        if(dx*dx+dy*dy<R2){m.read=1;m.t=t;readN++;SND.grain(x,y,0.6)}
       }
     }
     $('#sRead').textContent=readN
@@ -841,7 +1036,7 @@ function frame(now){
   // you, first — the ghost under everything. Brighter when it is really you,
   // fainter for the dreamed stand-in; gone once the crossing condenses.
   if(started&&!inscribed)
-    drawSilhouette((embodied?0.17:0.055)*quiet*(shared?1-shared.t:1))
+    drawSilhouette((embodied?0.07:0.03)*quiet*(shared?1-shared.t:1))
 
   // the core: everything read gathers into one flat disc — hot at the heart,
   // the one solid form in the piece
@@ -853,6 +1048,7 @@ function frame(now){
   // the reading stops while you are being addressed.
   const askOpen=asking!==null
   quiet+=((askOpen?0.14:1)-quiet)*(REDUCED?1:0.08)
+  SND.tick(quiet,frac())
 
   for(const [,m] of marks){
     let [x,y]=markScreen(m)
@@ -865,8 +1061,8 @@ function frame(now){
     }
     if(m.read){
       const age=Math.min(1,(t-m.t)/1.1)
-      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)*quiet*(shared?1-shared.t:1)
-      ctx.fillStyle='#f2efe9'
+      ctx.globalAlpha=(0.34+0.66*age)*(inscribed?1:0.95)*quiet*(shared?1-shared.t:1)
+      ctx.fillStyle=INK
       ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
@@ -874,8 +1070,8 @@ function frame(now){
       if(!inscribed&&!REDUCED){
         const fa=t-m.t
         if(fa<0.5){
-          ctx.globalAlpha=(1-fa/0.5)*0.3*quiet
-          ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+          ctx.globalAlpha=(1-fa/0.5)*0.55*quiet
+          ctx.strokeStyle=LIVE;ctx.lineWidth=1
           ctx.beginPath();ctx.arc(x,y,5+fa*44,0,6.2832);ctx.stroke()
         }
       }
@@ -883,14 +1079,14 @@ function frame(now){
       // a letter WARMS into being under your edge — the reading is watchable,
       // not a switch. Cold cells stay quiet points.
       const warm=m.heat?clamp(m.heat/0.5,0,1):0
-      ctx.fillStyle='#f2efe9'
+      ctx.fillStyle=warm>0.05?INK:GRAPHITE
       if(warm>0.05){
-        ctx.globalAlpha=(0.10+0.6*warm)*quiet*(shared?1-shared.t:1)
+        ctx.globalAlpha=(0.14+0.66*warm)*quiet*(shared?1-shared.t:1)
         ctx.font='300 '+(FS*(0.7+0.3*warm)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
         ctx.textAlign='center';ctx.textBaseline='middle'
         ctx.fillText(m.g,x,y)
       }else{
-        ctx.globalAlpha=0.2*quiet*(shared?1-shared.t:1)
+        ctx.globalAlpha=0.5*quiet*(shared?1-shared.t:1)
         ctx.fillRect(x-0.8,y-0.8,1.6,1.6)
       }
     }
@@ -898,16 +1094,19 @@ function frame(now){
 
   if(inscribed&&condense>0.55){
     const a=((condense-0.55)/0.45)*(shared?1-shared.t:1)
-    ctx.globalAlpha=0.14*a
-    ctx.fillStyle='#f2efe9'
-    ctx.beginPath();ctx.ellipse(coreCX,coreCY,coreR*0.98,coreR*0.47,0,0,6.2832);ctx.fill()
-    ctx.globalAlpha=0.5*a
+    if(!CORE3.ok){
+      ctx.globalAlpha=0.1*a
+      ctx.fillStyle=INK
+      ctx.beginPath();ctx.ellipse(coreCX,coreCY,coreR*0.98,coreR*0.47,0,0,6.2832);ctx.fill()
+    }
+    ctx.fillStyle=INK
+    ctx.globalAlpha=0.8*a
     ctx.font='300 '+Math.round(Math.min(W,H)*0.045)+'px "Noto Serif Armenian",Georgia,serif'
     ctx.textAlign='center';ctx.textBaseline='middle'
-    ctx.fillText(word,coreCX,coreCY)
-    ctx.globalAlpha=0.34*a
+    ctx.fillText(word,coreCX,coreCY+(CORE3.ok?coreR*1.55:0))
+    ctx.globalAlpha=0.55*a
     ctx.font='300 '+Math.round(Math.min(W,H)*0.026)+'px "Noto Serif Armenian",Georgia,serif'
-    ctx.fillText(name,coreCX,coreCY-coreR*0.72)
+    ctx.fillText(name,coreCX,coreCY+(CORE3.ok?coreR*1.55:0)-coreR*0.72)
   }
 
   // the shared body — the core opens and its letters travel out to the figure
@@ -933,8 +1132,8 @@ function frame(now){
           x+=(dx/(d||1))*push; y+=(dy/(d||1))*push
         }
       }
-      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.52)+near*0.48)*g)
-      ctx.fillStyle='#f2efe9'
+      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.58)+near*0.42)*g)
+      ctx.fillStyle=L.mine?LIVE:INK
       ctx.font='300 '+((L.mine?FS*1.15:FS)*(1+near*0.35)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.fillText(L.ch,x,y)
     }
@@ -943,8 +1142,8 @@ function frame(now){
   // the others, one faint point each — no labels, no lamps, no rings
   if(Mesh.peers.size){
     for(const[,pr]of Mesh.peers){
-      ctx.globalAlpha=0.34*quiet
-      ctx.fillStyle='#f2efe9'
+      ctx.globalAlpha=0.7*quiet
+      ctx.fillStyle=LIVE
       ctx.beginPath();ctx.arc((1-pr.x)*W,pr.y*H,2.2,0,6.2832);ctx.fill()
     }
   }
@@ -953,8 +1152,8 @@ function frame(now){
 
   // the lamp itself: a single ring. One mark, not three.
   if(started&&!inscribed&&P.has&&!(camOn&&segHas)){
-    ctx.globalAlpha=0.5*quiet
-    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.globalAlpha=0.6*quiet
+    ctx.strokeStyle=INK;ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
     ctx.globalAlpha=0.9*quiet
     ctx.beginPath();ctx.arc(P.x,P.y,1.4,0,6.2832);ctx.fill()

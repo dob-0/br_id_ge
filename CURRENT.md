@@ -30,8 +30,13 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 
 ## Open
 
-- **Visual direction still not accepted** — user has rejected every pass incl. the
-  current black/one-ink build. Next: design research before another repaint.
+- **New face shipped 2026-07-31 — paper & ink & chrome** (user brief: contemporary /
+  brutalist / minimalist / metamodern): warm paper ground, hairline frame, mono HUD
+  corners, ink letters, one live blue; the core is the piece's single Three.js
+  object — an iridescent chrome knot that recedes for the shared body. Sound added
+  the same pass: glass grains per letter read + a breathing room tone that follows
+  the acts and hushes for the Keeper (all synthesized, unlocked by the door touch).
+  Awaiting the user's verdict on the look.
 - **Concept pass pending:** MASTER_CONTEXT §6 describes tuff/light; the rite is
   black one-ink. Do together with the visual pass.
 - Sound — biggest untouched lever.
