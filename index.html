@@ -86,6 +86,8 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 .hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--graphite);pointer-events:none}
 #hudTitle{top:0;left:0;padding:1.35rem max(1.35rem,env(safe-area-inset-left));color:var(--ink)}
+/* inside the di.iiii viewer a project-switcher pill owns that corner */
+body.inframe #hudTitle{top:2.9rem}
 #hudTitle b{font-weight:400}
 #hudAct{top:0;right:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));text-align:right}
 #state{right:0;bottom:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));
@@ -163,6 +165,7 @@ const $=(s)=>document.querySelector(s)
 const clamp=(v,a,b)=>v<a?a:(v>b?b:v)
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches
 const Q=new URLSearchParams(location.search)
+try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
 
 // ── ink. The canvas speaks the page's own palette. ────────────────────────
 const INK='#131313', GRAPHITE='#8f8b83', LIVE='#1d4bff'
