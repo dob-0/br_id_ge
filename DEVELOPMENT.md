@@ -76,10 +76,14 @@ br_id_ge/
 │   ├── PROJECT.md               # Full project documentation
 │   └── MASTER_CONTEXT.md        # Curatorial ground truth — hosq / Notations #2
 ├── scripts/
+│   ├── serve.mjs                # Local mirror of the whole space (localhost:8899)
+│   ├── sync-space.mjs           # Linked-space sync engine (CI uses this)
 │   ├── auto-push-readme.sh      # README-only auto-push watcher
 │   └── auto-push-space.sh       # Multi-file repo sync watcher
-├── references/                  # Reference media assets
-├── index.html                   # Live project interface (main SPA)
+├── bridge.html                  # The door (published face of the space)
+├── index.html                   # The rite (Pages entry)
+├── field.html                   # The field
+├── dash.html                    # Show-rig planning (internal)
 └── .vscode/
     └── tasks.json               # VS Code workflow tasks
 ```

@@ -8,7 +8,7 @@ enter through a short rite — cross a bridge of glowing Armenian letters and an
 two questions, *who are you, and what do you carry?*; artists enter through an
 open jam, curated in. Every entry leaves a permanent mark — an inscribed stone —
 a *core* — in a shared field that is never erased. Built on the open web —
-Three.js/WebGL, no install, no engine.
+no install, no engine.
 
 Everything lives in **one di.iiii space** (`br_id_ge`); this repo is its file
 source and its GitHub Pages mirror.

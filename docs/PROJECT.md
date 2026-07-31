@@ -11,11 +11,11 @@ in. Every entry leaves a permanent mark — an inscribed stone — a *core*
 (*kar* is Armenian for stone) — in a shared field that is never erased. And the
 bridge runs both ways: what is built inside di.iiii can be carried back out.
 
-## The system — seven connected parts
+## The system — five connected parts
 
-One artwork grew into a small organism. All parts speak one visual language
-(near-black void · cyan = live in di.iiii · crimson = still on the real side ·
-amber = the lamp, attention · stone tan = memory and Armenian letterforms):
+One artwork grew into a small organism. All parts speak one visual language —
+the canonical tokens live in [MASTER_CONTEXT.md](MASTER_CONTEXT.md) §6
+(colors are concept actors, not decoration):
 
 | part | in one sentence | where |
 |---|---|---|
@@ -23,15 +23,13 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 | **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
 | **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field) · the `br_id_ge` space |
 | **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
-| **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
-| **the constellation** | The map where the whole system is seen and managed. | a project inside the same space |
 | **the scanner array** | Depth cameras and LiDAR — how places will enter. | physical kit, staged per show |
 
 ## 1. The Rite — five acts
 
 1. **Threshold** — the UI strips away; a dark void lit by a single *gantegh* lamp.
-2. **Crossing** — a bridge of Armenian letters; breathing-paced movement with the
-   *duduk* dam-drone.
+2. **Crossing** — a bridge of Armenian letters read along your own outline;
+   breathing-paced.
 3. **Witness** — the Keeper (archivist, not oracle) blocks the span and asks who
    you are and what you carry.
 4. **Notation** (ՆՈԹԱԳՐՈՒԹՅՈՒՆ) — a **core**: your name in
@@ -51,13 +49,14 @@ the bridge of letters reads as a score the visitor performs.
 
 ## 3. Technical
 
-- **Stack:** single-file `index.html` — Three.js/WebGL, WebAudio (synthesized duduk
-  drone), MSDF typography. Open web, no build step, no external engine.
+- **Stack:** single-file `index.html` — 2D canvas, one ink; optional MediaPipe
+  silhouette reading (graceful fallback to a dreamed body); WebAudio. Open web,
+  no build step, no external engine.
 - **Co-presence:** optional WebSocket mesh (`?mesh=` param or
   `<meta name="mesh-url">`); hub lives in di.iiii serverXR. Solo rite when unset.
-- **Versions:** `v.oooooo` = legacy Space Node (`v.oooooo.html`, renders this
-  document live) · `v.oooooo 2` = the current rite (`index.html`). This repo is the
-  source of truth; the di.iiii space syncs from it via CI.
+- **Versions:** `v.oooooo 3` — THE READING is the current rite (`index.html`);
+  earlier builds live in git history. This repo is the source of truth; the
+  di.iiii space syncs from it via CI.
 
 ## 4. Deployments
 

@@ -2,8 +2,8 @@ MASTER CONTEXT: br_id_ge · Notations #2 (hosq)
 
 Project: br_id_ge (կամուրջ) — the bridge where the real enters di.iiii
 Artist/Curator: Gevorg Aram Grigoryan (dob-0)
-Current version: v.oooooo 3 — THE SCAN (the camera is the lamp; see README "Versions")
-Festival title (canonical): br_id_ge XR_ Notations:vi.ritual — the rite is presented as **vi.ritual**; the jam opens it into **vi.rituals**
+Current version: v.oooooo 3 — THE READING (2D canvas; your silhouette reads the letters)
+Festival title (canonical): br_id_ge XR_ Notations:vi.ritual — the rite is presented as **vi.ritual**
 
 This is the working master context for the hosq collaboration. Earlier framings
 (N-Node tele-symbiotic mesh, Munich–Gyumri phases, ROS actuation, biometric capture)
@@ -37,9 +37,9 @@ much space you get:
   the shared virtual space. Small, but generative — every visitor affects the
   field and leaves data.
 - **a page** — a member's crossing. The same two questions at artist scale:
-  *who are you* is a name, *what do you carry* is a body of work. Every member
-  of Notations #2 gets a page (/members, built from members.json — the repo is
-  the info center). The members are not a credits list; they are crossings.
+  *who are you* is a name, *what do you carry* is a body of work. The members are
+  not a credits list; they are crossings. (The /members page surface was retired
+  2026-07-31 — its roster had gone stale; the magnitude stands as concept.)
 - **a space** — an artist's crossing, the top of the ladder. A whole world of
   their own on di.iiii to build in. The precedent is already live in the family:
   **wcc** (Emilya's World Creative Commons) is one space where every artist is a
@@ -50,27 +50,25 @@ much space you get:
 All three magnitudes land in the one system; all three generate the space. The
 work and the people who make it are the same material at three magnifications.
 
-THE RECAP — seven organs, where each one stands (2026-07-29, festival day 10 of 14).
+THE RECAP — the organs, where each one stands (2026-07-31).
 
 | organ | in one sentence | status |
 |---|---|---|
-| the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge |
-| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): the camera is the lamp, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/rite (memory mode inside the viewer; camera tier needs a top-level route) |
+| the landing | The public door: the approved blurb + "cross the bridge →" — the one link to share. | LIVE — di-studio.xyz/br_id_ge (the only published face) |
+| vi.ritual — the rite | Five acts (Threshold → Crossing → Witness → Notation → Echo): your silhouette reads the letters, answer the Keeper, leave your core. | LIVE — di-studio.xyz/br_id_ge/rite · camera works inside the viewer (deviceAccess, 2026-07-31, phone-verified) |
 | the field | Everything that crossed, held in the ONE space's own scene: cores first — scans of places and artists' works land there too. | LIVE — /field |
 | live co-presence | Visitors crossing at the same moment see each other (WebSocket mesh). | LIVE — restored 2026-07-28 after 8 silent days down |
-| the open visual jam | The door for artists: bring a notation (a word, gesture, sound, letterform, code), be bridged into the same field. | brief drafted · ⚠ waiting on slot dates |
-| the members | Every Notations #2 member as an artist-scale crossing — one page per member, seeded with the verified curators; the 65 lab names land as confirmed. | NEW — /p/members (staging first) |
-| the constellation | The map where the whole system is seen and managed — a project inside the same space. | LIVE on all tiers |
-| the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready · ⚠ blocked: the /p/ viewer is a sandboxed iframe, so the camera tier needs a top-level di.iiii route (not built) |
+| the open visual jam | The door for artists: bring a notation, be bridged into the same field. | PARKED — surface retired 2026-07-31; concept stands |
+| the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready — the old sandboxed-iframe camera block is GONE (deviceAccess); staging untested |
 
 HONEST STATE OF THE THREE DOORS (say this plainly, don't overclaim). People is the
 door that is open. Places is built in hardware and blocked in software. Artists is
 written and waiting on dates. The system is real; its breadth is not there yet.
 
 WORKFLOW. EVERYTHING lives in ONE public di.iiii space, `br_id_ge` — the landing
-is its face, the rite/field/map/board/drafts are its projects, the cores live in
-its scene. Files come from two repos (public + ops); approved pages graduate to
-the public repo; each audience gets exactly one link.
+is its face, the rite and the field are its projects, the cores live in its
+scene. Files come from two repos (public + ops); approved pages graduate to the
+public repo; everyone gets exactly one link: the door.
 
 WHAT MUST STAY TRUE — and what checks it. The festival opened with a closed field:
 `openInscriptions` sat false, every inscription was refused, and the rite played its
@@ -97,7 +95,7 @@ changes. Nothing in this section is done by remembering.
 
 2. Notations #2
 
-- Dates: July 20 – August 2, 2026. RUNNING NOW.
+- Dates: July 20 – August 2, 2026.
 - Venues: State Philharmonia of Armenia (primary), National Gallery of Armenia,
   other Yerevan locations.
 - Program shape: 3 days arrival & research → 8 days laboratory & production →
@@ -222,8 +220,6 @@ changes. Nothing in this section is done by remembering.
 
 - Festival staging format for the rite (projection vs devices) — decide in the lab,
   which is now more than half over.
-- The camera tier: does the top-level route get built during the festival, or does
-  the piece show in memory mode and say so honestly?
 - Which machine runs the keeper on site.
 
 Notes

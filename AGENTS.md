@@ -4,7 +4,7 @@ Short routing guide for AI agents working in `br_id_ge`.
 
 ## What This Project Is
 
-`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Notation → Echo), single-file Three.js in `index.html` — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
+`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Notation → Echo), a single-file 2D-canvas `index.html` (v.oooooo 3 — THE READING) — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
 
 Current focus: **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq) — theme "Rituals"/Communitas. Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
 
@@ -31,19 +31,16 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 | File | Role |
 |------|------|
-| `index.html` | The rite (`v.oooooo 2`) — five acts, Three.js, WebAudio drone, optional co-presence via `?mesh=`/`<meta name="mesh-url">` |
+| `index.html` | The rite (`v.oooooo 3` — THE READING) — five acts, 2D canvas, optional MediaPipe silhouette, co-presence via the di.iiii mesh |
 | `docs/PROJECT.md` | Canonical project docs |
 | `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
 | `scripts/auto-push-space.sh` | Multi-file repo sync watcher |
 
-## Aesthetic Baseline (Void Theme)
+## Aesthetic Baseline
 
-- Background: `#081423`, `#07121f`
-- Lines/borders: `#2b4d6d`
-- Typography: `#b9cfe4` (primary), `#78b9e8` (accent)
-- Fonts: Outfit (primary), Space Mono (data/CLI)
-- Style: terminal-art, ASCII borders, minimal UI
+Canonical design tokens live in `docs/MASTER_CONTEXT.md` §6 — colors are concept
+actors, not decoration. The rite and the door carry the artwork's own face.
 
 ## Known Draft Status
 
@@ -61,7 +58,7 @@ Everything we build is LOOKED AT before it graduates, in this order:
 
 1. **local** — open the page in a browser (file:// or the di.iiii dev stack on :4000)
 2. **staging** — sync into the `br_id_ge` space at `staging.di-studio.xyz`
-   (`node scripts/sync-space.mjs` in `br_id_ge-ops` with `--to https://staging.di-studio.xyz/serverXR`)
+   (`node scripts/sync-space.mjs --repo . --to https://staging.di-studio.xyz/serverXR`, or `node scripts/serve.mjs` locally)
 3. only then merge/publish — Pages and prod follow
 
 **GitHub is the backend** — the place where things are KEPT, not where they are
