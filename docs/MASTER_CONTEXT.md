@@ -28,17 +28,27 @@ what is built inside di.iiii can be carried back out across it. br_id_ge opens
 publicly at Notations #2 (July 20 – August 2, 2026, State Philharmonia, Yerevan,
 hosted by hosq) and keeps growing after it.
 
-TWO SCALES, ONE RITE (2026-07-30 — the concept's current growth).
+THE PORTAL — one rite, three magnitudes (2026-07-30/31, the concept's current growth).
 The vi.ritual is not a piece beside the festival; the festival is inside it.
-Everyone at Notations #2 crosses the same bridge, at one of two scales.
-A **visitor crosses small**: name, word, one core — a small part of the vi.ritual
-who affects it and leaves data. An **artist crosses at project scale**: the same
-two questions, answered bigger — *who are you* is a name, *what do you carry* is
-a body of work. So the members of Notations #2 are not an audience or a credits
-list — they are crossings, and every member gets a page (/p/members), which is
-their core at artist scale. Both scales land in the one field; both generate the
-space. The work and the people who make it are the same material at two
-magnifications.
+Everyone at Notations #2 crosses the same bridge, and what you carry decides how
+much space you get:
+
+- **a word** — a visitor's crossing. Name, word, one core: a permanent piece of
+  the shared virtual space. Small, but generative — every visitor affects the
+  field and leaves data.
+- **a page** — a member's crossing. The same two questions at artist scale:
+  *who are you* is a name, *what do you carry* is a body of work. Every member
+  of Notations #2 gets a page (/members, built from members.json — the repo is
+  the info center). The members are not a credits list; they are crossings.
+- **a space** — an artist's crossing, the top of the ladder. A whole world of
+  their own on di.iiii to build in. The precedent is already live in the family:
+  **wcc** (Emilya's World Creative Commons) is one space where every artist is a
+  full 3D scene project — their own room, their own works, their own light.
+  br_id_ge does for entering what wcc does for holding: it is the **portal for
+  creating** — cross with enough carried, and the bridge opens into a space.
+
+All three magnitudes land in the one system; all three generate the space. The
+work and the people who make it are the same material at three magnifications.
 
 THE RECAP — seven organs, where each one stands (2026-07-29, festival day 10 of 14).
 

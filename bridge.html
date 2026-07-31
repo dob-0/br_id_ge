@@ -73,6 +73,10 @@
 
   .facts{margin-top:52px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
   @media (min-width:560px){.facts{grid-template-columns:repeat(4,1fr)}}
+  .ladder{margin-top:34px;grid-template-columns:1fr}
+  @media (min-width:560px){.ladder{grid-template-columns:repeat(3,1fr)}}
+  .ladder .fact{border-top-color:var(--stone)}
+  .ladder .k{color:var(--stone)}
   .fact{border-top:2px solid var(--line);padding-top:8px}
   .fact:first-child{border-top-color:var(--amber)}
   .fact .k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--dim)}
@@ -132,7 +136,15 @@ a{transition:color .2s,border-color .2s}
   <nav class="paths">
     <a href="https://di-studio.xyz/br_id_ge/jam" target="_top">artist? <b>the open jam →</b></a>
     <a href="https://di-studio.xyz/br_id_ge/field" target="_top">the field <b>see who's crossed →</b></a>
+    <a href="https://di-studio.xyz/br_id_ge/members" target="_top">notations #2 <b>the members →</b></a>
   </nav>
+
+  <!-- the portal — what a crossing gives you, at three magnitudes -->
+  <div class="facts ladder">
+    <div class="fact"><div class="k">a word</div><p>every visitor who crosses leaves a core — a permanent piece of the shared space</p></div>
+    <div class="fact"><div class="k">a page</div><p>every <a class="di" href="https://di-studio.xyz/br_id_ge/members" target="_top">member</a> of notations #2 is a page — their crossing at artist scale</p></div>
+    <div class="fact"><div class="k">a space</div><p>every artist can build a whole world on <a class="di" href="https://di-studio.xyz">di.iiii</a> — the bridge is the door in</p></div>
+  </div>
 
   <div class="facts">
     <div class="fact"><div class="k">notations #2</div><p>jul 20 – aug 2 2026 · state philharmonia of armenia · hosted by hosq</p></div>
