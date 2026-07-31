@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>br_id_ge — the members</title>
+<meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual — the members">
+<meta property="og:description" content="Everyone at Notations #2 is inside the same rite. Visitors cross small; artists cross with a body of work. Every crossing is a page.">
+<meta property="og:url" content="https://di-studio.xyz/br_id_ge/members">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#000; --ink:#f2efe9; --faint:#5f5952; --ghost:#2a2724;
+  --arm:'Noto Serif Armenian',Georgia,serif;
+  --mono:'Space Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ground)}
+body{min-height:100%;color:var(--ink);font-family:var(--mono);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit}
+main{max-width:44rem;margin:0 auto;padding:clamp(2rem,7vh,4.5rem) 1.5rem 6rem}
+
+header .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2rem,8vw,3.6rem);letter-spacing:.06em}
+header .lat{font-size:.62rem;letter-spacing:.44em;text-transform:uppercase;color:var(--faint);margin-top:.9rem}
+.thesis{margin-top:2.4rem;font-size:.74rem;line-height:1.9;color:var(--faint);max-width:34rem}
+
+.scale{margin-top:4.2rem}
+.scale>.tag{font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--faint)}
+ul.names{list-style:none;margin-top:1.4rem}
+ul.names a{display:block;padding:.55rem 0;text-decoration:none}
+.nm{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,4.5vw,2rem);
+  line-height:1.3;color:var(--ink);opacity:.85;transition:opacity .2s}
+ul.names a:hover .nm,ul.names a:focus-visible .nm{opacity:1}
+
+.unnamed{margin-top:1.4rem;font-family:var(--arm);font-weight:300;
+  font-size:clamp(1.5rem,4.5vw,2rem);line-height:1.3;color:var(--faint)}
+
+/* one member — the page */
+#page{display:none}
+body.paged main{display:none}
+body.paged #page{display:block;max-width:44rem;margin:0 auto;
+  padding:clamp(2rem,7vh,4.5rem) 1.5rem 6rem}
+#page .back{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--faint);text-decoration:none}
+#page .back:hover{color:var(--ink)}
+#page .q{margin-top:3.4rem;font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:var(--faint)}
+#page .name{font-family:var(--arm);font-weight:300;font-size:clamp(2rem,8vw,3.4rem);
+  line-height:1.15;margin-top:1rem;text-wrap:balance}
+#page .role{font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);margin-top:1rem}
+#page .carry{margin-top:1.2rem;font-size:.82rem;line-height:1.95;max-width:36rem}
+#page .proj{margin-top:2.2rem}
+#page .proj .pt{font-family:var(--arm);font-weight:400;font-size:1.2rem}
+#page .proj .pd{margin-top:.6rem;font-size:.76rem;line-height:1.9;color:var(--ink)}
+#page .proj a{display:inline-block;margin-top:1rem;font-size:.64rem;letter-spacing:.28em;
+  text-transform:uppercase;text-decoration:none;border-bottom:1px solid var(--faint);padding-bottom:.3rem}
+#page .proj a:hover{border-color:var(--ink)}
+#page .await{margin-top:1.2rem;font-size:.74rem;line-height:1.9;color:var(--faint)}
+
+footer{margin-top:5rem;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+footer a{text-decoration:none;border-bottom:1px solid var(--ghost);padding-bottom:.25rem}
+footer a:hover{color:var(--ink);border-color:var(--faint)}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="arm">ԱՆԴԱՄՆԵՐ</div>
+    <div class="lat">the members · notations #2 · vi.ritual</div>
+  </header>
+
+  <p class="thesis">
+    Everyone here crosses the same bridge. Visitors cross small — a name, a word,
+    one core. Artists cross with a body of work. Every member is a page.
+  </p>
+
+  <section class="scale" id="hosts"><div class="tag">host</div><ul class="names"></ul></section>
+  <section class="scale" id="curators"><div class="tag">curators</div><ul class="names"></ul></section>
+  <section class="scale" id="participants"><div class="tag">the lab</div><ul class="names"></ul>
+    <p class="unnamed" id="await-note"></p>
+  </section>
+
+  <footer>
+    <a href="https://di-studio.xyz/br_id_ge" target="_top">the door</a> ·
+    <a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross small — the rite</a> ·
+    <a href="https://di-studio.xyz/br_id_ge/field" target="_top">the field</a>
+  </footer>
+</main>
+
+<section id="page">
+  <a class="back" href="#">← all members</a>
+  <div class="q">who are you</div>
+  <h1 class="name"></h1>
+  <div class="role"></div>
+  <div class="q">what do you carry</div>
+  <p class="carry"></p>
+  <div class="proj" hidden>
+    <div class="pt"></div>
+    <p class="pd"></p>
+    <a class="pl" target="_top"></a>
+  </div>
+  <p class="await" hidden>The work made in the lab lands here when it crosses —
+    a page is a core, and a core is taken from something still forming.</p>
+</section>
+
+<script>
+// Do not edit the roster here — members.json in the repo is the info center;
+// scripts/build-members.mjs injects it between the members-data markers.
+/*<members-data>*/const DATA={"labCount":65,"members":[{"slug":"hosq","scale":"hosts","name":"hosq","arm":"հոսք","role":"collective · host of notations","carry":"The frame itself. hosq builds the Notations Laboratory — twelve days of collective work in the State Philharmonia, closed by a two-day public festival. This year the material is Rituals: structured, repeatable actions that shape how we hold time, space, and each other.","project":{"title":"Notations #2 — Rituals","desc":"65 artists · Jul 20–31 laboratory · Aug 1–2 festival · State Philharmonia + National Gallery, Yerevan.","url":"https://hosq.co","label":"hosq.co →"}},{"slug":"gevorg","scale":"curators","name":"Gevorg Aram Grigoryan","arm":"Գևորգ","role":"video art curation · multimedia artist · di. studio","carry":"The bridge you are standing on. br_id_ge is his crossing: the rite, the field, the platform beneath them — di.iiii — where every crossing becomes permanent shared space. The vi.ritual is his notation for Rituals.","project":{"title":"br_id_ge XR_ Notations:vi.ritual","desc":"Cross a bridge of Armenian letters, answer the Keeper, leave your core. Every visitor of the festival is a small part of this work; every artist here is a large one.","url":"https://di-studio.xyz/br_id_ge/rite","label":"cross the bridge →"}},{"slug":"arman-peshtmaljyan","scale":"curators","name":"Arman Peshtmaljyan","role":"composer · pianist · songwriter","carry":"Composition as a living practice — his work with the Armenian Navy Band received the BBC Radio 3 Award for World Music."},{"slug":"ben-wheeler","scale":"curators","name":"Ben Wheeler","role":"ethnomusicologist · mountains of tongues","carry":"Listening as fieldwork — co-founder of the Mountains of Tongues label, carrying the Caucasus’ musical languages across borders."},{"slug":"hayk-karoyi","scale":"curators","name":"Hayk Karoyi","role":"multi-instrumentalist · dj · producer","carry":"The instrument as a ritual object — from traditional Armenian instruments to the Terraforma stage."},{"slug":"venera-kazarova","scale":"curators","name":"Venera Kazarova","role":"costume · performance","carry":"The body dressed as somewhere else — costume-centric performance shown at K21 Düsseldorf and NAXOS Frankfurt."}]}/*</members-data>*/
+const MEMBERS=DATA.members, LAB_COUNT=DATA.labCount
+
+const $=(s,r)=>(r||document).querySelector(s)
+const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))
+
+for(const m of MEMBERS){
+  const ul=$('#'+m.scale+' ul.names'); if(!ul)continue
+  const li=document.createElement('li')
+  li.innerHTML='<a href="#/'+esc(m.slug)+'"><span class="nm">'+esc(m.name)+'</span></a>'
+  ul.appendChild(li)
+}
+const named=MEMBERS.filter(m=>m.scale==='participants').length
+$('#await-note').textContent=(LAB_COUNT-named)+' artists, crossing now'
+
+function route(){
+  const slug=(location.hash.match(/^#\/(.+)$/)||[])[1]
+  const m=MEMBERS.find(x=>x.slug===slug)
+  document.body.classList.toggle('paged',!!m)
+  if(!m){document.title='br_id_ge — the members';return}
+  document.title='br_id_ge — '+m.name
+  $('#page .name').textContent=m.arm?m.name+' · '+m.arm:m.name
+  $('#page .role').textContent=m.role
+  $('#page .carry').textContent=m.carry
+  const proj=$('#page .proj'),await_=$('#page .await')
+  if(m.project){
+    proj.hidden=false;await_.hidden=true
+    $('.pt',proj).textContent=m.project.title
+    $('.pd',proj).textContent=m.project.desc
+    const a=$('.pl',proj)
+    if(m.project.url){a.hidden=false;a.href=m.project.url;a.textContent=m.project.label||'open →'}
+    else a.hidden=true
+  }else{proj.hidden=true;await_.hidden=false}
+  scrollTo(0,0)
+}
+addEventListener('hashchange',route)
+route()
+</script>
+</body>
+</html>

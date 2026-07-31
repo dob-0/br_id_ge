@@ -2,502 +2,969 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>br_id_ge XR_ Notations:vi.ritual — the rite</title>
-<meta name="description" content="br_id_ge (կամուրջ) — a playable tele-symbiotic rite in five acts. Cross a bridge of Armenian letters, answer the Keeper, inscribe what you carry, and meet those crossing with you. A node of the di.iiii platform.">
+<meta name="description" content="br_id_ge (կամուրջ) — a rite in five acts. The lamp reads your outline into Armenian letters; answer the Keeper, and your crossing becomes a core that stays. Nothing is recorded — only your name and one word cross.">
 <!-- Live co-presence + the permanent field — the rite is communal since 2026-07-13. -->
 <meta name="mesh-url" content="wss://di-studio.xyz/serverXR/mesh">
 <meta name="field-url" content="https://di-studio.xyz/serverXR/api/spaces/br_id_ge">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- The keeper — local LLM, layer 1 of the installation. Uncomment on the show rig
+     (or pass ?keeper=http://127.0.0.1:11434&keeperModel=llama3.1:8b). Rite never blocks on it.
+     Model matters more than size here: dob-fast answers the greeting entirely in
+     Armenian and sometimes echoes the prompt back, both of which break the one
+     line of English the keeper is supposed to speak. llama3.1:8b holds the form.
+<meta name="keeper-url" content="http://127.0.0.1:11434">
+<meta name="keeper-model" content="llama3.1:8b"> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Serif+Armenian:wght@300;500;700&family=Outfit:wght@200;300;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-:root{ --void:#050608; --gantegh:#ffb347; --stitch:#5fd0ff; --digitalkar:#cdb98f;
-  --tx:#f4ede0; --dim:#8a8276; --faint:#564f44; }
+/* ONE ground, ONE ink, ONE dim. No accent until the core, which is the only solid
+   form in the piece. The previous version stacked twenty-two simultaneous layers —
+   three noise fields, three pointer marks, six text layers — and no palette could
+   fix that. This is the edit, not a repaint. */
+:root{
+  --ground:#000; --ink:#f2efe9; --dim:#5f5952; --faint:#2a2724;
+  --arm:'Noto Serif Armenian',Georgia,serif;
+  --mono:'Space Mono',ui-monospace,Menlo,monospace;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-::selection{background:rgba(255,179,71,.25);color:#fff}
-html,body{height:100%}
-body{background:var(--void); color:var(--tx); overflow:hidden;
-  font-family:'Outfit',sans-serif; -webkit-font-smoothing:antialiased; cursor:none;}
-.mono{font-family:'Space Mono',monospace}
-.arm{font-family:'Noto Serif Armenian',serif}
-#scene{position:fixed; inset:0; width:100vw; height:100vh; z-index:0; display:block}
-#veil{position:fixed; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 46%, transparent 32%, rgba(5,6,8,.4) 72%, rgba(5,6,8,.88) 100%)}
-#pulse{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity .12s;
-  box-shadow:inset 0 0 220px rgba(255,99,99,.55)}
-#grain{position:fixed; inset:-50%; z-index:2; pointer-events:none; opacity:.045; mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grain 6s steps(6) infinite}
-@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-2%)}75%{transform:translate(-2%,4%)}100%{transform:translate(0,0)}}
+/* The rite is drag-driven, and on a phone dragging down is the browser's reload
+   gesture — so reading your own outline reloaded the page. overflow:hidden does not
+   stop overscroll; overscroll-behavior and touch-action do. */
+html,body{height:100%;overflow:hidden;background:var(--ground);
+  overscroll-behavior:none;touch-action:none;-webkit-overflow-scrolling:auto}
+body{color:var(--ink);font-family:var(--mono);cursor:none;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* the one element that must still accept native touch */
+.ask input{touch-action:auto;-webkit-user-select:text;user-select:text}
 
-#reticle{position:fixed; z-index:35; width:36px; height:36px; margin:-18px 0 0 -18px; pointer-events:none;
-  border:1px solid rgba(255,179,71,.5); border-radius:50%; transition:width .15s,height .15s,border-color .15s;
-  box-shadow:0 0 22px rgba(255,179,71,.35), inset 0 0 14px rgba(255,179,71,.2)}
-#reticle.hot{width:52px;height:52px;border-color:var(--gantegh)}
-#reticle::after{content:''; position:absolute; inset:46%; background:var(--gantegh); border-radius:50%}
+/* LAYER 1 — the reading */
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
 
-.chrome{position:fixed; z-index:30; left:0; right:0; top:0; pointer-events:none;
-  display:flex; justify-content:space-between; align-items:center; padding:1.3rem 1.6rem;
-  font-family:'Space Mono',monospace; font-size:.66rem; letter-spacing:.15em; text-transform:uppercase; color:var(--faint)}
-.chrome b{color:var(--tx); letter-spacing:.32em}
-.chrome .dot{color:var(--gantegh); animation:blink 2.6s infinite}
-.chrome .hb{color:#ff6b6b}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.chrome a{color:var(--dim); text-decoration:none; pointer-events:auto; border-bottom:1px solid transparent; transition:.25s}
-.chrome a:hover{color:var(--gantegh); border-color:var(--gantegh)}
+/* LAYER 2 — the words */
+#type{position:fixed;inset:0;z-index:2;display:grid;place-items:center;
+  padding:max(1.5rem,env(safe-area-inset-top)) 1.5rem;pointer-events:none;text-align:center}
+#type>*{grid-area:1/1;opacity:0;transition:opacity .9s ease}
+#type>.on{opacity:1}
 
-.hud{position:fixed; z-index:30; left:0; right:0; bottom:0; pointer-events:none;
-  display:flex; justify-content:space-between; align-items:flex-end; padding:1.3rem 1.6rem;
-  font-family:'Space Mono',monospace; font-size:.62rem; letter-spacing:.12em; color:var(--faint)}
-.hud .k{color:var(--gantegh)} .hud .s{color:var(--stitch)}
-.hud .mid{flex:1; text-align:center; font-size:.58rem; letter-spacing:.34em; text-transform:uppercase; color:var(--dim); opacity:0; transition:opacity .6s}
-.hud .mid.show{opacity:.85}
-#prog{position:fixed; z-index:30; left:0; bottom:0; height:2px; width:0; background:var(--gantegh); box-shadow:0 0 12px var(--gantegh); transition:width .12s linear}
+.card .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2.1rem,9vw,4.4rem);
+  line-height:1;letter-spacing:.02em}
+.card .lat{font-family:var(--mono);font-size:.62rem;letter-spacing:.44em;
+  text-transform:uppercase;color:var(--dim);margin-top:1.5rem}
 
-/* act title card */
-#act{position:fixed; z-index:22; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
-#act.in{opacity:1}
-#act .a{font-family:'Noto Serif Armenian',serif; font-weight:300; color:var(--gantegh);
-  font-size:clamp(2.4rem,8vw,5.5rem); line-height:1; text-shadow:0 0 44px rgba(255,179,71,.45)}
-#act .e{font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.46em; text-transform:uppercase; color:var(--dim); margin-top:1.4rem}
-#act .n{font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.3em; color:var(--faint); margin-top:.6rem}
+.ask{display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none}
+.ask.on{pointer-events:auto}
+.ask .q{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,5.4vw,2.5rem);
+  line-height:1.25;max-width:22ch}
+.ask .sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);margin-top:1.1rem}
+.ask input{margin-top:2.6rem;background:none;border:0;border-bottom:1px solid var(--faint);
+  color:var(--ink);font-family:var(--arm);font-weight:300;font-size:clamp(1.6rem,6vw,2.6rem);
+  text-align:center;width:min(90vw,26ch);padding:.2rem 0 .5rem;outline:none;caret-color:var(--ink)}
+.ask input::placeholder{color:var(--faint)}
+.ask input:focus{border-bottom-color:var(--dim)}
+.ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--faint);margin-top:1.3rem}
 
-/* hero */
-#hero{position:fixed; z-index:21; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; pointer-events:none; opacity:0; transition:opacity 1s}
-#hero.in{opacity:1}
-#hero .g{font-family:'Noto Serif Armenian',serif; color:var(--gantegh); font-weight:300; font-size:clamp(2.6rem,9vw,6rem); text-shadow:0 0 44px rgba(255,179,71,.5)}
-#hero .s{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:var(--dim); margin-top:1.2rem}
+/* anchored low: the core occupies the middle of the frame, and the words must not
+   sit on top of it */
+.end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
+  align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
+.end .said{font-family:var(--arm);font-weight:300;font-size:clamp(1.1rem,3.6vw,1.6rem);
+  line-height:1.45;max-width:26ch;color:var(--ink)}
+.end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
+  color:var(--dim);max-width:34ch;text-transform:lowercase}
+.end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--dim)}
 
-/* dialogue panels (keeper + inscription) */
-.panel{position:fixed; z-index:25; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:1.5rem; opacity:0; pointer-events:none; transition:opacity .8s;
-  background:radial-gradient(60% 50% at 50% 48%, rgba(5,6,8,.85) 0%, rgba(5,6,8,.55) 52%, transparent 82%)}
-.panel.show{opacity:1; pointer-events:auto}
-.panel .lbl{font-family:'Space Mono',monospace; font-size:.7rem; letter-spacing:.42em; text-transform:uppercase; margin-bottom:1.3rem}
-.panel.keeper .lbl{color:var(--stitch)} .panel.insc .lbl{color:var(--gantegh)}
-.panel .q{font-family:'Outfit',sans-serif; font-weight:200; font-size:clamp(1.5rem,4.2vw,2.8rem); color:var(--tx); line-height:1.2; max-width:18ch}
-.panel .q .arm{display:block; font-size:.5em; color:var(--dim); margin-top:.9rem; font-weight:300}
-.panel input{margin-top:2rem; background:transparent; border:none; border-bottom:1px solid rgba(205,185,143,.3);
-  color:var(--gantegh); font-family:'Noto Serif Armenian',serif; font-size:clamp(1.5rem,5vw,2.8rem); text-align:center;
-  width:min(86vw,440px); padding:.4rem .2rem; outline:none; caret-color:var(--gantegh)}
-.panel.keeper input{color:var(--stitch); caret-color:var(--stitch)}
-.panel input::placeholder{color:var(--faint)}
-.panel .hint{font-family:'Space Mono',monospace; font-size:.64rem; letter-spacing:.2em; color:var(--faint); margin-top:1.1rem}
-#enterBtn{margin-top:2.2rem; display:none; pointer-events:auto; font-family:'Space Mono',monospace; font-size:.8rem;
-  letter-spacing:.26em; text-transform:uppercase; color:var(--void); background:var(--gantegh); padding:.9rem 2.2rem;
-  border-radius:2px; text-decoration:none; box-shadow:0 0 40px rgba(255,179,71,.45); transition:.25s}
-#enterBtn:hover{transform:translateY(-2px); box-shadow:0 0 64px rgba(255,179,71,.7)}
-#closing{font-family:'Outfit',sans-serif; font-weight:200; color:var(--digitalkar); font-size:clamp(1rem,2.4vw,1.3rem);
-  max-width:34ch; margin-top:1.6rem; min-height:1.4em}
+/* LAYER 3 — one status line, bottom left. Nothing else. */
+/* right-hand side: the di.iiii viewer overlays its own badge bottom-left */
+#state{position:fixed;z-index:3;right:0;bottom:0;
+  padding:1.1rem max(1.1rem,env(safe-area-inset-right));
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
+  pointer-events:none;display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
+#state b{font-weight:400;color:var(--dim)}
 
-#intro{position:fixed; z-index:40; inset:0; background:#000; display:flex; align-items:center; justify-content:center;
-  text-align:center; transition:opacity .7s; cursor:pointer}
-#intro .t{font-family:'Space Mono',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); font-size:.76rem}
-#intro .t b{display:block; font-family:'Outfit',sans-serif; font-weight:200; letter-spacing:.34em; color:var(--tx);
-  font-size:clamp(1.4rem,5vw,2.4rem); margin-bottom:1.4rem; text-transform:none}
-#intro .t span{color:var(--gantegh); animation:blink 2s infinite}
-#intro.gone{opacity:0; pointer-events:none}
+/* the door */
+#door{position:fixed;inset:0;z-index:9;background:var(--ground);display:grid;place-items:center;
+  padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:opacity 1.1s ease}
+#door.gone{opacity:0;pointer-events:none}
+#door .w{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,12vw,5.5rem);line-height:1}
+#door .t{font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;line-height:2.2;
+  color:var(--dim);max-width:40ch;margin-top:2.2rem;text-transform:lowercase}
+#door .t em{font-style:normal;color:var(--ink)}
+#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--faint);
+  margin-top:2rem;line-height:1.9;text-transform:lowercase}
+
+@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}}
+@media (pointer:coarse){body{cursor:auto}}
+@media (max-width:560px){
+  #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
+  #door .t{letter-spacing:.2em;line-height:2}
+}
 </style>
 </head>
 <body>
-<canvas id="scene"></canvas>
-<div id="veil"></div>
-<div id="pulse"></div>
-<div id="grain"></div>
-<div id="reticle"></div>
 
-<div class="chrome mono">
-  <span><b>br_id_ge</b> &nbsp;·&nbsp; v.oooooo 2</span>
-  <span><span class="dot">●</span>&nbsp;<span id="lat">lat 174ms</span> &nbsp;·&nbsp; <span class="hb">♥ <span id="bpm">72</span></span></span>
-  <a href="https://di-studio.xyz">di.iiii ↗</a>
+<canvas id="c"></canvas>
+
+<div id="type">
+  <div class="card" id="card"><div class="arm"></div><div class="lat"></div></div>
+  <div class="ask" id="ask">
+    <div class="q"></div><div class="sub"></div>
+    <input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+    <div class="go">press enter</div>
+  </div>
+  <div class="end" id="end">
+    <div class="said"></div>
+    <div class="note"></div>
+    <div class="body-line" id="bodyLine"></div>
+  </div>
 </div>
 
-<div class="hud mono">
-  <span>carried <span class="k" id="carried">0</span></span>
-  <span class="mid" id="midhint">move to reveal · click letters to carry them</span>
-  <span>the field · <span class="s" id="fieldn">0</span> digitalkars · <span class="s" id="present">solo</span></span>
-</div>
-<div id="prog"></div>
-
-<div id="hero"><div class="g arm">կամուրջ</div><div class="s">a digital rite of transmission · in five acts</div></div>
-
-<div id="act"><div class="a arm"></div><div class="e"></div><div class="n"></div></div>
-
-<div class="panel keeper" id="keeper">
-  <div class="lbl">ՎԿԱ · the keeper of memory</div>
-  <div class="q" id="keeperQ">Who are you?<span class="arm">Ո՞վ ես դու։</span></div>
-  <input id="nameIn" maxlength="22" placeholder="ձեր անունը · your name" autocomplete="off" spellcheck="false">
-  <div class="hint">press enter — the bridge will know your name</div>
+<div id="state">
+  <span><b id="sRead">0</b> read</span>
+  <span><b id="sField">0</b> in the field</span>
+  <span id="sHere" hidden><b id="sHereN">0</b> here now</span>
+  <span id="sLamp">lamp closed</span>
 </div>
 
-<div class="panel insc" id="inscribe">
-  <div class="lbl">ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ · inscription</div>
-  <div class="q">What do you carry?<span class="arm">Ի՞նչ ես տանում կամրջի վրայով։</span></div>
-  <input id="wordIn" maxlength="22" placeholder="մեկ բառ · one word" autocomplete="off" spellcheck="false">
-  <div class="hint" id="inscHint">press enter to inscribe it into the digitalkar</div>
-  <div id="closing"></div>
-  <a id="enterBtn" href="#">↻ cross again</a>
+<div id="door">
+  <div>
+    <div class="w arm">կամուրջ</div>
+    <div class="t">a bridge between the real world and a shared one.<br>
+      stand where the lamp can see you. move, and your outline<br>
+      is read into letters. then answer once.<br>
+      <em>touch to open the lamp</em></div>
+    <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
+  </div>
 </div>
 
-<div id="intro"><div class="t mono">
-  <b class="arm">կամուրջ</b>
-  you are the lamp. <span>●</span> click to light it and begin the rite
-</div></div>
+<script type="module">
+const $=(s)=>document.querySelector(s)
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v)
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches
+const Q=new URLSearchParams(location.search)
 
-<script>
-(function(){
-const canvas=document.getElementById('scene');
-if(!window.THREE){document.getElementById('intro').innerHTML='<div class="t mono">WebGL required</div>';return;}
-const M=THREE.MathUtils;
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x050608,0.013);
-const camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,0.1,700);
+// ── the alphabet. Armenian letterforms and Armenian punctuation only. ──────
+const GLYPHS=[...'ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ']
 
-const L=480;
-function pathAt(t){return new THREE.Vector3(Math.sin(t*Math.PI*2.0)*7.5, Math.sin(t*Math.PI)*4.5+1.4, -t*L);}
+// ── canvas ────────────────────────────────────────────────────────────────
+const cv=$('#c'),ctx=cv.getContext('2d')
+let W=0,H=0,DPR=1
+function resize(){
+  DPR=Math.min(2,devicePixelRatio||1)
+  W=innerWidth;H=innerHeight
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR)
+  ctx.setTransform(DPR,0,0,DPR,0,0)
+  fitFigure()
+}
+addEventListener('resize',resize)
 
-function glow(hex){const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
-  const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,hex);g.addColorStop(.35,hex);g.addColorStop(1,'rgba(0,0,0,0)');
-  x.fillStyle=g;x.beginPath();x.arc(s/2,s/2,s/2,0,7);x.fill();return new THREE.CanvasTexture(c);}
-const lampTex=glow('rgba(255,190,110,.9)'),stitchTex=glow('rgba(95,208,255,.85)');
-const glyphCache={};
-function glyphTex(ch){if(glyphCache[ch])return glyphCache[ch];
-  const s=128,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');
-  x.font='600 86px "Noto Serif Armenian",serif';x.textAlign='center';x.textBaseline='middle';
-  x.shadowColor='rgba(255,179,71,.95)';x.shadowBlur=20;x.fillStyle='#ffe0b0';x.fillText(ch,s/2,s/2+4);
-  const t=new THREE.CanvasTexture(c);glyphCache[ch]=t;return t;}
-const labelCache={};
-function labelTex(text){const key=(String(text||'')||'…').slice(0,18);if(labelCache[key])return labelCache[key];
-  const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');
-  x.font='600 30px "Space Mono",monospace';x.textAlign='center';x.textBaseline='middle';
-  x.shadowColor='rgba(95,208,255,.9)';x.shadowBlur=12;x.fillStyle='#cfeaff';x.fillText(key,128,34);
-  const t=new THREE.CanvasTexture(c);labelCache[key]=t;return t;}
+// ── the figure. A grid only used to find the OUTLINE — never to fill it. ──
+// This is the whole difference: the body is a contour of letters, not a mass of
+// them. 96x54 cells yield a few hundred edge points, where the old shell drew
+// 2304 points every frame whether they meant anything or not.
+const GW=96,GH=54
+const bodyMask=new Uint8Array(GW*GH)
+// The mask, made visible. Without this the tracking is real but mute — the camera
+// opens and a human sees nothing answer them. A faint filled ghost, upscaled from
+// the same grid the outline reads, is the mirror: you appear the moment the lamp
+// finds you. Still no video on screen — the silhouette is all that is shown.
+const silCv=document.createElement('canvas');silCv.width=GW;silCv.height=GH
+const silCtx=silCv.getContext('2d')
+const silImg=silCtx.createImageData(GW,GH)
+function drawSilhouette(alpha){
+  const d=silImg.data
+  for(let k=0;k<GW*GH;k++){const o=k*4
+    d[o]=242;d[o+1]=239;d[o+2]=233;d[o+3]=bodyMask[k]?255:0}
+  silCtx.putImageData(silImg,0,0)
+  ctx.save()
+  ctx.globalAlpha=alpha
+  ctx.imageSmoothingEnabled=true
+  ctx.translate(W,0);ctx.scale(-1,1)      // the front camera shows your reflection
+  ctx.drawImage(silCv,0,0,W,H)
+  ctx.restore()
+}
+let figW=0.26,figH=0.40,figY=0.50
+// STEP thins the outline on narrow screens: at 96 columns across a phone the cells
+// are ~4px apart while a letter is ~13px, so every glyph collided with its
+// neighbours. FS keeps the letter proportional to the space it actually has.
+let STEP=1,FS=13
+function fitFigure(){
+  const a=W/Math.max(1,H)
+  figW=a<0.75?0.20:(a<1.2?0.24:0.17)
+  figH=a<0.75?0.34:0.40
+  STEP=W<560?2:1
+  FS=clamp((W/GW)*STEP*1.35,10,17)
+}
 
-// ── threshold gate (Act 0): an arch of letters you pass through ──
-const gateGroup=new THREE.Group();scene.add(gateGroup);
-const gp=pathAt(0.06);
-for(let i=0;i<=22;i++){const a=Math.PI*(i/22);
-  const m=new THREE.SpriteMaterial({map:glyphTex('Ա'),transparent:true,opacity:.0,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffcf8a});
-  const s=new THREE.Sprite(m);s.position.set(gp.x+Math.cos(a)*9, gp.y-1.5+Math.sin(a)*9, gp.z);s.scale.set(1.5,1.5,1.5);
-  s.userData={door:1,phase:i*0.3};gateGroup.add(s);}
+// memory mode — no camera (every visitor inside the sandboxed viewer). A standing
+// figure, breathing. Same language as the lit version so the piece reads the same.
+function dreamed(i,j,t){
+  const x=(i/(GW-1)-0.5),y=j/(GH-1)
+  const br=1+0.02*Math.sin(t*0.7)
+  const cy=figY
+  const torso=Math.pow(x/(figW*br),2)+Math.pow((y-cy)/(figH*br),2)
+  const head=Math.pow(x/(figW*0.42),2)+Math.pow((y-(cy+figH*0.92))/(figH*0.26),2)
+  const arms=Math.pow((Math.abs(x)-figW*0.96)/(figW*0.26),2)+Math.pow((y-(cy+figH*0.12))/(figH*0.62),2)
+  return Math.min(torso,head,arms)<1?1:0
+}
 
-// ── corridor of letters ──
-const GLYPHS='ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ'.split('');
-const corridor=new THREE.Group();scene.add(corridor);
-const N=420,sprites=[];
-for(let i=0;i<N;i++){const t=i/N,center=pathAt(t),ang=Math.random()*6.283,rad=4.0+Math.random()*9.0;
-  const mat=new THREE.SpriteMaterial({map:glyphTex(GLYPHS[(Math.random()*GLYPHS.length)|0]),transparent:true,opacity:0,
-    blending:THREE.AdditiveBlending,depthWrite:false,color:Math.random()<0.5?0xffffff:0xc7b48d});
-  const sp=new THREE.Sprite(mat);
-  sp.position.set(center.x+Math.cos(ang)*rad, center.y+Math.sin(ang)*rad*0.7, center.z+(Math.random()-0.5)*3);
-  const sc=0.9+Math.random()*1.7;sp.scale.set(sc,sc,sc);
-  sp.userData={t,phase:Math.random()*6.28,speed:0.5+Math.random()*0.9,base:sc,awoken:0,flare:0};
-  corridor.add(sp);sprites.push(sp);}
+// ── the outline, and the letters that live on it ──────────────────────────
+// Each edge cell holds one glyph. Unread it is a faint point; read it is a letter.
+// Nothing else is ever drawn.
+// A live camera moves the mask edge every frame. The first version kept every cell
+// that had EVER been an edge, so a real body walking around accreted into a solid
+// mass of letters — 1156 of them in a minute. The outline must TRACK the body:
+// unread points belong to the current edge only. Read letters persist, because they
+// are what the lamp has taken, but they are capped so the screen can never fill.
+const marks=new Map()    // cellIndex -> {i,j,g,read,t}
+let everSeen=0           // distinct cells the outline has ever offered
+const MAX_READ=300
+function rebuildOutline(t,dt,embodied){
+  const cur=new Set()
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
+    const k=j*GW+i
+    if(!bodyMask[k])continue
+    // Outside the frame counts as more body, never as background. Otherwise someone
+    // standing close — or a segmenter that calls the whole frame a person — turns the
+    // screen border itself into an "outline" and the letters ring the window instead
+    // of tracing anyone.
+    const l=i>0?bodyMask[k-1]:1, r=i<GW-1?bodyMask[k+1]:1
+    const u=j>0?bodyMask[k-GW]:1, d=j<GH-1?bodyMask[k+GW]:1
+    if(l&&r&&u&&d)continue
+    if(STEP>1&&((i%STEP)||(j%STEP)))continue
+    cur.add(k)
+    let m=marks.get(k)
+    if(!m){m={i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0,heat:0};marks.set(k,m);everSeen++}
+    // THE BODY IS THE LAMP. When the camera can see you, your own edge does the
+    // reading: hold your outline over a place and it gives up its letter. Standing
+    // still exhausts what you are covering, so the rite is finished by moving —
+    // which is the whole point of standing in front of a camera.
+    if(embodied&&!m.read){
+      m.heat+=dt
+      if(m.heat>=0.5){m.read=1;m.t=t;readN++}
+    }
+  }
+  let readCount=0
+  for(const [k,m] of marks){
+    if(m.read){readCount++;continue}
+    if(!cur.has(k))marks.delete(k)          // the body moved on
+  }
+  // oldest read letters give way, so the reading stays a contour and never a field
+  if(readCount>MAX_READ){
+    let over=readCount-MAX_READ
+    for(const [k,m] of marks){
+      if(!m.read)continue
+      marks.delete(k)
+      if(--over<=0)break
+    }
+  }
+}
+function markScreen(m){
+  // the grid is mirrored in x: a front camera shows you your reflection
+  return [ (1-(m.i+0.5)/GW)*W, ((m.j+0.5)/GH)*H ]
+}
 
-// dust + rails + ties
-const DUST=1500,dpos=new Float32Array(DUST*3);
-for(let i=0;i<DUST;i++){const t=Math.random(),c=pathAt(t);dpos[i*3]=c.x+(Math.random()-0.5)*64;dpos[i*3+1]=c.y-9-Math.random()*16;dpos[i*3+2]=c.z+(Math.random()-0.5)*8;}
-const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.BufferAttribute(dpos,3));
-const dust=new THREE.Points(dg,new THREE.PointsMaterial({color:0xcdb98f,size:0.07,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false}));scene.add(dust);
-const railMat=new THREE.LineBasicMaterial({color:0xffb347,transparent:true,opacity:.55,blending:THREE.AdditiveBlending});
-function railLine(off){const pts=[];for(let i=0;i<=180;i++){const t=i/180,c=pathAt(t);pts.push(new THREE.Vector3(c.x+off,c.y-1.7,c.z));}return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),railMat);}
-scene.add(railLine(-2.4));scene.add(railLine(2.4));
-const tieMat=new THREE.LineBasicMaterial({color:0xcdb98f,transparent:true,opacity:.26,blending:THREE.AdditiveBlending});
-for(let i=0;i<100;i++){const t=i/100,c=pathAt(t);const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(c.x-2.4,c.y-1.7,c.z),new THREE.Vector3(c.x+2.4,c.y-1.7,c.z)]);scene.add(new THREE.Line(g,tieMat));}
+// ── the lamp: camera in, outline out ─────────────────────────────────────
+const CAM_FACING=Q.get('cam')||'user'
+let video=null,camOn=false
+async function openLamp(){
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:CAM_FACING,width:{ideal:640},height:{ideal:360}},audio:false})
+    video=document.createElement('video');video.srcObject=s;video.muted=true
+    video.setAttribute('playsinline','');await video.play();camOn=true
+    $('#sLamp').textContent='lamp open'
+    openSeg()
+  }catch(e){ $('#sLamp').textContent='lamp closed — the bridge remembers for you' }
+}
 
-// lamp + halo
-const lamp=new THREE.PointLight(0xffb347,2.6,95);scene.add(lamp);
-scene.add(new THREE.AmbientLight(0x1b2742,0.7));
-const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0xffce8c,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));halo.scale.set(7,7,7);scene.add(halo);
+// MediaPipe, entirely optional: without it (no GPU, no CDN, ?body=0) the dreamed
+// figure stands in and every mechanic behaves identically.
+const MP='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14'
+let seg=null,segAt=0,segHas=false
+async function openSeg(){
+  if(Q.get('body')==='0')return
+  try{
+    const v=await import(MP+'/vision_bundle.mjs')
+    const files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
+    seg=await v.ImageSegmenter.createFromOptions(files,{
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite',delegate:'GPU'},
+      runningMode:'VIDEO',outputCategoryMask:true,outputConfidenceMasks:false})
+    $('#sLamp').textContent='lamp open — move, and it reads you'
+  }catch(e){seg=null}
+}
+function readSeg(now){
+  if(!seg||!camOn||!video||video.readyState<2)return false
+  if(now-segAt<80)return true
+  segAt=now
+  try{ seg.segmentForVideo(video,now,(res)=>{
+    const m=res&&res.categoryMask; if(!m){res&&res.close&&res.close();return}
+    const w=m.width,h=m.height,d=m.getAsUint8Array()
+    for(let j=0;j<GH;j++){const sy=Math.min(h-1,((j+0.5)/GH*h)|0)
+      for(let i=0;i<GW;i++){const sx=Math.min(w-1,((i+0.5)/GW*w)|0)
+        bodyMask[j*GW+i]=d[sy*w+sx]>0?1:0}}
+    segHas=true   // a real silhouette has landed — from here your body does the reading
+    m.close&&m.close();res.close&&res.close()
+  })}catch(e){}
+  return true
+}
 
-// the Stitch — AI keeper presence (blocks the span in Act 3/Witness)
-const stitchPos=pathAt(0.52);
-const stitch=new THREE.Sprite(new THREE.SpriteMaterial({map:stitchTex,color:0x9fe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
-stitch.scale.set(12,12,12);stitch.position.copy(stitchPos);scene.add(stitch);
-// a ring of cool letters orbiting the Keeper
-const keeperRing=[];
-for(let i=0;i<14;i++){const m=new THREE.SpriteMaterial({map:glyphTex(GLYPHS[(Math.random()*GLYPHS.length)|0]),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,color:0x9fe4ff});
-  const s=new THREE.Sprite(m);s.scale.set(1.3,1.3,1.3);s.userData={a:i/14*6.283};scene.add(s);keeperRing.push(s);}
+// ── where you are pointing ───────────────────────────────────────────────
+const P={x:-999,y:-999,has:false}
+function point(x,y){P.x=x;P.y=y;P.has=true}
+addEventListener('pointermove',e=>{if(!hand.has)point(e.clientX,e.clientY)},{passive:true})
+addEventListener('pointerdown',e=>{if(!hand.has)point(e.clientX,e.clientY)},{passive:true})
+// belt and braces for the reload gesture: some Android builds still overscroll a
+// fixed body. The input keeps its own touch handling so typing is unaffected.
+addEventListener('touchmove',e=>{
+  if(e.target&&e.target.tagName==='INPUT')return
+  e.preventDefault()
+},{passive:false})
 
-// the mesh — other nodes crossing the bridge (latency-jittered, the N-node concept)
-const CITIES=['gyumri','yerevan','leipzig','munich','spain'];
-const ghosts=[];
-for(let i=0;i<5;i++){const m=new THREE.SpriteMaterial({map:lampTex,color:i%2?0x9fe4ff:0xffce8c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
-  const s=new THREE.Sprite(m);s.scale.set(3.0,3.0,3.0);scene.add(s);
-  ghosts.push({s,t:Math.random(),speed:0.010+Math.random()*0.02,jit:Math.random()*6.28,city:CITIES[i]});}
+// ── what the lamp can see, drawn ──────────────────────────────────────────
+// The tracking used to be invisible: it moved the lamp and nothing told you the
+// machine had found you. Now the hand's 21 landmarks and the body's pose are drawn
+// as light — never as video, so "no image leaves this device" still holds.
+const HAND_BONES=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]]
+const POSE_BONES=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],
+  [23,25],[25,27],[24,26],[26,28],[15,17],[16,18]]
+let handLM=null, poseLM=null
+let pose=null, poseAt=0
+async function openPose(){
+  if(Q.get('pose')==='0')return
+  try{
+    const v=await import(MP+'/vision_bundle.mjs')
+    const files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
+    pose=await v.PoseLandmarker.createFromOptions(files,{
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',delegate:'GPU'},
+      numPoses:1,runningMode:'VIDEO'})
+  }catch(e){pose=null}
+}
+function readPose(now){
+  if(!pose||!camOn||!video||video.readyState<2)return
+  if(now-poseAt<66)return          // ~15Hz; a body is not faster than that
+  poseAt=now
+  let r;try{r=pose.detectForVideo(video,now)}catch(e){return}
+  poseLM=(r&&r.landmarks&&r.landmarks[0])||null
+}
+function drawTracking(){
+  ctx.lineCap='round'
+  if(poseLM){
+    const P2=poseLM.map(l=>[(1-l.x)*W,l.y*H])
+    ctx.globalAlpha=0.20*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath()
+    for(const [a,b] of POSE_BONES){
+      if(!P2[a]||!P2[b])continue
+      ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])
+    }
+    ctx.stroke()
+    ctx.globalAlpha=0.34*quiet;ctx.fillStyle='#f2efe9'
+    for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,1.5,0,6.2832);ctx.fill()}
+  }
+  if(handLM){
+    const P2=handLM.map(l=>[(1-l.x)*W,l.y*H])
+    ctx.globalAlpha=0.5*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath()
+    for(const [a,b] of HAND_BONES){ctx.moveTo(P2[a][0],P2[a][1]);ctx.lineTo(P2[b][0],P2[b][1])}
+    ctx.stroke()
+    ctx.globalAlpha=(pinch?0.95:0.55)*quiet;ctx.fillStyle='#f2efe9'
+    for(const [x,y] of P2){ctx.beginPath();ctx.arc(x,y,pinch?2.4:1.7,0,6.2832);ctx.fill()}
+    // the index fingertip is the reaching point — ringed so the hand reads as an
+    // instrument, and the pinch visibly closes around what it takes
+    const [ix,iy]=P2[8]
+    ctx.globalAlpha=(pinch?0.9:0.45)*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath();ctx.arc(ix,iy,pinch?11:7,0,6.2832);ctx.stroke()
+  }
+}
 
-// ── live co-presence (real mesh) — degrades to the simulated ghosts above when no server ──
-// Endpoint comes from ?mesh=wss://host, <meta name="mesh-url">, or window.BR_MESH_URL.
-// With none set (the default deploy) the rite stays solo and nothing changes.
-const MESH_URL=(new URLSearchParams(location.search).get('mesh'))||(document.querySelector('meta[name="mesh-url"]')||{}).content||window.BR_MESH_URL||'';
-const ROOM_SECRET=(new URLSearchParams(location.search).get('s'))||window.BR_ROOM_SECRET||'';
-const myNode='n'+Math.random().toString(36).slice(2,8);
-const Mesh={ws:null,live:false,lat:0,peers:new Map(),lastSend:0,lastPing:0,
-  connect(){if(!MESH_URL)return;let u;try{u=new URL(MESH_URL);}catch(e){return;}
-    u.searchParams.set('room','bridge');u.searchParams.set('node',myNode);if(ROOM_SECRET)u.searchParams.set('secret',ROOM_SECRET);
-    let ws;try{ws=new WebSocket(u.toString());}catch(e){return;}this.ws=ws;
-    ws.onopen=()=>{this.live=true;};
-    ws.onclose=()=>{this.live=false;this.clearPeers();};
-    ws.onerror=()=>{};
-    ws.onmessage=(ev)=>{let m;try{m=JSON.parse(ev.data);}catch(e){return;}this.handle(m);};},
+// the hand, if MediaPipe can find one. Confirmed working on device 2026-07-30.
+const hand={has:false,x:0,y:0}
+let pinch=false,pinchWas=false
+let hl=null,hlAt=0
+async function openHands(){
+  if(Q.get('hands')==='0')return
+  try{
+    const v=await import(MP+'/vision_bundle.mjs')
+    const files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
+    hl=await v.HandLandmarker.createFromOptions(files,{
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},
+      numHands:1,runningMode:'VIDEO'})
+  }catch(e){hl=null}
+}
+function readHand(now){
+  if(!hl||!camOn||!video||video.readyState<2)return
+  if(now-hlAt<40)return
+  hlAt=now
+  let r;try{r=hl.detectForVideo(video,now)}catch(e){return}
+  const lm=r&&r.landmarks&&r.landmarks[0]
+  if(!lm){hand.has=false;handLM=null;return}
+  hand.has=true;handLM=lm
+  const tx=(1-lm[9].x)*W, ty=lm[9].y*H
+  hand.x=hand.x?hand.x+(tx-hand.x)*0.3:tx
+  hand.y=hand.y?hand.y+(ty-hand.y)*0.3:ty
+  point(hand.x,hand.y)
+  // pinch: thumb tip to index tip, measured against the hand's own size so it
+  // works at any distance from the lamp
+  const dx=lm[4].x-lm[8].x, dy=lm[4].y-lm[8].y
+  const span=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||1
+  pinch=Math.hypot(dx,dy)/span<0.45
+  if(pinch&&!pinchWas&&started&&!inscribed){
+    // a pinch reaches further than the open hand — it takes a whole handful
+    const R=Math.min(W,H)*0.13, R2=R*R
+    for(const [,m] of marks){
+      if(m.read)continue
+      const [x,y]=markScreen(m)
+      const ddx=x-P.x, ddy=y-P.y
+      if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++}
+    }
+  }
+  pinchWas=pinch
+}
+
+// ── the liturgy. Unchanged: five acts, two questions, the same thresholds. ─
+const ACTS=[
+  {arm:'ԴՌՆԵՐ',       lat:'threshold · act i',   at:0.001},
+  {arm:'ԱՆՑՈՒՄ',      lat:'the crossing · act ii', at:0.10},
+  {arm:'ՎԿԱ',         lat:'the witness · act iii', at:0.45},
+  {arm:'ՆՈԹԱԳՐՈՒԹՅՈՒՆ',lat:'notation · act iv',    at:0.80},
+]
+const KEEPER_AT=0.45, INSCRIBE_AT=0.80
+let act=-1, started=false, readN=0, target=1, name='', word='', done=false
+let asking=null, inscribed=false, condense=0
+
+const card=$('#card'), ask=$('#ask'), end=$('#end'), input=$('#in')
+function show(el){for(const n of $('#type').children)n.classList.toggle('on',n===el)}
+// The act titles and the questions share one exclusive layer, and two acts land on
+// the exact thresholds that open the questions (iii/0.45 with the name, iv/0.80 with
+// the word). Without this the title closed the question the moment it opened and the
+// rite could never be finished. The title plays first; the question follows it.
+let cardUntil=0
+function showCard(a){
+  card.querySelector('.arm').textContent=a.arm
+  card.querySelector('.lat').textContent=a.lat
+  cardUntil=performance.now()+2800
+  show(card)
+  clearTimeout(showCard._t)
+  showCard._t=setTimeout(()=>{if(!asking&&!done)show(null)},2600)
+}
+function frac(){return clamp(readN/target,0,1)}
+
+// ── the keeper — a local LLM if one is running, scripted lines if not ─────
+const KEEPER_URL=(Q.get('keeper')||($('meta[name="keeper-url"]')||{}).content||'').replace(/\/+$/,'')
+const KEEPER_MODEL=Q.get('keeperModel')||($('meta[name="keeper-model"]')||{}).content||'llama3.1:8b'
+const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a carved inscription. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.'
+// ── the keeper's own words — written, not generated ───────────────────────
+// A live keeper needs a machine that is switched on, and a festival does not
+// guarantee one: the rig sleeps, the venue's network dies, prod has no model at
+// all. These lines are the keeper when nothing answers, which on prod is always.
+// Written once and read before the show — the rite never says a sentence nobody
+// has seen. {name} is what the visitor gave, {word} what they carried, {n} how
+// many crossed before them.
+const KEEPER_GREET=[
+  '{name}. The bridge waited. Cross, and it will remember the weight of you.',
+  'You come as {name}. The կամուրջ holds. It has held heavier.',
+  '{name} arrives. Nothing is recorded here except the fact of arriving.',
+  'Step, {name}. The far side is not far. It is only other.',
+  '{name}. Others stood exactly here and were also afraid. Go on.',
+  'The bridge knows no {name} yet. In a moment it will.',
+  '{name}, you are expected. Not by anyone — by the crossing itself.',
+  'Come, {name}. Bring your name and one word. Leave the rest.',
+  '{name}. What you carry across is the only thing that stays.',
+  'The lamp has read you, {name}. Now the bridge would like your name.',
+  '{name} at the threshold. A threshold is only a door that waits.',
+  'Welcome, {name}. This side and that side are the same water.',
+  '{name}. Walk slowly. The bridge is old and made of letters.',
+  'Your name is {name}, and that is already enough to begin.',
+  '{name}, the crossing does not test you. It only remembers.',
+  'Here is {name}, come to the կամուրջ, which was built by crossing.',
+  '{name}. No one crosses twice. Take your time with the first.',
+  'Good, {name}. The bridge prefers those who arrive uncertain.',
+  '{name} steps up, and the letters shift to make room.',
+  '{name}, the light on the far side is not for you. It is you.',
+  '{name}. Say your name again, quietly. That is the first half.',
+  'The bridge greets {name} and asks nothing further of the name.',
+  '{name} — the դուռ is open, and openness is all a door can do.',
+  'Slowly, {name}. Even a bridge is a kind of standing still.',
+]
+const KEEPER_BLESS=[
+  '{name} carried {word} across. The word stays where it was set.',
+  '{word}. The bridge is one word heavier, {name} one word lighter.',
+  '{name} brought {word} over, and the քար took it without asking why.',
+  'What {name} carried was {word}. It will outlast the carrying.',
+  '{word} is set. {n} came before, and none of them brought this.',
+  'The bridge accepts {word} from {name}. Acceptance is the whole rite.',
+  '{name} let go of {word} here. Letting go is how it stays.',
+  '{word}, carried by {name}, now stands with {n} others in the field.',
+  'It is done. {name} is across, and {word} is in the stone.',
+  '{word} crossed with {name} and did not come back. That is correct.',
+  'The field takes {word}. {name} may go; the word may not.',
+  '{name} gave {word} to the կամուրջ, which keeps everything and returns nothing.',
+  '{word} is written now — not by hand, but by having been carried.',
+  'Among {n} words, {word} takes its place, and the body grows.',
+  '{name} arrived carrying {word} and leaves carrying nothing. Good.',
+  '{word} remains. {name} does not. This is the arrangement.',
+  'Here lies {word}, brought by {name}, in the company of {n}.',
+  'The bridge has taken {word}. It will not be asked for again.',
+  '{name} crossed, {word} stayed, and the bridge is a little more real.',
+  '{word} joins the others. Nothing was recorded. Everything was kept.',
+  'The {word} of {name} is in the field now, indistinguishable from it.',
+  'Set down, {word} becomes հիշատակ — remembrance that needs no one to remember.',
+  '{n} before, {name} now, and {word} the shape of the difference.',
+  'The crossing of {name} is finished. What is unfinished is {word}.',
+]
+// A visitor hears at most two lines; never let them be the same one twice.
+const spoken=new Set()
+function written(pool,vars){
+  const free=pool.filter((l)=>!spoken.has(l))
+  const from=free.length?free:pool
+  const line=from[Math.floor(Math.random()*from.length)]
+  spoken.add(line)
+  return line.replace(/\{(\w+)\}/g,(_,k)=>(vars[k]==null?'':String(vars[k])))
+}
+
+function askKeeper(prompt,pool,vars){
+  if(!KEEPER_URL)return Promise.resolve(written(pool,vars))
+  const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000)
+  return fetch(KEEPER_URL+'/api/generate',{method:'POST',signal:ctl.signal,
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:KEEPER_MODEL,system:KEEPER_SYS,prompt,stream:false,think:false,
+      options:{temperature:0.7,num_predict:64}})})
+    .then(r=>r.json()).then(d=>{
+      clearTimeout(t)
+      let s=String(d.response||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim()
+      s=s.split('\n').map(x=>x.trim()).filter(Boolean)[0]||''
+      s=s.replace(/^["'“”«]+|["'“”»]+$/g,'').replace(/^(ՎԿԱ|VKA|keeper|the keeper)\s*[:·—-]\s*/i,'')
+      if(d.done_reason==='length'){
+        const cut=Math.max(s.lastIndexOf('։'),s.lastIndexOf('.'),s.lastIndexOf('!'),s.lastIndexOf('…'),s.lastIndexOf(','))
+        s=cut>12?s.slice(0,cut+1).replace(/,$/,'…'):s.slice(0,s.lastIndexOf(' '))+'…'
+      }
+      // An empty or one-word answer is the model failing quietly — the written
+      // line is better than the silence the visitor would otherwise get.
+      return s.length>8?s.slice(0,180):written(pool,vars)
+    }).catch(()=>{clearTimeout(t);return written(pool,vars)})
+}
+
+// ── the field ─────────────────────────────────────────────────────────────
+const FIELD_URL=(Q.get('field')||($('meta[name="field-url"]')||{}).content||'').replace(/\/+$/,'')
+let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]')}catch(e){field=[]}
+$('#sField').textContent=field.length
+if(FIELD_URL){
+  fetch(FIELD_URL+'/scene').then(r=>r.json()).then(j=>{
+    const objs=j.objects||(j.scene&&j.scene.objects)||[]
+    const remote=objs.filter(o=>String(o.id||'').startsWith('insc-')).map(o=>String(o.data||''))
+    for(const tag of remote)if(tag&&!field.includes(tag))field.push(tag)
+    $('#sField').textContent=field.length
+  }).catch(()=>{})
+}
+
+// ── co-presence. Protocol untouched; peers are one faint point each. ──────
+const MESH_URL=Q.get('mesh')||($('meta[name="mesh-url"]')||{}).content||''
+const myNode='n'+Math.random().toString(36).slice(2,8)
+const Mesh={ws:null,live:false,peers:new Map(),lastSend:0,
+  connect(){
+    if(!MESH_URL)return
+    let u;try{u=new URL(MESH_URL)}catch(e){return}
+    u.searchParams.set('room','bridge');u.searchParams.set('node',myNode)
+    let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
+    this.ws=ws
+    ws.onopen=()=>{this.live=true}
+    ws.onclose=()=>{this.live=false;this.peers.clear();this.count()}
+    ws.onerror=()=>{}
+    ws.onmessage=(ev)=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}this.handle(m)}
+  },
   handle(m){
-    if(m.type==='control:pong'){this.lat=m.roundTrip;return;}
-    if(m.type==='peer:leave'){this.drop(m.nodeId);return;}
+    if(m.type==='peer:leave'){this.peers.delete(m.nodeId);this.count();return}
     if(m.type==='mesh:event'&&m.channel==='motion'){
-      let pr=this.peers.get(m.from);if(!pr){pr=this.makePeer();this.peers.set(m.from,pr);}
-      const pos=(m.meta&&m.meta.predicted)||m.payload||{};            // server's latency-compensated ghost-hand
-      if(typeof pos.x==='number')pr.target.set(pos.x,pos.y,pos.z);
-      const nm=m.payload&&m.payload.name;
-      if(nm&&nm!==pr.name){pr.name=nm;pr.label.material.map=labelTex(nm);pr.label.material.needsUpdate=true;}
-      pr.seen=performance.now();}},
-  makePeer(){const lamp=new THREE.Sprite(new THREE.SpriteMaterial({map:lampTex,color:0x9fe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
-    lamp.scale.set(3.4,3.4,3.4);scene.add(lamp);
-    const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('…'),transparent:true,opacity:0,depthWrite:false}));
-    label.scale.set(6,1.5,1);scene.add(label);
-    return{lamp,label,target:new THREE.Vector3(0,0,-260),name:'',seen:performance.now()};},
-  drop(id){const pr=this.peers.get(id);if(!pr)return;scene.remove(pr.lamp);scene.remove(pr.label);this.peers.delete(id);},
-  clearPeers(){for(const id of[...this.peers.keys()])this.drop(id);},
-  send(p){if(!(this.ws&&this.live&&this.ws.readyState===1))return;const now=performance.now();
-    if(now-this.lastSend>90){this.lastSend=now;const c=pathAt(M.clamp(p,0,1));
-      this.ws.send(JSON.stringify({type:'publish',channel:'motion',pingTs:Date.now(),payload:{x:c.x,y:c.y+1.3,z:c.z,name:(name||'').slice(0,18),p}}));}
-    if(now-this.lastPing>2000){this.lastPing=now;this.ws.send(JSON.stringify({type:'control',cmd:'ping',sentAt:Date.now()}));}},
-  update(tm,camZ,gather){
-    for(const[id,pr]of this.peers){
-      if(performance.now()-pr.seen>9000){this.drop(id);continue;}
-      const tp=gather?new THREE.Vector3(end.x+Math.cos(id.length+tm*0.3)*8,end.y+2,end.z-8+Math.sin(id.length)*4):pr.target;
-      pr.lamp.position.lerp(tp,0.12);
-      const dz=Math.abs(pr.lamp.position.z-camZ),vis=M.clamp(1-dz/150,0,1);
-      pr.lamp.material.opacity=vis*0.85*(0.7+0.3*Math.sin(tm*3+id.length));
-      pr.label.position.set(pr.lamp.position.x,pr.lamp.position.y+2.6,pr.lamp.position.z);
-      pr.label.material.opacity=vis*0.7;}
-    return this.peers.size;}
-};
-Mesh.connect();
-
-// the digitalkar + diaspora field
-const end=pathAt(1.0);
-function mark(pos,bright){const m=new THREE.SpriteMaterial({map:glyphTex('☩'),color:0xffd9a0,transparent:true,opacity:bright?0:.3,blending:THREE.AdditiveBlending,depthWrite:false});
-  const s=new THREE.Sprite(m);const sc=bright?9:2.4+Math.random()*1.6;s.scale.set(sc,sc*1.3,1);s.position.copy(pos);scene.add(s);return s;}
-let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]');}catch(e){field=[];}
-const fieldGroup=new THREE.Group();scene.add(fieldGroup);
-function placeInscription(entry,i){const a=i*2.399,r=9+i*1.1;
-  const pos=new THREE.Vector3(end.x+Math.cos(a)*r, end.y+Math.sin(a)*r*0.5, end.z-12-i*1.8);
-  mark(pos,false);
-  const w=(String(entry).split('·').pop()||'').trim();
-  [...w].slice(0,7).forEach((ch,j,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
-    const s=new THREE.Sprite(m);s.position.set(pos.x+(j-(ar.length-1)/2)*1.0,pos.y-2.6,pos.z);s.scale.set(0.85,0.85,0.85);fieldGroup.add(s);});}
-field.forEach(placeInscription);
-const myKh=mark(new THREE.Vector3(end.x,end.y+2,end.z-6),true);
-document.getElementById('fieldn').textContent=field.length;
-// vi.ritual → di.iiii: the shared field lives in a di.iiii space (append-only inscriptions).
-// Endpoint comes from ?field=<space-api-url>, <meta name="field-url">, or window.BR_FIELD_URL.
-const FIELD_URL=((new URLSearchParams(location.search).get('field'))||(document.querySelector('meta[name="field-url"]')||{}).content||window.BR_FIELD_URL||'').replace(/\/+$/,'');
-if(FIELD_URL){fetch(FIELD_URL+'/scene').then(r=>r.ok?r.json():Promise.reject()).then(({scene:sc})=>{
-  const remote=(sc&&sc.objects||[]).filter(o=>String(o.id||'').startsWith('insc-')).map(o=>String(o.data||'').trim()).filter(Boolean);
-  remote.forEach(tag=>{if(!field.includes(tag)){field.push(tag);placeInscription(tag,field.length-1);}});
-  document.getElementById('fieldn').textContent=field.length;
-}).catch(()=>{});}
-
-// ── state ──
-let prog=0,target=0,started=false,carried=0,dialogOpen=false;
-let name='',word='',keeperShown=false,inscribed=false;
-let communion=false,simGhost=1;   // act v — Echo: world gathers after inscription; simGhost fades when live peers connect
-const mouse={x:0,y:0,px:innerWidth/2,py:innerHeight/2};
-const ray=new THREE.Raycaster();
-const reticle=document.getElementById('reticle');
-addEventListener('mousemove',e=>{mouse.x=e.clientX/innerWidth-0.5;mouse.y=e.clientY/innerHeight-0.5;mouse.px=e.clientX;mouse.py=e.clientY;reticle.style.left=e.clientX+'px';reticle.style.top=e.clientY+'px';});
-addEventListener('wheel',e=>{target=M.clamp(target+e.deltaY*0.00045,0,1);},{passive:true});
-const keys={};addEventListener('keydown',e=>keys[e.key.toLowerCase()]=1);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
-
-// sound — duduk dam drone
-let drone=null;
-function startDrone(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  const ctx=new AC();const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();
-  o.type='sine';o.frequency.value=110;o2.type='sine';o2.frequency.value=110.5;g.gain.value=0;
-  o.connect(g);o2.connect(g);g.connect(ctx.destination);o.start();o2.start();
-  g.gain.linearRampToValueAtTime(0.05,ctx.currentTime+4);drone={ctx,g};}catch(e){}}
-const SCALE=[330,371,440,495,557,660];                                  // a luminous pentatonic
-function chime(){if(!drone)return;try{const c=drone.ctx,o=c.createOscillator(),g=c.createGain();
-  o.type='triangle';o.frequency.value=SCALE[(Math.random()*SCALE.length)|0];o.connect(g);g.connect(c.destination);
-  g.gain.value=0;o.start();g.gain.linearRampToValueAtTime(0.09,c.currentTime+0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+0.9);o.stop(c.currentTime+1);}catch(e){}}
-function chord(){if(!drone)return;try{const c=drone.ctx;[220,277,330,440].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();
-  o.type='sine';o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.value=0;o.start();
-  g.gain.linearRampToValueAtTime(0.05,c.currentTime+0.1+i*0.09);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+3.4);o.stop(c.currentTime+3.6);});}catch(e){}}
-
-function awaken(){ if(!started)return;
-  ray.setFromCamera({x:(mouse.px/innerWidth)*2-1,y:-(mouse.py/innerHeight)*2+1},camera);
-  const hits=ray.intersectObjects(sprites);
-  if(hits.length){const sp=hits[0].object;if(!sp.userData.awoken){sp.userData.awoken=1;carried++;document.getElementById('carried').textContent=carried;chime();}sp.userData.flare=1;}
+      const p=(m.meta&&m.meta.predicted)||m.payload||{}
+      let pr=this.peers.get(m.from)
+      if(!pr){pr={x:0.5,y:0.5,name:'',seen:0};this.peers.set(m.from,pr)}
+      if(typeof p.u==='number'){pr.x=p.u;pr.y=p.v}
+      if(m.payload&&m.payload.name)pr.name=String(m.payload.name).slice(0,18)
+      pr.seen=performance.now();this.count()
+    }
+  },
+  send(u,v,f){
+    if(!(this.ws&&this.live&&this.ws.readyState===1))return
+    const now=performance.now();if(now-this.lastSend<100)return
+    this.lastSend=now
+    this.ws.send(JSON.stringify({type:'publish',channel:'motion',pingTs:Date.now(),
+      payload:{u,v,x:u*20-10,y:v*-10+5,z:-20,name:(name||'').slice(0,18),p:f}}))
+  },
+  sweep(){for(const[id,pr]of this.peers)if(performance.now()-pr.seen>9000)this.peers.delete(id);this.count()},
+  count(){
+    const n=this.peers.size
+    $('#sHere').hidden=n===0
+    $('#sHereN').textContent=n
+    return n
+  }
 }
-addEventListener('click',()=>{if(started)awaken();});
+Mesh.connect()
 
-// touch — steer with a finger, tap letters to awaken, hold to cross faster
-let touchHold=false;
-function touchAt(t){mouse.x=t.clientX/innerWidth-0.5;mouse.y=t.clientY/innerHeight-0.5;mouse.px=t.clientX;mouse.py=t.clientY;reticle.style.left=t.clientX+'px';reticle.style.top=t.clientY+'px';}
-addEventListener('touchstart',e=>{if(e.touches[0])touchAt(e.touches[0]);touchHold=true;
-  if(started){midhint.textContent='drag to look · tap letters · hold to cross';}},{passive:true});
-addEventListener('touchmove',e=>{if(e.touches[0])touchAt(e.touches[0]);},{passive:true});
-addEventListener('touchend',()=>{touchHold=false;if(started)awaken();},{passive:true});
-
-const intro=document.getElementById('intro');
-function begin(){if(started)return;started=true;intro.classList.add('gone');target=0.02;startDrone();
-  heroEl.classList.add('in');setTimeout(()=>heroEl.classList.remove('in'),2400);}
-intro.addEventListener('click',begin);
-intro.addEventListener('touchstart',e=>{e.preventDefault();begin();});
-
-// act cards
-const ACTS=[{a:'ԴՌՆԵՐ',e:'Threshold',n:'act i — into the dark',at:0.0},
-  {a:'ԱՆՑՈՒՄ',e:'The Crossing',n:'act ii — paced by the dam',at:0.12},
-  {a:'ՎԿԱ',e:'The Witness',n:'act iii — the keeper of memory',at:0.50},
-  {a:'ԱՐՁԱՆԱԳՐՈՒԹՅՈՒՆ',e:'Inscription',n:'act iv — continuity',at:0.80}];
-let actIdx=0;const actEl=document.getElementById('act');const heroEl=document.getElementById('hero');
-function showAct(o){actEl.style.transition='';actEl.style.opacity='';
-  actEl.querySelector('.a').textContent=o.a;actEl.querySelector('.e').textContent=o.e;actEl.querySelector('.n').textContent=o.n;
-  actEl.classList.add('in');clearTimeout(showAct._t);showAct._t=setTimeout(()=>actEl.classList.remove('in'),2800);}
-function hideActNow(){clearTimeout(showAct._t);actEl.classList.remove('in');actEl.style.transition='none';actEl.style.opacity='0';}
-
-// keeper dialogue
-const keeperEl=document.getElementById('keeper'),nameIn=document.getElementById('nameIn'),keeperQ=document.getElementById('keeperQ');
-function openKeeper(){keeperShown=true;dialogOpen=true;hideActNow();
-  keeperQ.innerHTML=(carried>0?('You carry '+carried+' letter'+(carried>1?'s':'')+' into the dark.<br>Who are you?'):'Who are you?')+'<span class="arm">Ո՞վ ես դու։</span>';
-  keeperEl.classList.add('show');setTimeout(()=>nameIn.focus(),400);}
-nameIn.addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const v=(nameIn.value||'').trim();if(!v||name)return;
-  nameIn.style.display='none';keeperEl.querySelector('.hint').style.display='none';chord();
-  keeperQ.innerHTML='<span class="arm" style="color:var(--stitch);font-size:1.25em">'+v+'</span><br>the bridge remembers your name.<span class="arm">անցի՛ր · carry it across.</span>';
-  setTimeout(()=>{name=v;keeperEl.classList.remove('show');dialogOpen=false;},2800);});
-
-// inscription
-const inscEl=document.getElementById('inscribe'),wordIn=document.getElementById('wordIn'),
-  enterBtn=document.getElementById('enterBtn'),closing=document.getElementById('closing'),inscHint=document.getElementById('inscHint');
-let inscShown=false;
-function openInscribe(){inscShown=true;dialogOpen=true;hideActNow();inscEl.classList.add('show');setTimeout(()=>wordIn.focus(),400);}
-function doInscribe(){const v=(wordIn.value||'').trim();if(!v||inscribed)return;inscribed=true;word=v;chord();
-  const tag=(name||'—')+' · '+word;field.push(tag);try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)));}catch(e){}
-  // the crossing leaves a mark in di.iiii — fire-and-forget, the rite never blocks on it
-  if(FIELD_URL){fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name||'—',word:word})}).catch(()=>{});}
-  placeInscription(tag,field.length-1);                 // your word joins the drifting field
-  document.getElementById('fieldn').textContent=field.length;
-  // build name (amber) + word (calligraphic) glyphs rising from the digitalkar
-  [...name].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false,color:0xffe6bf});
-    const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.3,end.y+4.4,end.z-6);s.scale.set(1.5,1.5,1.5);scene.add(s);});
-  [...word].slice(0,16).forEach((ch,i,ar)=>{const m=new THREE.SpriteMaterial({map:glyphTex(ch),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,color:0xcdb98f});
-    const s=new THREE.Sprite(m);s.position.set(end.x+(i-(ar.length-1)/2)*1.2,end.y-1.6,end.z-6);s.scale.set(1.2,1.2,1.2);scene.add(s);});
-  wordIn.style.display='none';inscHint.style.display='none';
-  // ── act v — ԱՐՁԱԳԱՆՔ (Echo): the bridge answers; the field and those present gather ──
-  inscEl.querySelector('.lbl').innerHTML='ԱՐՁԱԳԱՆՔ · echo · act v';
-  const others=field.length-1;
-  closing.textContent = Mesh.live
-    ? ('Ardzaganq — the bridge answers. '+(Mesh.peers.size>0?(Mesh.peers.size+(Mesh.peers.size>1?' others cross':' other crosses')+' with you now. '):'')+'your digitalkar joins '+others+' before you. You are not alone.')
-    : ('Communitas — your digitalkar joins '+others+' before you. You are no longer alone on the bridge.');
-  enterBtn.style.display='inline-block';
-  communion=true;
-  if(drone){try{drone.g.gain.linearRampToValueAtTime(0.09,drone.ctx.currentTime+3);}catch(e){}}   // a swell into the echo
+// ── acts ──────────────────────────────────────────────────────────────────
+function advance(){
+  const f=frac()
+  for(let i=ACTS.length-1;i>=0;i--){
+    if(f>=ACTS[i].at&&act<i){act=i;if(!asking)showCard(ACTS[i]);break}
+  }
+  if(asking||done||performance.now()<cardUntil)return
+  if(!name&&f>=KEEPER_AT)openAsk('name')
+  else if(name&&!word&&f>=INSCRIBE_AT)openAsk('word')
 }
-wordIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doInscribe();}});
-enterBtn.addEventListener('click',e=>{e.preventDefault();location.reload();});
-
-// hud refs
-const midhint=document.getElementById('midhint'),latEl=document.getElementById('lat'),bpmEl=document.getElementById('bpm'),
-  progEl=document.getElementById('prog'),pulse=document.getElementById('pulse'),presentEl=document.getElementById('present');
-let latT=0,bpm=72,nextBeat=0,pulseV=0;
-
-const clock=new THREE.Clock();
-function frame(){
-  const tm=clock.getElapsedTime();
-  // movement gate: Keeper blocks until you give your name
-  const gate = name?1:0.50;
-  if(started){let v=0.0016*(0.72+0.28*Math.sin(tm*0.8)); // dam pacing
-    if(prog<0.14)v+=0.0030;                              // onboarding glide — step you onto the lit bridge
-    if(touchHold)v+=0.0026;
-    if(keys['w']||keys['arrowup'])v+=0.0030; if(keys['s']||keys['arrowdown'])v-=0.0034;
-    target=M.clamp(target+v,0,gate);}
-  target=M.clamp(target,0,gate);
-  prog+=(target-prog)*0.05;const p=M.clamp(prog,0,0.9999);
-
-  const cur=pathAt(p),ahead=pathAt(Math.min(p+0.04,1));
-  camera.position.set(cur.x+mouse.x*4.0, cur.y+1.2-mouse.y*2.4+Math.sin(tm*0.6)*0.25, cur.z+6.5);
-  camera.lookAt(ahead.x+mouse.x*3, ahead.y+0.4-mouse.y*2, ahead.z);
-
-  const fwd=new THREE.Vector3();camera.getWorldDirection(fwd);
-  const right=new THREE.Vector3().crossVectors(fwd,new THREE.Vector3(0,1,0)).normalize();
-  const up=new THREE.Vector3().crossVectors(right,fwd).normalize();
-  const focus=camera.position.clone().add(fwd.clone().multiplyScalar(13)).add(right.multiplyScalar(mouse.x*16)).add(up.multiplyScalar(-mouse.y*11));
-  lamp.position.copy(focus);lamp.intensity=2.1+Math.sin(tm*1.8)*0.5;
-  halo.position.copy(focus);halo.material.opacity=.7+Math.sin(tm*1.8)*0.15;halo.scale.setScalar(6+Math.sin(tm*1.4)*0.6);
-
-  // threshold arch ignites at the start, fades after you pass
-  const doorLit=M.clamp(1-Math.abs(0.06-p)/0.10,0,1);
-  gateGroup.children.forEach(s=>{s.material.opacity=doorLit*(0.5+0.5*Math.sin(tm*1.5+s.userData.phase));});
-
-  // letters reveal ahead + your lamp pops them
-  let hot=false;
-  sprites.forEach(sp=>{const u=sp.userData;const dt=u.t-p;
-    const aheadV=M.clamp((0.36-dt)/0.42,0,1),behind=M.clamp(1+dt*12,0,1);
-    let o=aheadV*behind*0.6;const df=sp.position.distanceTo(focus);const nl=M.clamp(1-df/14,0,1);
-    if(nl>0.5)hot=true;o=Math.max(o,nl);if(u.awoken)o=Math.max(o,0.78);
-    if(u.flare>0){u.flare*=0.92;o=Math.min(1,o+u.flare);}
-    sp.material.opacity=o*(0.72+0.28*Math.sin(tm*u.speed+u.phase));
-    sp.scale.setScalar(u.base*(1+Math.sin(tm*u.speed+u.phase)*0.06+(u.awoken?0.25:0)+u.flare*0.8));});
-  reticle.classList.toggle('hot',hot);
-  corridor.rotation.z=Math.sin(tm*0.05)*0.02;dust.rotation.y=tm*0.008;
-
-  // the Keeper: visible as you approach the span, intense while blocking
-  const nearK=M.clamp(1-Math.abs(p-0.50)/0.16,0,1);
-  const block=name?0:1;
-  stitch.material.opacity=Math.max(nearK,block*M.clamp((p-0.40)/0.1,0,1))*(0.45+0.3*Math.sin(tm*2.2));
-  stitch.scale.setScalar(11+Math.sin(tm*1.6)*1.8);
-  keeperRing.forEach(s=>{const a=s.userData.a+tm*0.5;s.position.set(stitchPos.x+Math.cos(a)*5,stitchPos.y+Math.sin(a*1.3)*3,stitchPos.z+Math.sin(a)*5);
-    s.material.opacity=stitch.material.opacity*0.8;});
-
-  // the mesh — live peers if a server is set, else simulated ghost nodes (graceful fallback)
-  Mesh.send(p);
-  simGhost+=((Mesh.live?0:1)-simGhost)*0.05;                 // fade the simulated nodes out once real peers are live
-  ghosts.forEach((g,gi)=>{
-    if(communion){const a=tm*0.32+gi*1.256;                  // act v — gather around the digitalkar
-      g.s.position.set(end.x+Math.cos(a)*8,end.y+2+Math.sin(a*1.2)*2.2,end.z-8+Math.sin(a)*4);
-      g.s.material.opacity=simGhost*0.6*(0.6+0.4*Math.sin(tm*2.2+gi));return;}
-    g.t+=g.speed*0.016*(0.6+0.4*Math.sin(tm*0.7+g.jit));if(g.t>1)g.t-=1;
-    const c=pathAt(g.t);g.s.position.set(c.x+Math.sin(tm*1.3+g.jit)*1.6,c.y+1.3,c.z);
-    const dz=Math.abs(g.s.position.z-camera.position.z);
-    g.s.material.opacity=simGhost*M.clamp(1-dz/130,0,1)*0.5*(0.6+0.4*Math.sin(tm*3+g.jit));});
-  const present=Mesh.update(tm,camera.position.z,communion);
-  fieldGroup.rotation.y=Math.sin(tm*0.1)*0.08;fieldGroup.position.y=Math.sin(tm*0.4)*0.3;
-
-  // digitalkar ignites at the end / after inscription
-  const arrive=M.clamp((p-0.82)/0.16,0,1);
-  myKh.material.opacity=inscribed?0.95:arrive*0.85;myKh.scale.setScalar(8+Math.sin(tm*0.8)*0.6);
-
-  // act cards
-  let ai=0;for(let i=0;i<ACTS.length;i++)if(p>=ACTS[i].at)ai=i;
-  if(started&&ai>actIdx&&ai>0&&!dialogOpen&&!heroEl.classList.contains('in')){actIdx=ai;showAct(ACTS[ai]);}
-
-  // dialogue triggers
-  if(started&&!name&&!keeperShown&&p>=0.47)openKeeper();
-  if(started&&name&&!inscShown&&p>=0.86)openInscribe();
-
-  // hud
-  midhint.classList.toggle('show',started&&p<0.42&&carried<3);
-  progEl.style.width=(p*100)+'%';
-  if(tm-latT>0.5){latT=tm;
-    latEl.textContent='lat '+((Mesh.live&&Mesh.lat>0)?Mesh.lat:(121+Math.floor(Math.random()*108)))+'ms';
-    bpm=M.clamp(bpm+(Math.random()-0.5)*4,62,92);bpmEl.textContent=Math.round(bpm);
-    presentEl.textContent=Mesh.live?(present>0?(present+' present'):'alone here'):'solo';}
-  // heartbeat → screen pulse (the measurable shadow)
-  if(started&&tm>=nextBeat){nextBeat=tm+60/bpm;pulseV=0.7;}
-  pulseV*=0.86;pulse.style.opacity=(pulseV*0.18).toFixed(3);
-
-  renderer.render(scene,camera);requestAnimationFrame(frame);
+function openAsk(kind){
+  asking=kind
+  const q=ask.querySelector('.q'),sub=ask.querySelector('.sub')
+  if(kind==='name'){
+    q.textContent='Ո՞վ ես դու։'
+    sub.textContent='who are you'
+    input.placeholder='ձեր անունը · your name'
+  }else{
+    q.textContent='Ի՞նչ ես բերում։'
+    sub.textContent='what do you carry across'
+    input.placeholder='մեկ բառ · one word'
+  }
+  input.value=''
+  show(ask)
+  setTimeout(()=>input.focus(),260)
 }
-function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
-addEventListener('resize',resize);resize();frame();
-})();
+function submit(){
+  const v=input.value.trim()
+  if(!v)return
+  if(asking==='name'){
+    name=v.slice(0,40);asking=null;show(null)
+    askKeeper('The visitor gives their name: '+name+'. Greet them in one line as they cross the bridge.',
+      KEEPER_GREET,{name})
+      .then(l=>{if(l&&!done)said(l)})
+  }else{
+    word=v.slice(0,60);asking=null;inscribe()
+  }
+}
+input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}})
+
+function said(line){
+  end.querySelector('.said').textContent=line
+  end.querySelector('.note').textContent=''
+  show(end)
+  clearTimeout(said._t)
+  said._t=setTimeout(()=>{if(!done)show(null)},7000)
+}
+
+// ── the core ──────────────────────────────────────────────────────────────
+function inscribe(){
+  inscribed=true;done=true
+  const tag=(name||'—')+' · '+word
+  field.push(tag)
+  try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
+  $('#sField').textContent=field.length
+
+  const others=field.length-1
+  end.querySelector('.said').textContent=
+    (Mesh.count()>0?'the bridge answers. ':'')+
+    'your word joins '+others+' before you.'
+  end.querySelector('.note').textContent=''
+  show(end)
+
+  // The rite never blocks on the network — but it no longer claims a permanence
+  // it did not achieve. Silence here is what hid nine days of refused crossings.
+  if(FIELD_URL){
+    fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:name||'—',word})})
+      .then(r=>{if(!r.ok)throw new Error(String(r.status))})
+      .catch(()=>{end.querySelector('.note').textContent=
+        'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'})
+  }
+  askKeeper('The visitor has crossed. Their name: '+(name||'a nameless one')+'. They carried the word: '+word+
+    '. Their outline became a core, joining '+others+' before them. Bless it in one line.',
+    KEEPER_BLESS,{name:name||'the nameless one',word,n:others})
+    .then(l=>{if(l)end.querySelector('.said').textContent=l})
+  // the core holds for a moment, then opens into the body everyone shares
+  setTimeout(buildSharedBody,7000)
+}
+
+// ── the shared body ───────────────────────────────────────────────────────
+// A crossing does not end with an invitation to cross again. It ends by showing
+// what you have joined: one body whose outline is made from the words everyone
+// carried across. No new data is stored to do this — the field already holds every
+// name and word, so the body is literally composed of the crossings themselves.
+let shared=null
+function buildSharedBody(){
+  // the canonical standing figure, sampled as an outline
+  const pts=[]
+  const mask=new Uint8Array(GW*GH)
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)mask[j*GW+i]=dreamed(i,j,0)
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
+    const k=j*GW+i
+    if(!mask[k])continue
+    const l=i>0?mask[k-1]:1,r=i<GW-1?mask[k+1]:1,u=j>0?mask[k-GW]:1,d=j<GH-1?mask[k+GW]:1
+    if(l&&r&&u&&d)continue
+    if(STEP>1&&((i%STEP)||(j%STEP)))continue
+    pts.push([(1-(i+0.5)/GW)*W,((j+0.5)/GH)*H])
+  }
+  if(!pts.length)return
+  // Fill the frame. The dreamed figure is narrow, and at its natural size the shared
+  // body read as a clot in the middle of a large black screen.
+  let lo=Infinity,hi=-Infinity,xlo=Infinity,xhi=-Infinity
+  for(const [x,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y;if(x<xlo)xlo=x;if(x>xhi)xhi=x}
+  const top=H*0.04, bot=H*0.76, span=Math.max(1,hi-lo)
+  const cxm=(xlo+xhi)/2, wide=Math.min(1.55, (W*0.62)/Math.max(1,xhi-xlo))
+  for(const p of pts){
+    p[1]=top+((p[1]-lo)/span)*(bot-top)
+    p[0]=cxm+(p[0]-cxm)*wide
+  }
+  // Order the outline as a contour, not in scan order, so words laid along it read
+  // as words. Angular sort around the centroid is enough for a standing figure.
+  let cx=0,cy=0
+  for(const [x,y] of pts){cx+=x;cy+=y}
+  cx/=pts.length;cy/=pts.length
+  pts.sort((a,b)=>Math.atan2(a[1]-cy,a[0]-cx)-Math.atan2(b[1]-cy,b[0]-cx))
+
+  // Every crossing gives both of its words — the name someone answered with and the
+  // word they carried. They are written around the body whole, so the figure can be
+  // read rather than merely seen.
+  const words=[]
+  field.forEach((tag,idx)=>{
+    const mine=idx===field.length-1
+    const parts=String(tag).split('·').map(s=>s.trim()).filter(s=>s&&s!=='—')
+    for(const w of parts)words.push({w:[...w].slice(0,14),mine})
+  })
+  if(!words.length)return
+
+  // lay them end to end around the contour, one letter per point, a gap between
+  const letters=[]
+  let slot=0, wi=0
+  while(slot<pts.length){
+    const src=words[wi%words.length]; wi++
+    for(const ch of src.w){
+      if(slot>=pts.length)break
+      const p=pts[slot++]
+      letters.push({x:coreCX,y:coreCY,tx:p[0],ty:p[1],ch,mine:src.mine,d:Math.random()*0.45})
+    }
+    slot++ // one empty point between words, so they do not run together
+  }
+  shared={pts,letters,t:0}
+  const n=field.length
+  end.querySelector('.said').textContent='you are part of it now.'
+  end.querySelector('.body-line').textContent=
+    n+' crossing'+(n===1?'':'s')+' · one body'
+  show(end)
+}
+
+// ── the door ──────────────────────────────────────────────────────────────
+const door=$('#door')
+function begin(){
+  if(started)return
+  started=true
+  door.classList.add('gone')
+  openLamp().then(()=>{openHands();openPose()})
+  showCard(ACTS[0])
+}
+door.addEventListener('click',begin)
+door.addEventListener('touchend',e=>{e.preventDefault();begin()},{passive:false})
+
+// ── draw ──────────────────────────────────────────────────────────────────
+// Three things reach the screen: unread points, read letters, and — at the end —
+// the core. That is the entire visual vocabulary.
+const t0=performance.now()
+let coreCX=0,coreCY=0,coreR=0,quiet=1,lastT=0
+// where you are, in the frame — the centroid of whatever the lamp can see of you.
+// Falls back to the pointer when there is no camera, so the ending is interactive
+// either way.
+let presX=-1,presY=-1
+function presence(){
+  let sx=0,sy=0,n=0
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;if(bodyMask[k]){sx+=i;sy+=j;n++}}
+  if(n>8&&camOn&&segHas){
+    const tx=(1-((sx/n)+0.5)/GW)*W, ty=(((sy/n)+0.5)/GH)*H
+    presX=presX<0?tx:presX+(tx-presX)*0.18
+    presY=presY<0?ty:presY+(ty-presY)*0.18
+  }else if(P.has){presX=P.x;presY=P.y}
+  else{presX=-1;presY=-1}
+}
+
+function frame(now){
+  const t=(now-t0)/1000
+  readHand(now)
+  readPose(now)
+  const lit=readSeg(now)
+  if(!lit||!camOn){
+    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
+  }
+  const dt=Math.min(0.1,t-lastT); lastT=t
+  presence()
+  // With a front camera your own silhouette reads the letters. Without one there is
+  // nothing to move, so the pointer stands in — which is what the sandboxed viewer
+  // and every desktop without permission will use.
+  const embodied=camOn&&segHas
+  if(started&&!inscribed){
+    rebuildOutline(t,dt,embodied)
+    // The target has to be reachable. A fixed 180 was not: the dreamed figure only
+    // ever offers ~162 distinct cells at this size, so the final act sat just under
+    // the threshold, and on a smaller frame the rite could not be finished at all.
+    // Scale to what the outline has actually offered — it grows as you sweep.
+    target=clamp(Math.round(everSeen*0.62),32,220)
+    // the pointer only reads when the body cannot
+    if(P.has&&!embodied){
+      const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
+      for(const [,m] of marks){
+        if(m.read)continue
+        const [x,y]=markScreen(m)
+        const dx=x-P.x,dy=y-P.y
+        if(dx*dx+dy*dy<R2){m.read=1;m.t=t;readN++}
+      }
+    }
+    $('#sRead').textContent=readN
+  // The lamp says what it can actually see, so "is it working?" is never a guess.
+  // A mask that swallows the frame has no edge to read — the only honest advice
+  // is distance.
+  if(embodied){
+    let cover=0;for(let k=0;k<GW*GH;k++)cover+=bodyMask[k]
+    cover/=GW*GH
+    $('#sLamp').textContent=cover>0.9
+      ? 'step back — the lamp needs your edge'
+      : 'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+  }
+    advance()
+    Mesh.send(clamp(P.x/W,0,1),clamp(P.y/H,0,1),frac())
+    if(((now/1000)|0)%3===0)Mesh.sweep()
+  }
+  if(inscribed)condense=Math.min(1,condense+(REDUCED?0.02:0.006))
+
+  ctx.clearRect(0,0,W,H)
+
+  // you, first — the ghost under everything. Brighter when it is really you,
+  // fainter for the dreamed stand-in; gone once the crossing condenses.
+  if(started&&!inscribed)
+    drawSilhouette((embodied?0.17:0.055)*quiet*(shared?1-shared.t:1))
+
+  // the core: everything read gathers into one flat disc — hot at the heart,
+  // the one solid form in the piece
+  coreCX=W*0.5;coreCY=H*0.40;coreR=Math.min(W,H)*0.17
+  const ease=condense<0.5?2*condense*condense:1-Math.pow(-2*condense+2,2)/2
+
+  // When the Keeper asks, the world goes quiet. This is the fix for the question
+  // being unreadable through the letters, and it is also the right dramaturgy:
+  // the reading stops while you are being addressed.
+  const askOpen=asking!==null
+  quiet+=((askOpen?0.14:1)-quiet)*(REDUCED?1:0.08)
+
+  for(const [,m] of marks){
+    let [x,y]=markScreen(m)
+    if(inscribed){
+      // spiral inward to the rim of the core, flattened
+      const a=(m.i*0.37+m.j*0.61)
+      const tx=coreCX+Math.cos(a)*coreR*0.92*(0.35+0.65*((m.i%7)/7))
+      const ty=coreCY+Math.sin(a)*coreR*0.44*(0.35+0.65*((m.j%5)/5))
+      x=x+(tx-x)*ease;y=y+(ty-y)*ease
+    }
+    if(m.read){
+      const age=Math.min(1,(t-m.t)/1.1)
+      ctx.globalAlpha=(0.28+0.72*age)*(inscribed?1:0.92)*quiet*(shared?1-shared.t:1)
+      ctx.fillStyle='#f2efe9'
+      ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.textAlign='center';ctx.textBaseline='middle'
+      ctx.fillText(m.g,x,y)
+      // the taking, seen: a brief ring where a letter was just read
+      if(!inscribed&&!REDUCED){
+        const fa=t-m.t
+        if(fa<0.5){
+          ctx.globalAlpha=(1-fa/0.5)*0.3*quiet
+          ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+          ctx.beginPath();ctx.arc(x,y,5+fa*44,0,6.2832);ctx.stroke()
+        }
+      }
+    }else{
+      // a letter WARMS into being under your edge — the reading is watchable,
+      // not a switch. Cold cells stay quiet points.
+      const warm=m.heat?clamp(m.heat/0.5,0,1):0
+      ctx.fillStyle='#f2efe9'
+      if(warm>0.05){
+        ctx.globalAlpha=(0.10+0.6*warm)*quiet*(shared?1-shared.t:1)
+        ctx.font='300 '+(FS*(0.7+0.3*warm)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+        ctx.textAlign='center';ctx.textBaseline='middle'
+        ctx.fillText(m.g,x,y)
+      }else{
+        ctx.globalAlpha=0.2*quiet*(shared?1-shared.t:1)
+        ctx.fillRect(x-0.8,y-0.8,1.6,1.6)
+      }
+    }
+  }
+
+  if(inscribed&&condense>0.55){
+    const a=((condense-0.55)/0.45)*(shared?1-shared.t:1)
+    ctx.globalAlpha=0.14*a
+    ctx.fillStyle='#f2efe9'
+    ctx.beginPath();ctx.ellipse(coreCX,coreCY,coreR*0.98,coreR*0.47,0,0,6.2832);ctx.fill()
+    ctx.globalAlpha=0.5*a
+    ctx.font='300 '+Math.round(Math.min(W,H)*0.045)+'px "Noto Serif Armenian",Georgia,serif'
+    ctx.textAlign='center';ctx.textBaseline='middle'
+    ctx.fillText(word,coreCX,coreCY)
+    ctx.globalAlpha=0.34*a
+    ctx.font='300 '+Math.round(Math.min(W,H)*0.026)+'px "Noto Serif Armenian",Georgia,serif'
+    ctx.fillText(name,coreCX,coreCY-coreR*0.72)
+  }
+
+  // the shared body — the core opens and its letters travel out to the figure
+  // everyone who ever crossed is holding up
+  if(shared){
+    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.014))
+    const S=shared.t
+    // The crossing does not end in a picture. You are still in front of the lamp, and
+    // the body you joined answers where you stand: the words nearest you brighten and
+    // are pushed aside as you move through them.
+    const R=Math.min(W,H)*0.26, live=presX>=0
+    ctx.textAlign='center';ctx.textBaseline='middle'
+    for(const L of shared.letters){
+      const e=clamp((S-L.d)/(1-L.d),0,1)
+      const g=e<0.5?2*e*e:1-Math.pow(-2*e+2,2)/2
+      let x=L.x+(L.tx-L.x)*g, y=L.y+(L.ty-L.y)*g
+      let near=0
+      if(live&&g>0.6){
+        const dx=x-presX, dy=y-presY, d=Math.hypot(dx,dy)
+        if(d<R){
+          near=1-d/R
+          const push=near*near*26
+          x+=(dx/(d||1))*push; y+=(dy/(d||1))*push
+        }
+      }
+      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.52)+near*0.48)*g)
+      ctx.fillStyle='#f2efe9'
+      ctx.font='300 '+((L.mine?FS*1.15:FS)*(1+near*0.35)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.fillText(L.ch,x,y)
+    }
+  }
+
+  // the others, one faint point each — no labels, no lamps, no rings
+  if(Mesh.peers.size){
+    for(const[,pr]of Mesh.peers){
+      ctx.globalAlpha=0.34*quiet
+      ctx.fillStyle='#f2efe9'
+      ctx.beginPath();ctx.arc((1-pr.x)*W,pr.y*H,2.2,0,6.2832);ctx.fill()
+    }
+  }
+
+  if(started&&!inscribed)drawTracking()
+
+  // the lamp itself: a single ring. One mark, not three.
+  if(started&&!inscribed&&P.has&&!(camOn&&segHas)){
+    ctx.globalAlpha=0.5*quiet
+    ctx.strokeStyle='#f2efe9';ctx.lineWidth=1
+    ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
+    ctx.globalAlpha=0.9*quiet
+    ctx.beginPath();ctx.arc(P.x,P.y,1.4,0,6.2832);ctx.fill()
+  }
+
+  ctx.globalAlpha=1
+  requestAnimationFrame(frame)
+}
+resize()
+requestAnimationFrame(frame)
 </script>
 </body>
 </html>

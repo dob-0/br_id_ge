@@ -7,7 +7,7 @@
 Three doors: **places** enter as 3D scans; **people** enter through a short rite —
 cross a bridge built of glowing Armenian letters and answer two questions, *who
 are you, and what do you carry?*; **artists** enter through an open jam, curated
-in. Every entry leaves a permanent mark — an inscribed stone — a *digitalkar*
+in. Every entry leaves a permanent mark — an inscribed stone — a *core*
 (*kar* is Armenian for stone) — in a shared field that is never erased. And the
 bridge runs both ways: what is built inside di.iiii can be carried back out.
 
@@ -20,8 +20,8 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
 | part | in one sentence | where |
 |---|---|---|
 | **the landing** | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
-| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
-| **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | Pages `/field.html` · the `br_id_ge` space |
+| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
+| **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field) · the `br_id_ge` space |
 | **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
 | **the open visual jam** | The artists' door: bring a notation — a word, gesture, sound, letterform, code — and be bridged into the same field. | Notations #2, then ongoing |
 | **the constellation** | The map where the whole system is seen and managed. | a project inside the same space |
@@ -34,10 +34,9 @@ amber = the lamp, attention · stone tan = memory and Armenian letterforms):
    *duduk* dam-drone.
 3. **Witness** — the Keeper (archivist, not oracle) blocks the span and asks who
    you are and what you carry.
-4. **Inscription** — a **digitalkar**, the digital stone: your name in rigid
-   *Erkatagir* at its base, your word in decorative *Trchnagir* woven through
-   its body.
-5. **Echo** — the shared field: every inscribed stone persists; with the live
+4. **Notation** (ՆՈԹԱԳՐՈՒԹՅՈՒՆ) — a **core**: your name in
+   rigid *Erkatagir*, your word in decorative *Trchnagir* upon the face of the core.
+5. **Echo** — the shared field: every core persists; with the live
    co-presence mesh, others crossing now are present with you.
 
 ## 2. Notations #2 · hosted by hosq
@@ -64,16 +63,16 @@ the bridge of letters reads as a score the visitor performs.
 
 | Tier | Environment | URL |
 |---|---|---|
-| Production | GitHub Pages | [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) |
+| Production | di.iiii — the rite | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
 | Production | di.iiii space | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) |
 | Staging | Preview lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) |
-| Dev | Source repo | [github.com/dob-0/br_id_ge](https://github.com/dob-0/br_id_ge) |
+| Dev | Source repo (backend — never linked publicly) | `dob-0/br_id_ge` |
 
 ## 5. Team & Partners
 
 **Core:**
-* [**Gevorg Aram Grigoryan**](https://github.com/dob-0) ([@dob______](https://www.instagram.com/dob______/)): Head of di.ii, technical & conceptual development.
-* [**Emilya Nikoghosyan**](https://github.com/emilyanikoghosyan): Co-founder & multimedia artist.
+* [**Gevorg Aram Grigoryan**](https://di-studio.xyz) ([@dob______](https://www.instagram.com/dob______/)): Head of di.ii, technical & conceptual development.
+* **Emilya Nikoghosyan**: Co-founder & multimedia artist.
 * [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Curator & German partnership liaison.
 
 **Creative & technical:**

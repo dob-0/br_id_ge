@@ -7,7 +7,7 @@ Platform** and becomes shared space. Three doors: places enter as 3D scans; peop
 enter through a short rite — cross a bridge of glowing Armenian letters and answer
 two questions, *who are you, and what do you carry?*; artists enter through an
 open jam, curated in. Every entry leaves a permanent mark — an inscribed stone —
-a *digitalkar* (*kar* is Armenian for stone) — in a shared field that is never erased. Built on the open web —
+a *core* — in a shared field that is never erased. Built on the open web —
 Three.js/WebGL, no install, no engine.
 
 Everything lives in **one di.iiii space** (`br_id_ge`); this repo is its file
@@ -21,8 +21,8 @@ source and its GitHub Pages mirror.
 ## Quick Links
 
 - **The door (share this):** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge)
-- **The rite:** [dob-0.github.io/br_id_ge](https://dob-0.github.io/br_id_ge/) · **the field:** [/field.html](https://dob-0.github.io/br_id_ge/field.html)
-- **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://github.com/dob-0/di.iiii)
+- **The rite:** [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) · **the field:** [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field)
+- **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://di-studio.xyz)
 - [DEVELOPMENT.md](DEVELOPMENT.md) — contributor setup, deploy pipeline
 
 ## Versions — same names everywhere

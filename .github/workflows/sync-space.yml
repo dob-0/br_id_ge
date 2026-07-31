@@ -15,6 +15,9 @@ on:
       - 'di-space.json'
       - 'di-space.v1.json'
       - 'di-space.landing.json'
+      - 'di-space.members.json'
+      - 'members.html'
+      - 'members.json'
       - 'assets/**'
       - 'scripts/sync-space.mjs'
       - '.github/workflows/sync-space.yml'
@@ -54,3 +57,4 @@ jobs:
           node scripts/sync-space.mjs --repo .                                    # v.oooooo 2 (rite)   → newww
           node scripts/sync-space.mjs --repo . --manifest di-space.v1.json        # v.oooooo (legacy)   → v-oooooo
           node scripts/sync-space.mjs --repo . --manifest di-space.landing.json   # the landing (face)  → landing (published)
+          node scripts/sync-space.mjs --repo . --manifest di-space.members.json   # the members         → members
