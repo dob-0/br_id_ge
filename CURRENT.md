@@ -45,6 +45,16 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   mesh; jetson: `keeper-presence.mjs --eye /dev/video0 --ollama http://127.0.0.1:11434`);
   invisible wire — hairline thread sewing every revealed core through the keeper,
   blue-tinted when awake.
+- **Third pass:** Rite — untracked shape is now a breathing CIRCLE (center; follows
+  touch/mouse without camera; morphs to body when tracked, back when lost); sturdier
+  hands (smoothing, pinch hysteresis, frame confirmation, grace hold); end choices —
+  "keep a copy ↓" (client-side PNG memento) and "unmake my crossing" (proof-based
+  DELETE, feature-detected; `unmade` guard stops the field link resurrecting).
+  Tone sweep: gravestone register removed everywhere — ՊԱՀԱՊԱՆ (was ՎԿԱ), ՆԵՐԿԱ
+  act III, հուշ (was հիշատակ), "keeps walking" over "forever".
+  serverXR (di.iiii dev): inscriptions POST now returns one-time `proof`
+  (sha256 stored as proofHash); DELETE /inscriptions/:id {proof} unmakes own
+  crossing; legacy crossings 403. Contract tests green (64+8).
 - Still open from the brainstorm: 3D letter-body gather, AR/VR field entry,
   keeper TTS/physical-witness on the show rig.
 

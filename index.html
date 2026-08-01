@@ -85,6 +85,7 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   text-transform:lowercase;color:var(--live);text-decoration:none;
   border-bottom:1px solid var(--hairline);padding-bottom:.3rem;pointer-events:auto}
 .end .field-link:hover{border-color:var(--live)}
+.end .field-link .yn{color:var(--ink);border-bottom:1px solid var(--graphite);cursor:pointer}
 
 /* LAYER 3 — the HUD: data pinned to the frame's corners. Everything it says is true. */
 .hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
@@ -140,6 +141,8 @@ body.inframe #hudTitle{top:2.9rem}
     <div class="note"></div>
     <div class="body-line" id="bodyLine"></div>
     <a class="field-link" id="fieldLink" href="https://di-studio.xyz/br_id_ge/field" target="_top" hidden>see the field · your core is there →</a>
+    <a class="field-link" id="keepLink" href="#" hidden>keep a copy ↓</a>
+    <a class="field-link" id="unmakeLink" href="#" hidden>unmake my crossing</a>
   </div>
 </div>
 
@@ -329,30 +332,29 @@ function drawSilhouette(alpha){
   ctx.drawImage(silCv,0,0,W,H)
   ctx.restore()
 }
-let figW=0.26,figH=0.40,figY=0.50
 // STEP thins the outline on narrow screens: at 96 columns across a phone the cells
 // are ~4px apart while a letter is ~13px, so every glyph collided with its
 // neighbours. FS keeps the letter proportional to the space it actually has.
 let STEP=1,FS=13
 function fitFigure(){
-  const a=W/Math.max(1,H)
-  figW=a<0.75?0.20:(a<1.2?0.24:0.17)
-  figH=a<0.75?0.34:0.40
   STEP=W<560?2:1
   FS=clamp((W/GW)*STEP*1.35,10,17)
 }
 
-// memory mode — no camera (every visitor inside the sandboxed viewer). A standing
-// figure, breathing. Same language as the lit version so the piece reads the same.
-function dreamed(i,j,t){
-  const x=(i/(GW-1)-0.5),y=j/(GH-1)
-  const br=1+0.02*Math.sin(t*0.7)
-  const cy=figY
-  const torso=Math.pow(x/(figW*br),2)+Math.pow((y-cy)/(figH*br),2)
-  const head=Math.pow(x/(figW*0.42),2)+Math.pow((y-(cy+figH*0.92))/(figH*0.26),2)
-  const arms=Math.pow((Math.abs(x)-figW*0.96)/(figW*0.26),2)+Math.pow((y-(cy+figH*0.12))/(figH*0.62),2)
-  return Math.min(torso,head,arms)<1?1:0
+// the circle before the body — the ground state of the mask. Before the lamp
+// finds anyone (or without a lamp at all) the piece offers a clean circle of
+// letters, breathing; a found body morphs out of it and a lost body returns
+// to it. Without a camera the circle can be carried by the pointer.
+const circle={x:-1,y:-1}
+let morph=0            // 0 = the circle, 1 = the tracked body
+function circleField(i,j,t){
+  // mirrored screen coords, same transform as markScreen, so the circle sits
+  // exactly where the letters (and the pointer) are
+  const sx=(1-(i+0.5)/GW)*W, sy=((j+0.5)/GH)*H
+  const R=Math.min(W,H)*0.21*(1+(REDUCED?0:0.02*Math.sin(t*0.7)))
+  return 1-Math.hypot(sx-circle.x,sy-circle.y)/Math.max(1,R)
 }
+function dreamed(i,j,t){return circleField(i,j,t)>0?1:0}
 
 // ── the outline, and the letters that live on it ──────────────────────────
 // Each edge cell holds one glyph. Unread it is a faint point; read it is a letter.
@@ -424,13 +426,17 @@ async function openLamp(){
     $('#sLamp').textContent='lamp open'
     startReveal()
     openSeg()
-  }catch(e){ $('#sLamp').textContent='lamp closed — the bridge remembers for you' }
+  }catch(e){ $('#sLamp').textContent='lamp closed — the bridge still carries you' }
 }
 
 // MediaPipe, entirely optional: without it (no GPU, no CDN, ?body=0) the dreamed
 // figure stands in and every mechanic behaves identically.
 const MP='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14'
 let seg=null,segAt=0,segHas=false
+// the segmenter writes here, never straight into bodyMask — the drawn mask is
+// always the morph between this and the circle, one code path for both worlds
+const segMask=new Uint8Array(GW*GH)
+let segCover=0
 async function openSeg(){
   if(Q.get('body')==='0')return
   try{
@@ -449,9 +455,11 @@ function readSeg(now){
   try{ seg.segmentForVideo(video,now,(res)=>{
     const m=res&&res.categoryMask; if(!m){res&&res.close&&res.close();return}
     const w=m.width,h=m.height,d=m.getAsUint8Array()
+    let cnt=0
     for(let j=0;j<GH;j++){const sy=Math.min(h-1,((j+0.5)/GH*h)|0)
       for(let i=0;i<GW;i++){const sx=Math.min(w-1,((i+0.5)/GW*w)|0)
-        bodyMask[j*GW+i]=d[sy*w+sx]>0?1:0}}
+        const on=d[sy*w+sx]>0?1:0;segMask[j*GW+i]=on;cnt+=on}}
+    segCover=cnt
     segHas=true   // a real silhouette has landed — from here your body does the reading
     m.close&&m.close();res.close&&res.close()
   })}catch(e){}
@@ -592,7 +600,12 @@ function drawTracking(){
 
 // the hand, if MediaPipe can find one. Confirmed working on device 2026-07-30.
 const hand={has:false,x:0,y:0}
-let pinch=false,pinchWas=false
+let pinch=false
+// steadying: smoothed landmarks, hysteresis + debounce on the pinch, and a
+// short hold when the detector loses the hand mid-gesture — fast motion no
+// longer flickers the state
+let handSm=null,handSeenAt=0,pinchRun=0
+const PINCH_IN=0.28,PINCH_OUT=0.40,PINCH_FRAMES=3,HAND_HOLD=250
 let hl=null,hlAt=0
 async function openHands(){
   if(Q.get('hands')==='0')return
@@ -610,37 +623,51 @@ function readHand(now){
   hlAt=now
   let r;try{r=hl.detectForVideo(video,now)}catch(e){return}
   const lm=r&&r.landmarks&&r.landmarks[0]
-  if(!lm){hand.has=false;handLM=null;return}
-  hand.has=true;handLM=lm
-  const tx=(1-lm[9].x)*W, ty=lm[9].y*H
+  if(!lm){
+    // hold the last state briefly — a dropped frame is not a released gesture
+    if(now-handSeenAt>HAND_HOLD){hand.has=false;handLM=null;handSm=null;pinch=false;pinchRun=0}
+    return
+  }
+  handSeenAt=now
+  if(!handSm)handSm=lm.map(l=>({x:l.x,y:l.y}))
+  else for(let i=0;i<handSm.length;i++){
+    handSm[i].x+=(lm[i].x-handSm[i].x)*0.45
+    handSm[i].y+=(lm[i].y-handSm[i].y)*0.45
+  }
+  hand.has=true;handLM=handSm
+  const tx=(1-handSm[9].x)*W, ty=handSm[9].y*H
   hand.x=hand.x?hand.x+(tx-hand.x)*0.3:tx
   hand.y=hand.y?hand.y+(ty-hand.y)*0.3:ty
   point(hand.x,hand.y)
-  // pinch: thumb tip to index tip, measured against the hand's own size so it
-  // works at any distance from the lamp
-  const dx=lm[4].x-lm[8].x, dy=lm[4].y-lm[8].y
-  const span=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||1
-  pinch=Math.hypot(dx,dy)/span<0.45
-  if(pinch&&!pinchWas&&started&&!inscribed){
-    // a pinch reaches further than the open hand — it takes a whole handful
-    const R=Math.min(W,H)*0.13, R2=R*R
-    let taken=0
-    for(const [,m] of marks){
-      if(m.read)continue
-      const [x,y]=markScreen(m)
-      const ddx=x-P.x, ddy=y-P.y
-      if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++;taken++}
+  // pinch: thumb tip to index tip against the hand's own size, with hysteresis
+  // (engages tight, releases loose) and a few frames of agreement required
+  const dx=handSm[4].x-handSm[8].x, dy=handSm[4].y-handSm[8].y
+  const span=Math.hypot(handSm[0].x-handSm[9].x,handSm[0].y-handSm[9].y)||1
+  const ratio=Math.hypot(dx,dy)/span
+  const cand=pinch?(ratio<PINCH_OUT):(ratio<PINCH_IN)
+  if(cand===pinch)pinchRun=0
+  else if(++pinchRun>=PINCH_FRAMES){
+    pinch=cand;pinchRun=0
+    if(pinch&&started&&!inscribed){
+      // a pinch reaches further than the open hand — it takes a whole handful
+      const R=Math.min(W,H)*0.13, R2=R*R
+      let taken=0
+      for(const [,m] of marks){
+        if(m.read)continue
+        const [x,y]=markScreen(m)
+        const ddx=x-P.x, ddy=y-P.y
+        if(ddx*ddx+ddy*ddy<R2){m.read=1;m.t=(performance.now()-t0)/1000;readN++;taken++}
+      }
+      if(taken)SND.chord(taken)
     }
-    if(taken)SND.chord(taken)
   }
-  pinchWas=pinch
 }
 
 // ── the liturgy. Unchanged: five acts, two questions, the same thresholds. ─
 const ACTS=[
   {arm:'ԴՌՆԵՐ',       lat:'threshold · act i',   at:0.001},
   {arm:'ԱՆՑՈՒՄ',      lat:'the crossing · act ii', at:0.10},
-  {arm:'ՎԿԱ',         lat:'the witness · act iii', at:0.45},
+  {arm:'ՆԵՐԿԱ',       lat:'the witness · act iii', at:0.45},
   {arm:'ՆՈԹԱԳՐՈՒԹՅՈՒՆ',lat:'notation · act iv',    at:0.80},
 ]
 const KEEPER_AT=0.45, INSCRIBE_AT=0.80
@@ -669,7 +696,7 @@ function frac(){return clamp(readN/target,0,1)}
 // ── the keeper — a local LLM if one is running, scripted lines if not ─────
 const KEEPER_URL=(Q.get('keeper')||($('meta[name="keeper-url"]')||{}).content||'').replace(/\/+$/,'')
 const KEEPER_MODEL=Q.get('keeperModel')||($('meta[name="keeper-model"]')||{}).content||'llama3.1:8b'
-const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a carved inscription. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.'
+const KEEPER_SYS='You are ՊԱՀԱՊԱՆ, the Keeper of կամուրջ, the bridge of Armenian letters between the real world and a shared digital one. Reply with exactly ONE line in English, at most 16 words, spare and warm like a proverb said on the road. You may include at most one Armenian word. No emoji, no quotes, no questions, no explanations.'
 // ── the keeper's own words — written, not generated ───────────────────────
 // A live keeper needs a machine that is switched on, and a festival does not
 // guarantee one: the rig sleeps, the venue's network dies, prod has no model at
@@ -678,7 +705,7 @@ const KEEPER_SYS='You are ՎԿԱ, the Keeper of Memory on կամուրջ, the br
 // has seen. {name} is what the visitor gave, {word} what they carried, {n} how
 // many crossed before them.
 const KEEPER_GREET=[
-  '{name}. The bridge waited. Cross, and it will remember the weight of you.',
+  '{name}. The bridge waited. Cross, and it will learn the weight of you.',
   'You come as {name}. The կամուրջ holds. It has held heavier.',
   '{name} arrives. Nothing is recorded here except the fact of arriving.',
   'Step, {name}. The far side is not far. It is only other.',
@@ -692,7 +719,7 @@ const KEEPER_GREET=[
   'Welcome, {name}. This side and that side are the same water.',
   '{name}. Walk slowly. The bridge is old and made of letters.',
   'Your name is {name}, and that is already enough to begin.',
-  '{name}, the crossing does not test you. It only remembers.',
+  '{name}, the crossing does not test you. It only walks beside you.',
   'Here is {name}, come to the կամուրջ, which was built by crossing.',
   '{name}. No one crosses twice. Take your time with the first.',
   'Good, {name}. The bridge prefers those who arrive uncertain.',
@@ -704,28 +731,28 @@ const KEEPER_GREET=[
   'Slowly, {name}. Even a bridge is a kind of standing still.',
 ]
 const KEEPER_BLESS=[
-  '{name} carried {word} across. The word stays where it was set.',
+  '{name} carried {word} across. Now the word keeps walking without you.',
   '{word}. The bridge is one word heavier, {name} one word lighter.',
-  '{name} brought {word} over, and the քար took it without asking why.',
-  'What {name} carried was {word}. It will outlast the carrying.',
-  '{word} is set. {n} came before, and none of them brought this.',
+  '{name} brought {word} over, and the ճանապարհ carries it on.',
+  'What {name} carried was {word}. The carrying ends; the word does not.',
+  '{word} is here. {n} came before, and none of them brought this.',
   'The bridge accepts {word} from {name}. Acceptance is the whole rite.',
-  '{name} let go of {word} here. Letting go is how it stays.',
-  '{word}, carried by {name}, now stands with {n} others in the field.',
-  'It is done. {name} is across, and {word} is in the stone.',
+  '{name} let go of {word} here. Letting go is how it lives.',
+  '{word}, carried by {name}, now walks with {n} others in the field.',
+  'It is done. {name} is across, and {word} is in the light.',
   '{word} crossed with {name} and did not come back. That is correct.',
-  'The field takes {word}. {name} may go; the word may not.',
-  '{name} gave {word} to the կամուրջ, which keeps everything and returns nothing.',
+  'The field welcomes {word}. {name} moves on; the word moves in.',
+  '{name} gave {word} to the կամուրջ, which grows by what it is given.',
   '{word} is written now — not by hand, but by having been carried.',
   'Among {n} words, {word} takes its place, and the body grows.',
   '{name} arrived carrying {word} and leaves carrying nothing. Good.',
-  '{word} remains. {name} does not. This is the arrangement.',
-  'Here lies {word}, brought by {name}, in the company of {n}.',
-  'The bridge has taken {word}. It will not be asked for again.',
+  '{word} lives here now. {name} lives everywhere else. Both go on.',
+  'Here breathes {word}, brought by {name}, in the company of {n}.',
+  'The bridge holds {word} lightly, the way a road holds footsteps.',
   '{name} crossed, {word} stayed, and the bridge is a little more real.',
   '{word} joins the others. Nothing was recorded. Everything was kept.',
   'The {word} of {name} is in the field now, indistinguishable from it.',
-  'Set down, {word} becomes հիշատակ — remembrance that needs no one to remember.',
+  'Set down, {word} becomes շունչ — a breath the field keeps breathing.',
   '{n} before, {name} now, and {word} the shape of the difference.',
   'The crossing of {name} is finished. What is unfinished is {word}.',
 ]
@@ -750,7 +777,7 @@ function askKeeper(prompt,pool,vars){
       clearTimeout(t)
       let s=String(d.response||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim()
       s=s.split('\n').map(x=>x.trim()).filter(Boolean)[0]||''
-      s=s.replace(/^["'“”«]+|["'“”»]+$/g,'').replace(/^(ՎԿԱ|VKA|keeper|the keeper)\s*[:·—-]\s*/i,'')
+      s=s.replace(/^["'“”«]+|["'“”»]+$/g,'').replace(/^(ՊԱՀԱՊԱՆ|ՎԿԱ|VKA|keeper|the keeper)\s*[:·—-]\s*/i,'')
       if(d.done_reason==='length'){
         const cut=Math.max(s.lastIndexOf('։'),s.lastIndexOf('.'),s.lastIndexOf('!'),s.lastIndexOf('…'),s.lastIndexOf(','))
         s=cut>12?s.slice(0,cut+1).replace(/,$/,'…'):s.slice(0,s.lastIndexOf(' '))+'…'
@@ -889,7 +916,15 @@ function inscribe(){
   if(FIELD_URL){
     fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name:name||'—',word})})
-      .then(r=>{if(!r.ok)throw new Error(String(r.status))})
+      .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json().catch(()=>null)})
+      .then(d=>{
+        // newer servers grant a proof — the one key that can unmake this crossing
+        if(d&&d.id&&d.proof){
+          crossing={id:String(d.id),proof:String(d.proof)}
+          try{localStorage.setItem('br_id_ge_last_crossing',JSON.stringify(crossing))}catch(e){}
+          endLinks()
+        }
+      })
       .catch(()=>{end.querySelector('.note').textContent=
         'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'})
   }
@@ -1011,9 +1046,81 @@ function buildSharedBody(){
     n+' crossing'+(n===1?'':'s')+' · one body'
   // the hand-over: the field opens on YOUR core, then plays the gathering
   const fl=$('#fieldLink')
-  if(word){fl.href='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word);fl.hidden=false}
+  if(word&&!unmade){fl.href='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word);fl.hidden=false}
+  endOpen=true
+  endLinks()
   show(end)
 }
+
+// ── the choice at the end — keep a copy, or unmake the crossing ───────────
+let crossing=null      // {id,proof} if the field's server grants one
+let unmade=false       // once unmade, nothing may re-open the door to the field
+let endOpen=false
+function endLinks(){
+  if(!endOpen)return
+  $('#keepLink').hidden=false
+  if(crossing)$('#unmakeLink').hidden=false   // no proof (old server) — no offer
+}
+$('#keepLink').addEventListener('click',e=>{
+  e.preventDefault()
+  // composed and downloaded entirely on this device — nothing leaves it
+  const kc=document.createElement('canvas');kc.width=1080;kc.height=1350
+  const k=kc.getContext('2d')
+  k.fillStyle='#f3f1ec';k.fillRect(0,0,1080,1350)
+  k.strokeStyle='#dcd8cf';k.lineWidth=2;k.strokeRect(40,40,1000,1270)
+  k.textAlign='center';k.textBaseline='middle'
+  let fs=170
+  k.font='300 '+fs+'px "Noto Serif Armenian",Georgia,serif'
+  while(fs>52&&k.measureText(word||'—').width>880){fs-=8;k.font='300 '+fs+'px "Noto Serif Armenian",Georgia,serif'}
+  k.fillStyle='#131313'
+  k.fillText(word||'—',540,580)
+  k.fillStyle='#8f8b83'
+  k.font='44px "Space Mono",ui-monospace,Menlo,monospace'
+  k.fillText(name||'—',540,760)
+  k.font='30px "Space Mono",ui-monospace,Menlo,monospace'
+  k.fillText('br_id_ge · vi.ritual · notations #2 · di-studio.xyz/br_id_ge',540,1240)
+  kc.toBlob(b=>{
+    if(!b)return
+    const a=document.createElement('a')
+    a.href=URL.createObjectURL(b);a.download='br_id_ge-crossing.png'
+    document.body.appendChild(a);a.click();a.remove()
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000)
+  },'image/png')
+})
+const unmakeLink=$('#unmakeLink')
+unmakeLink.addEventListener('click',e=>{
+  e.preventDefault()
+  const t=e.target
+  if(t&&t.dataset&&t.dataset.un==='no'){unmakeLink.textContent='unmake my crossing';return}
+  if(t&&t.dataset&&t.dataset.un==='yes'){
+    if(!crossing)return
+    fetch(FIELD_URL+'/inscriptions/'+encodeURIComponent(crossing.id),{method:'DELETE',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({proof:crossing.proof})})
+      .then(r=>{
+        if(r.ok){
+          end.querySelector('.note').textContent='your crossing is unmade — the field forgets you.'
+          unmakeLink.hidden=true;$('#fieldLink').hidden=true
+          crossing=null;unmade=true
+          try{localStorage.removeItem('br_id_ge_last_crossing')}catch(e2){}
+        }else{
+          end.querySelector('.note').textContent='the field would not let go — your crossing stays.'
+          unmakeLink.textContent='unmake my crossing'
+        }
+      })
+      .catch(()=>{
+        end.querySelector('.note').textContent='the field would not let go — your crossing stays.'
+        unmakeLink.textContent='unmake my crossing'
+      })
+    return
+  }
+  if(!unmakeLink.querySelector('.yn')){
+    // ask once, inline — the link itself becomes the question
+    unmakeLink.textContent='really unmake it? this cannot be undone — '
+    const y=document.createElement('span');y.className='yn';y.dataset.un='yes';y.textContent='yes'
+    const n2=document.createElement('span');n2.className='yn';n2.dataset.un='no';n2.textContent='no'
+    unmakeLink.append(y,document.createTextNode(' / '),n2)
+  }
+})
 
 // ── the core, in glass and chrome ─────────────────────────────────────────
 // The one Three.js moment in the piece. The whole page is flat print; what a
@@ -1095,7 +1202,7 @@ let presX=-1,presY=-1
 function presence(){
   let sx=0,sy=0,n=0
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;if(bodyMask[k]){sx+=i;sy+=j;n++}}
-  if(n>8&&camOn&&segHas){
+  if(n>8&&camOn&&segHas&&morph>0.5){
     const tx=(1-((sx/n)+0.5)/GW)*W, ty=(((sy/n)+0.5)/GH)*H
     presX=presX<0?tx:presX+(tx-presX)*0.18
     presY=presY<0?ty:presY+(ty-presY)*0.18
@@ -1107,9 +1214,28 @@ function frame(now){
   const t=(now-t0)/1000
   readHand(now)
   readPose(now)
-  const lit=readSeg(now)
-  if(!lit||!camOn){
-    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
+  readSeg(now)
+  const dt=Math.min(0.1,t-lastT); lastT=t
+  // one mask, two sources: the circle is the ground state, a found body pulls
+  // the boundary toward itself (~1.5s in), a lost one lets it return (~2.5s)
+  const bodyNow=camOn&&segHas&&segCover>12
+  if(REDUCED)morph=bodyNow?1:0
+  else morph=clamp(morph+(bodyNow?dt/1.5:-dt/2.5),0,1)
+  const R0=Math.min(W,H)*0.21
+  let ctx2=W/2,cty=H/2
+  if(!camOn&&P.has){ctx2=clamp(P.x,R0+14,W-R0-14);cty=clamp(P.y,R0+14,H-R0-14)}
+  if(circle.x<0){circle.x=W/2;circle.y=H/2}
+  circle.x+=(ctx2-circle.x)*(REDUCED?1:0.06)
+  circle.y+=(cty-circle.y)*(REDUCED?1:0.06)
+  if(morph>=0.999)bodyMask.set(segMask)
+  else if(morph<=0.001){for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=circleField(i,j,t)>0?1:0}
+  else{
+    // blending the circle's signed field with the mask as a step field makes
+    // the boundary itself travel — a morph, not a crossfade
+    for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
+      const f=circleField(i,j,t)*(1-morph)+(segMask[j*GW+i]?1:-1)*morph
+      bodyMask[j*GW+i]=f>0?1:0
+    }
   }
   // how much the body moved since last frame — the mask diff is already free.
   // motion spikes when you move and decays when you hold still; the field's
@@ -1117,12 +1243,13 @@ function frame(now){
   let chg=0
   for(let k=0;k<GW*GH;k++){if(bodyMask[k]!==prevMask[k])chg++;prevMask[k]=bodyMask[k]}
   motion=Math.max(motion*0.94,clamp(chg/120,0,1))
-  const dt=Math.min(0.1,t-lastT); lastT=t
   presence()
   // With a front camera your own silhouette reads the letters. Without one there is
   // nothing to move, so the pointer stands in — which is what the sandboxed viewer
   // and every desktop without permission will use.
-  const embodied=camOn&&segHas
+  // only a mask that is mostly body reads by edge-heat; a circle (or the way
+  // back to one) hands the reading to the pointer instead
+  const embodied=camOn&&segHas&&morph>0.5
   if(started&&!inscribed){
     rebuildOutline(t,dt,embodied)
     // The target has to be reachable. A fixed 180 was not: the dreamed figure only
