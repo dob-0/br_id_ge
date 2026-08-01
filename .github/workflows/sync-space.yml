@@ -51,3 +51,4 @@ jobs:
         run: |
           node scripts/sync-space.mjs --repo .                                    # v.oooooo 2 (rite)   → newww
           node scripts/sync-space.mjs --repo . --manifest di-space.landing.json   # the landing (face)  → landing (published)
+          node scripts/sync-space.mjs --repo . --manifest di-space.field.json     # the field           → br-id-ge-field
