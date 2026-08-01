@@ -34,8 +34,19 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 - **Rite**: letters respond to touch (ink bloom + ripple); body motion surfaces edge
   letters (digitizing feel); inscription gathers letters into the core before it grows;
   act changes breathe across the letter field. All reduced-motion-safe.
-- Next agreed: camera→analysis reveal in the rite; Unfinished Swan reveal-by-touch in
-  the field; then letter-body gather, AR field, jetson keeper-voice.
+- **Second pass, same day:** Rite — THE REVEAL: camera opens as a paper-toned photo,
+  the analysis becomes visible (skeleton hairlines, silhouette ink wash, one blue scan),
+  the photo drains, the measurement holds, then the reading takes over; persistent faint
+  skeleton through the whole rite (camera path only; dreamed path untouched).
+  Field — Unfinished Swan: opens blank, taps throw ink stains that reveal the crossings
+  they touch (gather/arrival print all); keeper is now an AI lattice (wireframe
+  icosahedron + eye + orbits, not a knot); tap it → keeper window: see through di_bot's
+  eye (`keeper:eye` jpeg frames) and speak with it (`keeper:ask`/`keeper:say` over the
+  mesh; jetson: `keeper-presence.mjs --eye /dev/video0 --ollama http://127.0.0.1:11434`);
+  invisible wire — hairline thread sewing every revealed core through the keeper,
+  blue-tinted when awake.
+- Still open from the brainstorm: 3D letter-body gather, AR/VR field entry,
+  keeper TTS/physical-witness on the show rig.
 
 ## What works
 

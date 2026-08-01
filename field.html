@@ -46,6 +46,25 @@ canvas.grabbing{cursor:grabbing}
   background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.55rem;
   letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 #mode:hover{color:var(--live)}
+#kPanel{position:fixed;z-index:4;top:50%;right:1.6rem;transform:translateY(-50%);
+  width:min(19rem,calc(100vw - 3rem));background:var(--paper);border:1px solid var(--hairline);
+  padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.7rem;font-family:var(--mono)}
+#kPanel .kHead{display:flex;justify-content:space-between;align-items:center;
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+#kClose{background:none;border:none;cursor:pointer;color:var(--graphite);
+  font-size:1rem;line-height:1;padding:0}
+#kClose:hover{color:var(--ink)}
+#kState{font-size:.55rem;letter-spacing:.16em;color:var(--graphite);text-transform:lowercase}
+#kEye{width:100%;border:1px solid var(--hairline);filter:grayscale(1) contrast(1.05)}
+#kLog{display:flex;flex-direction:column;gap:.45rem;max-height:9rem;overflow-y:auto;
+  font-size:.66rem;line-height:1.55}
+#kLog .me{color:var(--graphite)}
+#kLog .it{color:var(--ink)}
+#kLog .it b{color:var(--live);font-weight:400}
+#kIn{width:100%;background:none;border:none;border-bottom:1px solid var(--hairline);
+  font-family:var(--mono);font-size:.7rem;color:var(--ink);padding:.35rem 0;outline:none}
+#kIn:focus{border-color:var(--live)}
+#kIn::placeholder{color:var(--graphite)}
 @media (prefers-reduced-motion: no-preference){
   .hud,#frame{opacity:0;animation:fade 1.2s .3s ease forwards}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
@@ -61,7 +80,15 @@ canvas.grabbing{cursor:grabbing}
 <div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
 <div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
 <button class="hud" id="mode">all together →</button>
-<div class="hud" id="hint">drag orbit · scroll zoom</div>
+<!-- the keeper's window — tap the lattice: see through di_bot's eye, speak to it -->
+<div id="kPanel" hidden>
+  <div class="kHead"><span>պահապան · the keeper</span><button id="kClose">×</button></div>
+  <div id="kState">asleep — the jetson is not on the mesh</div>
+  <img id="kEye" alt="" hidden>
+  <div id="kLog"></div>
+  <form id="kForm"><input id="kIn" placeholder="speak to it" autocomplete="off" maxlength="120"></form>
+</div>
+<div class="hud" id="hint">tap — ink finds the crossings<br>drag orbit · scroll zoom</div>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
 "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}
@@ -142,8 +169,45 @@ function placeCore(tag,i,id){
   const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(word,name),transparent:true,depthWrite:false}));
   label.position.set(0,1.55,0);label.scale.set(4.2,1.575,1);grp.add(label);
   grp.userData={phase:i*1.31,home:pos.clone(),gather:new THREE.Vector3(),m:0,word,
-    speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,born:performance.now()};
+    rev:0,revT:0,speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,born:performance.now()};
+  grp.visible=false;
   world.add(grp);return grp;}
+
+// UNFINISHED SWAN — the field arrives blank. The page is paper; the cores are
+// there but unprinted. A tap throws ink: a stain blooms on the ground and the
+// crossings it touches become visible. You reveal the field the way the rite
+// reveals the body — by marking it. The gather and a fresh arrival print
+// everything: the ceremony outranks the game.
+const stainTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=256;
+  const g=cv.getContext('2d');const r=rng(7);g.fillStyle='#131313';
+  for(let i=0;i<26;i++){const a=r()*Math.PI*2,d=Math.pow(r(),2)*92,s=6+r()*30;
+    g.globalAlpha=.10+r()*.16;g.beginPath();
+    g.arc(128+Math.cos(a)*d,128+Math.sin(a)*d,s,0,Math.PI*2);g.fill();}
+  g.globalAlpha=.32;g.beginPath();g.arc(128,128,52,0,Math.PI*2);g.fill();
+  const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;})();
+const stains=[];
+function throwInk(local){
+  const st=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+    new THREE.MeshBasicMaterial({map:stainTex,transparent:true,opacity:.34,depthWrite:false}));
+  st.rotation.x=-Math.PI/2;st.rotation.z=Math.random()*Math.PI*2;
+  st.position.set(local.x,0.02+stains.length*0.0004,local.z);
+  st.userData={born:performance.now(),size:5.5+Math.random()*2.5};
+  world.add(st);stains.push(st);
+  if(stains.length>40){const old=stains.shift();world.remove(old);}
+  const R=6.5;
+  cores.forEach(g=>{const h=g.userData.home;
+    if((h.x-local.x)**2+(h.z-local.z)**2<R*R&&!g.userData.revT){
+      g.userData.revT=1;g.userData.born=performance.now();}});}
+function revealAll(){cores.forEach(g=>{if(!g.userData.revT){g.userData.revT=1;g.userData.born=performance.now();}});}
+const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
+const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),hit=new THREE.Vector3();
+function tapAt(x,y){
+  ndc.set(x/innerWidth*2-1,-(y/innerHeight)*2+1);
+  raycaster.setFromCamera(ndc,camera);
+  // the keeper answers to a touch before the ground does
+  if(raycaster.intersectObject(keeper.userData.knot,true).length){openKeeper();return;}
+  if(!raycaster.ray.intersectPlane(groundPlane,hit))return;
+  world.updateMatrixWorld();throwInk(world.worldToLocal(hit.clone()));}
 
 // TOGETHER — the same cores, gathered into one shared body. Each core keeps
 // its own form; only the distance between them goes. The keeper sits at the
@@ -158,44 +222,113 @@ let together=false;
 const modeBtn=document.getElementById('mode');
 const countLine=document.getElementById('countLine');
 function setMode(t){together=t;
+  if(together)revealAll();
   modeBtn.textContent=together?'← each alone':'all together →';
   countLine.textContent=together?'one shared body':'each one = a crossing';}
 modeBtn.addEventListener('click',()=>setMode(!together));
 
-// THE KEEPER — the ai among us. Asleep it is graphite; when the jetson
-// (di_bot) is on the mesh it wakes to the one live blue and joins the body.
-const keeperMat=new THREE.MeshPhysicalMaterial({color:0x8f8b83,metalness:.85,roughness:.32,envMapIntensity:.9});
+// THE KEEPER — the ai among us, and it does not pretend to be a crossing:
+// where every core is a closed knot of chrome, the keeper is an open lattice —
+// a thing that is all structure and no body. Asleep it is graphite; when the
+// jetson (di_bot) is on the mesh it wakes to the one live blue.
+const keeperMat=new THREE.MeshBasicMaterial({color:0x8f8b83,wireframe:true,transparent:true,opacity:.85});
+const keeperEyeMat=new THREE.MeshPhysicalMaterial({color:0x8f8b83,metalness:.9,roughness:.25,envMapIntensity:1});
 const keeper=(()=>{
   const grp=new THREE.Group();grp.position.set(0,1.2,0);
-  const knot=new THREE.Mesh(new THREE.TorusKnotGeometry(0.5,0.19,160,24,2,3),keeperMat);
+  const knot=new THREE.Group();
+  const lattice=new THREE.Mesh(new THREE.IcosahedronGeometry(0.85,1),keeperMat);
+  knot.add(lattice);
+  // one small solid at the center — the eye it sees us with
+  const eye=new THREE.Mesh(new THREE.SphereGeometry(0.2,24,24),keeperEyeMat);
+  knot.add(eye);
+  // three thin orbits, off-axis: the machine thinking
+  const orbits=[];
+  for(let i=0;i<3;i++){const o=new THREE.Mesh(new THREE.TorusGeometry(1.05+i*.16,0.008,8,90),
+    new THREE.MeshBasicMaterial({color:0x8f8b83,transparent:true,opacity:.35}));
+    o.rotation.set(Math.PI/2*Math.random()+i,i*1.1,i*.7);knot.add(o);orbits.push(o);}
   knot.scale.setScalar(0.55);grp.add(knot);
   const sh=new THREE.Sprite(new THREE.SpriteMaterial({map:shadowTex,transparent:true,depthWrite:false}));
   sh.position.set(0,-1.14,0);sh.scale.set(2.2,2.2,1);grp.add(sh);
   const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('պահապան','keeper · asleep'),transparent:true,depthWrite:false}));
   label.position.set(0,1.35,0);label.scale.set(4.2,1.575,1);grp.add(label);
   grp.userData={home:grp.position.clone(),gather:new THREE.Vector3(0,3.1,0),m:0,speed:0.03,
-    scale:0.55,phase:0,knot,label,shadow:sh,born:performance.now()};
+    scale:0.55,phase:0,knot,label,shadow:sh,orbits,born:performance.now()};
   world.add(grp);return grp;})();
+
+// THE WIRE — the almost-invisible thread through everything. Every revealed
+// core is sewn to the keeper and to its neighbour: one continuous connection,
+// at the edge of what the paper can show. It breathes a little; when the
+// keeper is awake the thread carries the live blue very faintly.
+const wireMat=new THREE.LineBasicMaterial({color:0x8f8b83,transparent:true,opacity:.10});
+const wireGeo=new THREE.BufferGeometry();
+const wire=new THREE.LineSegments(wireGeo,wireMat);wire.frustumCulled=false;world.add(wire);
+function sewWire(t){
+  const vis=[...cores.values()].filter(g=>g.visible);
+  const pts=[];
+  vis.forEach((g,i)=>{
+    pts.push(g.position.x,g.position.y,g.position.z,
+      keeper.position.x,keeper.position.y,keeper.position.z);
+    if(i>0){const p=vis[i-1];
+      pts.push(p.position.x,p.position.y,p.position.z,
+        g.position.x,g.position.y,g.position.z);}});
+  wireGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pts),3));
+  wireMat.opacity=(0.06+Math.sin(t*.7)*.03)+(keeperOnline()?.05:0);
+  wireMat.color.set(keeperOnline()?0x1d4bff:0x8f8b83);}
 let keeperSeen=-1e9,keeperName='';
 function keeperOnline(){return performance.now()-keeperSeen<15000;}
 let keeperWas=null;
 function keeperFace(){
   const on=keeperOnline();if(on===keeperWas)return;keeperWas=on;
   keeperMat.color.set(on?0x1d4bff:0x8f8b83);
+  keeperEyeMat.color.set(on?0x1d4bff:0x8f8b83);
+  keeper.userData.orbits.forEach(o=>o.material.color.set(on?0x1d4bff:0x8f8b83));
   keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'di_bot')+' awake'):'keeper · asleep');
-  keeper.userData.label.material.needsUpdate=true;}
+  keeper.userData.label.material.needsUpdate=true;
+  document.getElementById('kState').textContent=on?((keeperName||'di_bot')+' · awake — it can hear you'):'asleep — the jetson is not on the mesh';}
 
-// the mesh — same room the rite crosses in; the field only listens
+// the mesh — same room the rite crosses in. the field listens for the keeper's
+// heartbeat, its eye, and its words — and carries the visitor's words back.
 const MESH=(new URLSearchParams(location.search).get('mesh'))||'wss://di-studio.xyz/serverXR/mesh';
+let meshWs=null;
 (function meshConnect(){
   let u;try{u=new URL(MESH)}catch(e){return}
   u.searchParams.set('room','bridge');u.searchParams.set('node','f'+Math.random().toString(36).slice(2,8));
   let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
+  meshWs=ws;
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}
-    if(m.type==='mesh:event'&&m.channel==='keeper'){keeperSeen=performance.now();
-      keeperName=String((m.payload&&m.payload.name)||'').slice(0,14);}};
-  ws.onclose=()=>setTimeout(meshConnect,5000);
+    if(m.type!=='mesh:event')return;
+    if(m.channel==='keeper'){keeperSeen=performance.now();
+      keeperName=String((m.payload&&m.payload.name)||'').slice(0,14);}
+    else if(m.channel==='keeper:eye'&&m.payload&&typeof m.payload.jpg==='string'
+      &&m.payload.jpg.startsWith('data:image/jpeg;base64,')){
+      const img=document.getElementById('kEye');img.src=m.payload.jpg;img.hidden=false;}
+    else if(m.channel==='keeper:say'&&m.payload&&m.payload.text){
+      kSay(String(m.payload.text).slice(0,300));}};
+  ws.onclose=()=>{meshWs=null;setTimeout(meshConnect,5000);};
   ws.onerror=()=>{};})();
+
+// the keeper's window
+const kPanel=document.getElementById('kPanel'),kLog=document.getElementById('kLog');
+document.getElementById('kClose').addEventListener('click',()=>{kPanel.hidden=true;});
+function kLine(cls,html){const d=document.createElement('div');d.className=cls;
+  d.textContent=html;kLog.appendChild(d);kLog.scrollTop=kLog.scrollHeight;
+  while(kLog.children.length>24)kLog.removeChild(kLog.firstChild);}
+function kSay(text){const d=document.createElement('div');d.className='it';
+  const b=document.createElement('b');b.textContent='պահապան ';
+  d.appendChild(b);d.appendChild(document.createTextNode(text));
+  kLog.appendChild(d);kLog.scrollTop=kLog.scrollHeight;}
+document.getElementById('kForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const inp=document.getElementById('kIn'),text=inp.value.trim();
+  if(!text)return;inp.value='';
+  kLine('me',text);
+  if(meshWs&&meshWs.readyState===1)
+    meshWs.send(JSON.stringify({type:'publish',channel:'keeper:ask',pingTs:Date.now(),
+      payload:{text:text.slice(0,120)}}));
+  else kSay('…the mesh is not here — nothing carried your words.');});
+function openKeeper(){kPanel.hidden=false;
+  if(!keeperOnline())document.getElementById('kEye').hidden=true;}
+
 // show-rig probe: lets the rig (and tests) ask whether the ai is with us
 window.__keeper=()=>({online:keeperOnline(),name:keeperName});
 
@@ -227,15 +360,20 @@ function receive(){
   let target=null;
   cores.forEach(g=>{if(g.userData.word===JUST)target=g;});
   target=target||[...cores.values()].pop();
+  revealAll();
   target.userData.born=performance.now();
   focus={grp:target,until:performance.now()+5200};
   setTimeout(()=>setMode(true),5600);
   setTimeout(()=>{setMode(false);},14000);}
 
-let dragging=false,px=0,vy=0;
-canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;canvas.classList.add('grabbing');});
-addEventListener('pointerup',()=>{dragging=false;canvas.classList.remove('grabbing');});
-addEventListener('pointermove',e=>{if(!dragging)return;vy=(e.clientX-px)*.004;px=e.clientX;});
+let dragging=false,px=0,vy=0,downX=0,downY=0,moved=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;
+  downX=e.clientX;downY=e.clientY;moved=0;canvas.classList.add('grabbing');});
+addEventListener('pointerup',e=>{
+  if(dragging&&moved<8)tapAt(downX,downY);
+  dragging=false;canvas.classList.remove('grabbing');});
+addEventListener('pointermove',e=>{if(!dragging)return;
+  moved+=Math.abs(e.clientX-px);vy=(e.clientX-px)*.004;px=e.clientX;});
 let zoom=1;
 canvas.addEventListener('wheel',e=>{e.preventDefault();
   zoom=Math.min(2.7,Math.max(0.4,zoom*(1+e.deltaY*.0009)));
@@ -253,6 +391,9 @@ renderer.setAnimationLoop(()=>{
   keeperFace();
   const step=g=>{
     const u=g.userData;
+    if(u.revT!==undefined){u.rev+=(u.revT-u.rev)*.08;
+      g.visible=u.rev>0.01;if(!g.visible)return;}
+    const rev=u.revT===undefined?1:u.rev;
     u.m+=((together?1:0)-u.m)*u.speed;
     const m=u.m*u.m*(3-2*u.m);
     g.position.lerpVectors(u.home,u.gather,m);
@@ -260,12 +401,21 @@ renderer.setAnimationLoop(()=>{
     u.knot.rotation.y+=0.0035;u.knot.rotation.x+=0.0011;
     // a new core arrives the way the rite makes one: it grows into place
     const age=(performance.now()-u.born)/1600;
-    if(age<1)u.knot.scale.setScalar(u.scale*(1-Math.pow(1-Math.max(0,age),3)));
+    if(age<1)u.knot.scale.setScalar(u.scale*rev*(1-Math.pow(1-Math.max(0,age),3)));
     else if(g===keeper&&keeperOnline())u.knot.scale.setScalar(u.scale*(1+Math.sin(t*2.2)*.05));
-    u.label.material.opacity=g===keeper?1:1-m;
-    u.shadow.material.opacity=1-m*.85;
+    else u.knot.scale.setScalar(u.scale*rev);
+    u.label.material.opacity=(g===keeper?1:1-m)*rev;
+    u.shadow.material.opacity=(1-m*.85)*rev;
     u.shadow.position.y=-g.position.y+0.06;};
   cores.forEach(step);step(keeper);
+  keeper.userData.orbits.forEach((o,i)=>{o.rotation.z+=0.002+i*0.0013;o.rotation.x+=0.0009;});
+  sewWire(t);
+  // ink stains bloom in, then dry to a pale permanent mark
+  for(const st of stains){
+    const a=Math.min(1,(performance.now()-st.userData.born)/900);
+    const e=1-Math.pow(1-a,3);
+    st.scale.setScalar(st.userData.size*e);
+    st.material.opacity=.34-.22*e;}
   // the camera has one seat; a fresh crossing borrows it to meet its own core
   _p.copy(CAM_HOME).multiplyScalar(zoom);_l.copy(LOOK_HOME);
   if(focus&&focus.grp){
