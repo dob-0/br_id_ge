@@ -4,190 +4,82 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>br_id_ge XR_ Notations:vi.ritual — cross the bridge</title>
-<meta name="description" content="br_id_ge (կամուրջ) is a bridge between the real world and a shared digital one. Cross a bridge of glowing Armenian letters — who are you, and what do you carry? Your answer stays forever.">
+<meta name="description" content="br_id_ge (կամուրջ) is a bridge between the real world and a shared digital one. Cross, answer once, and your answer stays there forever.">
 <meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual">
-<meta property="og:description" content="A bridge between the real world and a shared digital one. Cross, answer one question, and your answer stays there forever — with everyone who crossed before you.">
+<meta property="og:description" content="A bridge between the real world and a shared digital one. Cross, answer once, and your answer stays there forever — with everyone who crossed before you.">
 <meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-bridge.jpg">
 <meta property="og:url" content="https://di-studio.xyz/br_id_ge">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-  :root{
-    /* the br_id_ge language — one palette across all surfaces:
-       cyan = di.iiii/live · crimson = the real/notation · amber = the lamp/attention · stone = memory/letterforms */
-    --bg:#05080d; --bg2:#0a1018; --line:#1b2634; --txt:#c3d0dc; --acc:#00e5ff;
-    --amber:#ffb347; --dim:#5f6b7a; --real:#ff2a5f; --stone:#cdb98f;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{background:var(--bg)}
-  body{font-family:'Outfit',sans-serif;color:var(--txt);font-weight:300;min-height:100svh;
-       display:flex;flex-direction:column;overflow-x:hidden}
-  .mono{font-family:'Space Mono',monospace}
-  .label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:lowercase;color:var(--dim)}
-  .label b{color:var(--amber);font-weight:400}
-  .label a{color:inherit;text-decoration:none}
-
-  /* floating letterforms — the bridge, dimly present behind everything */
-  #letters{position:fixed;inset:0;pointer-events:none;z-index:0;transition:transform .6s ease-out}
-  #letters span{position:absolute;font-family:'Space Mono',monospace;color:var(--stone);
-    animation:drift var(--t) ease-in-out infinite alternate;will-change:opacity,transform}
-  @keyframes drift{
-    from{opacity:.04;transform:translateY(0)}
-    to{opacity:.16;transform:translateY(-14px)}
-  }
-  @media (prefers-reduced-motion: reduce){ #letters span{animation:none;opacity:.08} }
-
-  /* the lamp — a soft amber glow that follows the cursor, gantegh-lamp motif */
-  #lamp{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .4s ease;
-    background:radial-gradient(320px circle at var(--lx,50%) var(--ly,50%),rgba(255,179,71,.08),transparent 70%)}
-  body.lit #lamp{opacity:1}
-  @media (hover:none){ #lamp{display:none} }
-
-  /* hover-reveal transliteration on the Armenian word */
-  .arm{position:relative;cursor:default}
-  .arm .gloss{font-family:'Outfit',sans-serif;color:var(--dim);letter-spacing:0.02em;font-size:12px;
-    max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .5s ease,opacity .3s ease .1s;
-    display:inline-block;vertical-align:middle}
-  .arm:hover .gloss,.arm:focus-within .gloss{max-width:220px;opacity:1}
-
-  main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;
-       max-width:640px;width:100%;margin:0 auto;padding:28px 24px 40px}
-  .chrome{display:flex;justify-content:space-between;gap:12px;position:relative;z-index:1;
-          max-width:640px;width:100%;margin:0 auto;padding:22px 24px 0}
-
-  h1{font-weight:200;font-size:clamp(44px,11vw,72px);letter-spacing:0.12em;color:#eaf3fb;line-height:1.05}
-  h1 span{color:var(--amber)}
-  .arm{font-family:'Space Mono',monospace;color:var(--stone);letter-spacing:0.5em;font-size:clamp(13px,3.4vw,18px);margin-top:10px}
-
-  .lede{margin-top:34px;font-size:clamp(17px,4.4vw,20px);line-height:1.7;color:var(--txt)}
-  .lede b{color:#e8f2fa;font-weight:400}
-  .lede .a{color:var(--amber)}
-  .lede .q{color:var(--acc)}
-  a.di{color:inherit;text-decoration:underline;text-decoration-color:var(--acc);text-underline-offset:3px}
-
-  .cross{display:inline-block;text-align:center;margin-top:42px;padding:16px 34px;border:1px solid var(--acc);
-         font-family:'Space Mono',monospace;font-size:14px;letter-spacing:0.28em;text-transform:lowercase;
-         color:var(--acc);text-decoration:none;background:transparent;transition:background .25s,color .25s}
-  .cross:hover,.cross:focus-visible{background:var(--acc);color:var(--bg)}
-
-  .facts{margin-top:52px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  @media (min-width:560px){.facts{grid-template-columns:repeat(4,1fr)}}
-  .ladder{margin-top:34px;grid-template-columns:1fr}
-  @media (min-width:560px){.ladder{grid-template-columns:repeat(3,1fr)}}
-  .ladder .fact{border-top-color:var(--stone)}
-  .ladder .k{color:var(--stone)}
-  .fact{border-top:2px solid var(--line);padding-top:8px}
-  .fact:first-child{border-top-color:var(--amber)}
-  .fact .k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--dim)}
-  .fact:first-child .k{color:var(--amber)}
-  .fact p{font-size:13px;line-height:1.5;margin-top:5px}
-
-  footer{position:relative;z-index:1;max-width:640px;width:100%;margin:0 auto;padding:0 24px 64px;
-         display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-
-/* motion — entrance + micro-interactions (skipped under reduced motion) */
-@media (prefers-reduced-motion: no-preference){
-  h1,.arm,.lede,.cross,.facts,.foot{opacity:0;transform:translateY(14px);
-    animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
-  .arm{animation-delay:.12s}.lede{animation-delay:.24s}.cross{animation-delay:.4s}
-  .facts{animation-delay:.55s}.foot{animation-delay:.7s}
-  @keyframes rise{to{opacity:1;transform:none}}
+/* PAPER AND INK — the door speaks the rite's face: warm paper ground, one ink,
+   one graphite, one live blue. Print, not glow. */
+:root{
+  --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
+  --live:#1d4bff;
+  --arm:'Noto Serif Armenian',Georgia,serif;
+  --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
-.cross{transition:box-shadow .25s,letter-spacing .25s,border-color .25s}
-.cross:hover{box-shadow:0 0 34px rgba(0,229,255,.22);letter-spacing:.34em}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--paper)}
+body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;
+  display:flex;align-items:center;justify-content:center}
+#frame{position:fixed;inset:10px;border:1px solid var(--hairline);pointer-events:none}
+@media (max-width:560px){#frame{inset:8px}}
+.hud{position:fixed;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--graphite);line-height:1.9;padding:1.35rem}
+.hud a{color:inherit;text-decoration:none}
+.hud a:hover{color:var(--ink)}
+#tl{top:0;left:0;color:var(--ink)}
+#tr{top:0;right:0;text-align:right}
+#bl{bottom:0;left:0}
+#br{bottom:0;right:0;text-align:right}
+@media (max-width:560px){.hud{padding:1.1rem}#br{display:none}}
 
-/* three doors — quiet secondary paths; "cross the bridge" stays the one primary action */
-.paths{margin-top:18px;display:flex;gap:22px;flex-wrap:wrap}
-.paths a{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:lowercase;
-  color:var(--dim);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
-.paths a:hover,.paths a:focus-visible{color:var(--txt);border-bottom-color:var(--dim)}
-.paths a b{color:inherit;font-weight:400}
-.fact{transition:border-color .3s}
-.fact:hover{border-top-color:var(--acc)}
-a{transition:color .2s,border-color .2s}
+main{text-align:center;max-width:34rem;padding:0 1.5rem}
+h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
+  letter-spacing:.06em;line-height:1.1}
+.lat{font-size:.6rem;letter-spacing:.44em;text-transform:lowercase;
+  color:var(--graphite);margin-top:.7rem}
+.lede{font-family:var(--arm);font-weight:300;font-size:clamp(1rem,3.2vw,1.25rem);
+  line-height:1.7;color:var(--graphite);margin-top:2.4rem}
+.lede b{font-weight:400;color:var(--ink)}
+.cross{display:inline-block;margin-top:2.6rem;color:var(--live);text-decoration:none;
+  font-size:.75rem;letter-spacing:.28em;text-transform:lowercase;
+  border-bottom:1px solid var(--hairline);padding-bottom:.35rem;transition:border-color .25s}
+.cross:hover,.cross:focus-visible{border-color:var(--live)}
+.field{display:block;margin-top:1.4rem;color:var(--graphite);text-decoration:none;
+  font-size:.6rem;letter-spacing:.2em;text-transform:lowercase}
+.field:hover,.field:focus-visible{color:var(--ink)}
+
+@media (prefers-reduced-motion: no-preference){
+  main>*,#frame,.hud{opacity:0;animation:fade 1.2s ease forwards}
+  h1{animation-delay:.1s}.lat{animation-delay:.2s}.lede{animation-delay:.35s}
+  .cross{animation-delay:.55s}.field{animation-delay:.7s}
+  @keyframes fade{to{opacity:1}}
+}
 </style>
 </head>
 <body>
 
-<div id="letters" aria-hidden="true"></div>
-<div id="lamp" aria-hidden="true"></div>
+<div id="frame" aria-hidden="true"></div>
 
-<div class="chrome">
-  <span class="label">gevorg aram grigoryan · <a href="https://di-studio.xyz">di.ii</a></span>
-  <span class="label">notations #2 · rituals · <b>hosq</b></span>
-</div>
+<div class="hud" id="tl">br_id_ge · vi.ritual</div>
+<div class="hud" id="tr">notations #2 · rituals · hosq</div>
+<div class="hud" id="bl"><a href="https://di-studio.xyz">di.iiii</a></div>
+<div class="hud" id="br">jul 20 – aug 2 2026 · state philharmonia</div>
 
 <main>
-  <h1>br<span>_</span>id<span>_</span>ge</h1>
-  <div class="arm" tabindex="0">կ_ա_մ_ու_ր_ջ <span class="gloss">— "kamurj," Armenian for bridge</span></div>
-
-  <p class="lede">
-    <b>br_id_ge</b> / կ_ա_մ_ու_ր_ջ is a bridge between the real world and a shared
-    digital one. You cross a bridge of glowing Armenian letters, you're asked one
-    question — <span class="q">who are you, and what do you carry?</span> — and your
-    answer stays there, forever, with everyone who crossed before you. It lives at
-    <a href="https://di-studio.xyz">di-studio.xyz</a> — and at <span class="a">Notations #2</span>,
-    the bridge opens to <b>vi.rituals</b>.
-  </p>
-
+  <h1>կամուրջ</h1>
+  <div class="lat">b r _ i d _ g e</div>
+  <p class="lede">a bridge between the real world and a shared one.
+    cross, answer once — <b>who are you, and what do you carry?</b> —
+    and your answer stays, forever, with everyone who crossed before you.</p>
   <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
-
-  <nav class="paths">
-    <a href="https://di-studio.xyz/br_id_ge/field" target="_top">the field <b>see who's crossed →</b></a>
-  </nav>
-
-  <!-- the portal — what a crossing gives you, at three magnitudes -->
-  <div class="facts ladder">
-    <div class="fact"><div class="k">a word</div><p>every visitor who crosses leaves a core — a permanent piece of the shared space</p></div>
-    <div class="fact"><div class="k">a page</div><p>every member of notations #2 is a page — their crossing at artist scale</p></div>
-    <div class="fact"><div class="k">a space</div><p>every artist can build a whole world on <a class="di" href="https://di-studio.xyz">di.iiii</a> — the bridge is the door in</p></div>
-  </div>
-
-  <div class="facts">
-    <div class="fact"><div class="k">notations #2</div><p>jul 20 – aug 2 2026 · state philharmonia of armenia · hosted by hosq</p></div>
-    <div class="fact"><div class="k">the rite</div><p>five acts · threshold → crossing → witness → notation → echo</p></div>
-    <div class="fact"><div class="k">takes</div><p>~6–10 minutes · sound on · works on your phone</p></div>
-    <div class="fact"><div class="k">medium</div><p>open web · nothing to install · part of <a class="di" href="https://di-studio.xyz">di.iiii</a></p></div>
-  </div>
+  <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
 </main>
-
-<footer>
-  <span class="label"><a href="https://di-studio.xyz/br_id_ge">di-studio.xyz/br_id_ge</a></span>
-  <span class="label"><a href="https://hosq.co">hosq.co</a> · @dob______</span>
-</footer>
-
-<script>
-  const AY = 'ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔՕՖ';
-  const layer = document.getElementById('letters');
-  for (let i = 0; i < 26; i++) {
-    const s = document.createElement('span');
-    s.textContent = AY[Math.floor(Math.random() * AY.length)];
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.top = Math.random() * 100 + 'vh';
-    s.style.fontSize = (12 + Math.random() * 30) + 'px';
-    s.style.setProperty('--t', (4 + Math.random() * 8) + 's');
-    s.style.animationDelay = (-Math.random() * 8) + 's';
-    layer.appendChild(s);
-  }
-
-  const prefersMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-  if (prefersMotion && window.matchMedia('(hover: hover)').matches) {
-    document.body.classList.add('lit');
-    let raf = null;
-    window.addEventListener('pointermove', (e) => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        const xPct = (e.clientX / window.innerWidth) * 100;
-        const yPct = (e.clientY / window.innerHeight) * 100;
-        document.documentElement.style.setProperty('--lx', xPct + '%');
-        document.documentElement.style.setProperty('--ly', yPct + '%');
-        layer.style.transform = `translate(${(xPct - 50) * -0.08}px, ${(yPct - 50) * -0.08}px)`;
-        raf = null;
-      });
-    });
-  }
-</script>
 
 </body>
 </html>

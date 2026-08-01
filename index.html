@@ -81,6 +81,10 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   color:var(--graphite);max-width:34ch;text-transform:lowercase}
 .end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
   text-transform:uppercase;color:var(--graphite)}
+.end .field-link{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;
+  text-transform:lowercase;color:var(--live);text-decoration:none;
+  border-bottom:1px solid var(--hairline);padding-bottom:.3rem;pointer-events:auto}
+.end .field-link:hover{border-color:var(--live)}
 
 /* LAYER 3 — the HUD: data pinned to the frame's corners. Everything it says is true. */
 .hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
@@ -135,6 +139,7 @@ body.inframe #hudTitle{top:2.9rem}
     <div class="said"></div>
     <div class="note"></div>
     <div class="body-line" id="bodyLine"></div>
+    <a class="field-link" id="fieldLink" href="https://di-studio.xyz/br_id_ge/field" target="_top" hidden>see the field · your core is there →</a>
   </div>
 </div>
 
@@ -375,7 +380,9 @@ function rebuildOutline(t,dt,embodied){
     if(STEP>1&&((i%STEP)||(j%STEP)))continue
     cur.add(k)
     let m=marks.get(k)
-    if(!m){m={i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0,heat:0};marks.set(k,m);everSeen++}
+    // a cell the edge just arrived at is the moving edge — it wakes stirred,
+    // so a body in motion is visibly being digitized along its own line
+    if(!m){m={i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0,heat:0,stir:started?1:0,bloom:0};marks.set(k,m);everSeen++}
     // THE BODY IS THE LAMP. When the camera can see you, your own edge does the
     // reading: hold your outline over a place and it gives up its letter. Standing
     // still exhausts what you are covering, so the rite is finished by moving —
@@ -454,7 +461,14 @@ function readSeg(now){
 const P={x:-999,y:-999,has:false}
 function point(x,y){P.x=x;P.y=y;P.has=true}
 addEventListener('pointermove',e=>{if(!hand.has)point(e.clientX,e.clientY)},{passive:true})
-addEventListener('pointerdown',e=>{if(!hand.has)point(e.clientX,e.clientY)},{passive:true})
+// a touch rings outward through the field — a slow wave of opacity, print not sparks
+const ripples=[]
+function ripple(x,y){
+  if(!started||inscribed||asking||REDUCED)return
+  if(ripples.length>=3)ripples.shift()
+  ripples.push({x,y,t:(performance.now()-t0)/1000})
+}
+addEventListener('pointerdown',e=>{if(!hand.has)point(e.clientX,e.clientY);ripple(e.clientX,e.clientY)},{passive:true})
 // belt and braces for the reload gesture: some Android builds still overscroll a
 // fixed body. The input keeps its own touch handling so typing is unaffected.
 addEventListener('touchmove',e=>{
@@ -578,6 +592,7 @@ const ACTS=[
 const KEEPER_AT=0.45, INSCRIBE_AT=0.80
 let act=-1, started=false, readN=0, target=1, name='', word='', done=false
 let asking=null, inscribed=false, condense=0
+let breathAt=-9   // when an act turned: a breath sweeps the letter field once
 
 const card=$('#card'), ask=$('#ask'), end=$('#end'), input=$('#in')
 function show(el){for(const n of $('#type').children)n.classList.toggle('on',n===el)}
@@ -752,7 +767,7 @@ Mesh.connect()
 function advance(){
   const f=frac()
   for(let i=ACTS.length-1;i>=0;i--){
-    if(f>=ACTS[i].at&&act<i){act=i;SND.actSwell(i);$('#hudAct').textContent=ACTS[i].lat;if(!asking)showCard(ACTS[i]);break}
+    if(f>=ACTS[i].at&&act<i){act=i;SND.actSwell(i);breathAt=(performance.now()-t0)/1000;$('#hudAct').textContent=ACTS[i].lat;if(!asking)showCard(ACTS[i]);break}
   }
   if(asking||done||performance.now()<cardUntil)return
   if(!name&&f>=KEEPER_AT)openAsk('name')
@@ -800,7 +815,9 @@ function said(line){
 function inscribe(){
   inscribed=true;done=true
   SND.settle()
-  CORE3.mount()
+  // the letters fold inward first; the chrome core grows out of the gathering,
+  // never on top of it
+  setTimeout(()=>CORE3.mount(),REDUCED?0:2200)
   const tag=(name||'—')+' · '+word
   field.push(tag)
   try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
@@ -826,8 +843,10 @@ function inscribe(){
     '. Their outline became a core, joining '+others+' before them. Bless it in one line.',
     KEEPER_BLESS,{name:name||'the nameless one',word,n:others})
     .then(l=>{if(l)end.querySelector('.said').textContent=l})
-  // the core holds for a moment, then opens into the body everyone shares
-  setTimeout(buildSharedBody,7000)
+  // the core holds for a moment, recedes, and only then opens into the body
+  // everyone shares — the letters never swarm a knot still on the page
+  setTimeout(()=>CORE3.recede(),REDUCED?5200:6800)
+  setTimeout(buildSharedBody,REDUCED?7000:8600)
 }
 
 // ── the shared body ───────────────────────────────────────────────────────
@@ -854,18 +873,32 @@ function buildSharedBody(){
   // body read as a clot in the middle of a large black screen.
   let lo=Infinity,hi=-Infinity,xlo=Infinity,xhi=-Infinity
   for(const [x,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y;if(x<xlo)xlo=x;if(x>xhi)xhi=x}
-  const top=H*0.04, bot=H*0.76, span=Math.max(1,hi-lo)
+  // the floor stays above the closing text — the body never writes over it
+  const top=H*0.05, bot=H*0.66, span=Math.max(1,hi-lo)
   const cxm=(xlo+xhi)/2, wide=Math.min(1.55, (W*0.62)/Math.max(1,xhi-xlo))
   for(const p of pts){
     p[1]=top+((p[1]-lo)/span)*(bot-top)
     p[0]=cxm+(p[0]-cxm)*wide
   }
-  // Order the outline as a contour, not in scan order, so words laid along it read
-  // as words. Angular sort around the centroid is enough for a standing figure.
-  let cx=0,cy=0
-  for(const [x,y] of pts){cx+=x;cy+=y}
-  cx/=pts.length;cy/=pts.length
-  pts.sort((a,b)=>Math.atan2(a[1]-cy,a[0]-cx)-Math.atan2(b[1]-cy,b[0]-cx))
+  // Order the outline by WALKING it — from the topmost point always to the
+  // nearest unvisited one. An angular sort around the centroid collapsed head
+  // and arms into a single ring: a body is not star-shaped. Where the walk has
+  // to jump (head to shoulder, arm to hip) the jump survives as a break in the
+  // text instead of a scribble across the figure.
+  let start=0
+  for(let i=1;i<pts.length;i++)if(pts[i][1]<pts[start][1])start=i
+  const used=new Uint8Array(pts.length), chain=[pts[start]]
+  used[start]=1
+  let cur=start
+  for(let n=1;n<pts.length;n++){
+    let best=-1,bd=Infinity
+    for(let i=0;i<pts.length;i++){
+      if(used[i])continue
+      const dx=pts[i][0]-pts[cur][0],dy=pts[i][1]-pts[cur][1],d=dx*dx+dy*dy
+      if(d<bd){bd=d;best=i}
+    }
+    used[best]=1;chain.push(pts[best]);cur=best
+  }
 
   // Every crossing gives both of its words — the name someone answered with and the
   // word they carried. They are written around the body whole, so the figure can be
@@ -878,19 +911,43 @@ function buildSharedBody(){
   })
   if(!words.length)return
 
-  // lay them end to end around the contour, one letter per point, a gap between
+  // Resample the contour by arc length so letters sit shoulder to shoulder and
+  // never on top of each other — the grid cells are far narrower than a glyph.
+  // A jump in the angular order is a concavity: break there, never letter across it.
+  const gap=FS*0.85
+  const slots=[]
+  let carry=0
+  for(let i=0;i<chain.length-1;i++){
+    const a=chain[i], b=chain[i+1]
+    const seg=Math.hypot(b[0]-a[0],b[1]-a[1])
+    if(seg>gap*3){carry=0;continue}
+    let d=carry
+    while(d<seg){const f=d/seg;slots.push([a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]);d+=gap}
+    carry=d-seg
+  }
+  if(!slots.length)return
+  // Lay the words end to end around the resampled contour, a gap between words.
+  // Each letter leaves from the core's rim toward its own place and the body
+  // blooms outward — near letters first, far letters last — instead of the whole
+  // field bursting from one point at once.
+  let maxD=1
+  for(const p of slots){const d=Math.hypot(p[0]-coreCX,p[1]-coreCY);if(d>maxD)maxD=d}
   const letters=[]
   let slot=0, wi=0
-  while(slot<pts.length){
+  while(slot<slots.length){
     const src=words[wi%words.length]; wi++
     for(const ch of src.w){
-      if(slot>=pts.length)break
-      const p=pts[slot++]
-      letters.push({x:coreCX,y:coreCY,tx:p[0],ty:p[1],ch,mine:src.mine,d:Math.random()*0.45})
+      if(slot>=slots.length)break
+      const p=slots[slot++]
+      const ang=Math.atan2(p[1]-coreCY,p[0]-coreCX)
+      const dist=Math.hypot(p[0]-coreCX,p[1]-coreCY)
+      letters.push({x:coreCX+Math.cos(ang)*coreR*0.9,y:coreCY+Math.sin(ang)*coreR*0.45,
+        tx:p[0],ty:p[1],ch,mine:src.mine,d:0.08+0.42*(dist/maxD)+Math.random()*0.06})
     }
-    slot++ // one empty point between words, so they do not run together
+    slot++ // one empty slot between words, so they do not run together
   }
   shared={pts,letters,t:0}
+  breathAt=(performance.now()-t0)/1000
   $('#hudAct').textContent='echo \u00b7 act v'
   SND.sharedPad()
   CORE3.recede()
@@ -898,6 +955,9 @@ function buildSharedBody(){
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
     n+' crossing'+(n===1?'':'s')+' · one body'
+  // the hand-over: the field opens on YOUR core, then plays the gathering
+  const fl=$('#fieldLink')
+  if(word){fl.href='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word);fl.hidden=false}
   show(end)
 }
 
@@ -938,7 +998,8 @@ const CORE3={ok:false,dying:false,
       const onR=()=>{r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();place()}
       addEventListener('resize',onR)
       const tick=()=>{
-        if(this.dying){mat.opacity=Math.max(0,mat.opacity-0.02)
+        if(this.dying){mat.opacity=Math.max(0,mat.opacity-0.012)
+          core.scale.multiplyScalar(0.988)
           if(mat.opacity<=0){cnv.classList.remove('on');return}}
         core.rotation.y+=0.0035;core.rotation.x+=0.0011
         core.position.x=Math.sin(performance.now()*0.00022)*0.06
@@ -971,6 +1032,8 @@ door.addEventListener('touchend',e=>{e.preventDefault();begin()},{passive:false}
 // the core. That is the entire visual vocabulary.
 const t0=performance.now()
 let coreCX=0,coreCY=0,coreR=0,quiet=1,lastT=0
+const prevMask=new Uint8Array(GW*GH)
+let motion=0
 // where you are, in the frame — the centroid of whatever the lamp can see of you.
 // Falls back to the pointer when there is no camera, so the ending is interactive
 // either way.
@@ -994,6 +1057,12 @@ function frame(now){
   if(!lit||!camOn){
     for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=dreamed(i,j,t)
   }
+  // how much the body moved since last frame — the mask diff is already free.
+  // motion spikes when you move and decays when you hold still; the field's
+  // ink answers it, so moving IS being digitized.
+  let chg=0
+  for(let k=0;k<GW*GH;k++){if(bodyMask[k]!==prevMask[k])chg++;prevMask[k]=bodyMask[k]}
+  motion=Math.max(motion*0.94,clamp(chg/120,0,1))
   const dt=Math.min(0.1,t-lastT); lastT=t
   presence()
   // With a front camera your own silhouette reads the letters. Without one there is
@@ -1044,7 +1113,6 @@ function frame(now){
   // the core: everything read gathers into one flat disc — hot at the heart,
   // the one solid form in the piece
   coreCX=W*0.5;coreCY=H*0.40;coreR=Math.min(W,H)*0.17
-  const ease=condense<0.5?2*condense*condense:1-Math.pow(-2*condense+2,2)/2
 
   // When the Keeper asks, the world goes quiet. This is the fix for the question
   // being unreadable through the letters, and it is also the right dramaturgy:
@@ -1053,6 +1121,15 @@ function frame(now){
   quiet+=((askOpen?0.14:1)-quiet)*(REDUCED?1:0.08)
   SND.tick(quiet,frac())
 
+  // per-frame constants for the field's three responses: the fingertip's
+  // reach, the touch ripples, and the act's breath crossing the page
+  const touchR=Math.max(46,Math.min(W,H)*0.1)
+  const touching=P.has&&started&&!inscribed&&!askOpen
+  while(ripples.length&&t-ripples[0].t>2.4)ripples.shift()
+  const bAge=t-breathAt
+  const breathing=!REDUCED&&bAge>0&&bAge<4
+  const bx=(-0.2+(bAge/3.4)*1.4)*W, bw=Math.max(1,W*0.2)
+
   for(const [,m] of marks){
     let [x,y]=markScreen(m)
     if(inscribed){
@@ -1060,13 +1137,40 @@ function frame(now){
       const a=(m.i*0.37+m.j*0.61)
       const tx=coreCX+Math.cos(a)*coreR*0.92*(0.35+0.65*((m.i%7)/7))
       const ty=coreCY+Math.sin(a)*coreR*0.44*(0.35+0.65*((m.j%5)/5))
-      x=x+(tx-x)*ease;y=y+(ty-y)*ease
+      // near letters reach the core first — the field folds inward, not a jump cut
+      const lag=REDUCED?0:0.35*Math.min(1,Math.hypot(x-coreCX,y-coreCY)/(Math.min(W,H)*0.6))
+      const e2=clamp((condense-lag)/(1-lag),0,1)
+      const ez=e2<0.5?2*e2*e2:1-Math.pow(-2*e2+2,2)/2
+      x=x+(tx-x)*ez;y=y+(ty-y)*ez
     }
+    // ink under the fingertip: nearby letters darken toward ink and ease
+    // away a few px, then settle back as the bloom decays
+    let bl=m.bloom||0
+    if(touching){
+      const dx=x-P.x,dy=y-P.y,d=Math.hypot(dx,dy)
+      if(d<touchR){
+        const nr=1-d/touchR
+        if(nr>bl)bl=nr
+        if(!REDUCED&&d>0.001){x+=(dx/d)*nr*nr*7;y+=(dy/d)*nr*nr*7}
+      }
+    }
+    m.bloom=bl*0.96
+    let sw=0
+    for(const r of ripples){
+      const rd=Math.hypot(x-r.x,y-r.y)-(t-r.t)*Math.min(W,H)*0.3
+      sw=Math.max(sw,Math.exp(-(rd*rd)/5000)*(1-(t-r.t)/2.4))
+    }
+    const br=breathing?Math.exp(-((x-bx)*(x-bx))/(2*bw*bw)):0
+    const lift=1+bl*0.5+sw*0.5+br*0.45
+    // the moving edge stirs: a freshly arrived cell shows its letter as a
+    // faint ghost, weighted by how much the body is actually moving
+    const digi=m.read?0:(m.stir||0)*(0.2+0.8*motion)
+    if(m.stir)m.stir*=0.95
     if(m.read){
       const age=Math.min(1,(t-m.t)/1.1)
-      ctx.globalAlpha=(0.34+0.66*age)*(inscribed?1:0.95)*quiet*(shared?1-shared.t:1)
+      ctx.globalAlpha=Math.min(1,(0.34+0.66*age)*(inscribed?1:0.95)*quiet*(shared?1-shared.t:1)*lift)
       ctx.fillStyle=INK
-      ctx.font='300 '+(FS+age*FS*0.22).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.font='300 '+((FS+age*FS*0.22)*(1+bl*0.1+br*0.05)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
       // the taking, seen: a brief ring where a letter was just read
@@ -1081,16 +1185,20 @@ function frame(now){
     }else{
       // a letter WARMS into being under your edge — the reading is watchable,
       // not a switch. Cold cells stay quiet points.
+      // warmth from being held, stir from the body's motion, bloom from the
+      // fingertip — whichever is strongest lets the letter surface from the point
       const warm=m.heat?clamp(m.heat/0.5,0,1):0
-      ctx.fillStyle=warm>0.05?INK:GRAPHITE
-      if(warm>0.05){
-        ctx.globalAlpha=(0.14+0.66*warm)*quiet*(shared?1-shared.t:1)
-        ctx.font='300 '+(FS*(0.7+0.3*warm)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      const wake=Math.max(warm,digi,bl*0.8)
+      ctx.fillStyle=wake>0.05?INK:GRAPHITE
+      if(wake>0.05){
+        ctx.globalAlpha=Math.min(1,(0.14+0.66*wake)*quiet*(shared?1-shared.t:1)*lift)
+        ctx.font='300 '+(FS*(0.7+0.3*wake)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
         ctx.textAlign='center';ctx.textBaseline='middle'
         ctx.fillText(m.g,x,y)
       }else{
-        ctx.globalAlpha=0.5*quiet*(shared?1-shared.t:1)
-        ctx.fillRect(x-0.8,y-0.8,1.6,1.6)
+        ctx.globalAlpha=Math.min(1,0.5*quiet*(shared?1-shared.t:1)*lift)
+        const s=0.8+bl*0.6
+        ctx.fillRect(x-s,y-s,s*2,s*2)
       }
     }
   }
@@ -1115,7 +1223,7 @@ function frame(now){
   // the shared body — the core opens and its letters travel out to the figure
   // everyone who ever crossed is holding up
   if(shared){
-    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.014))
+    shared.t=Math.min(1,shared.t+(REDUCED?0.05:0.0065))
     const S=shared.t
     // The crossing does not end in a picture. You are still in front of the lamp, and
     // the body you joined answers where you stand: the words nearest you brighten and
@@ -1135,7 +1243,9 @@ function frame(now){
           x+=(dx/(d||1))*push; y+=(dy/(d||1))*push
         }
       }
-      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.58)+near*0.42)*g)
+      // the echo's breath passes through the shared body too
+      const brS=breathing?Math.exp(-((x-bx)*(x-bx))/(2*bw*bw)):0
+      ctx.globalAlpha=Math.min(1,((L.mine?0.95:0.58)+near*0.42+brS*0.25)*g)
       ctx.fillStyle=L.mine?LIVE:INK
       ctx.font='300 '+((L.mine?FS*1.15:FS)*(1+near*0.35)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.fillText(L.ch,x,y)

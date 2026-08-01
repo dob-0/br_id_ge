@@ -21,6 +21,22 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
+## This pass (2026-08-01)
+
+- **Door redesigned** to the paper-and-ink face, minimal: կամուրջ serif title, one lede,
+  cross + field links, event essentials in the frame corners. Old void/cyan face gone.
+- **Field**: every crossing now leaves its OWN shape (seeded by inscription id, permanent);
+  "all together ↔ each alone" toggle gathers all cores into one shared body;
+  the keeper (պահապան, graphite knot at center) wakes to live blue when the jetson
+  runs `scripts/keeper-presence.mjs` (mesh channel `keeper`, room `bridge`, 15s timeout;
+  probe: `window.__keeper()`). After a crossing the rite links `field?just=<word>` —
+  camera meets your core, then the gather plays.
+- **Rite**: letters respond to touch (ink bloom + ripple); body motion surfaces edge
+  letters (digitizing feel); inscription gathers letters into the core before it grows;
+  act changes breathe across the letter field. All reduced-motion-safe.
+- Next agreed: camera→analysis reveal in the rite; Unfinished Swan reveal-by-touch in
+  the field; then letter-body gather, AR field, jetson keeper-voice.
+
 ## What works
 
 - Full loop LIVE on prod: cross at /br_id_ge/rite → core lands in the space →

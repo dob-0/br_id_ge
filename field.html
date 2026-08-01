@@ -4,131 +4,278 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>br_id_ge XR_ Notations:vi.ritual — the field</title>
-<meta name="description" content="The field of vi.ritual — every stone is one crossing of br_id_ge, inscribed forever in di.iiii.">
+<meta name="description" content="The field of vi.ritual — every core is one crossing of br_id_ge, inscribed forever in di.iiii.">
 <meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual — the field">
-<meta property="og:description" content="Every stone is one crossing of the bridge — inscribed forever.">
+<meta property="og:description" content="Every core is one crossing of the bridge — inscribed forever.">
 <meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-echo.jpg">
 <meta property="og:url" content="https://di-studio.xyz/br_id_ge/field">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-:root{--void:#05080d;--gantegh:#ffb347;--core:#cdb98f;--stitch:#00e5ff;--dim:#5f6b7a}
+/* PAPER AND INK — the field speaks the rite's face: warm paper ground, one ink,
+   one graphite, one live blue. The only depth on the page is the cores
+   themselves: what the crossings left. Everything else is print. */
+:root{
+  --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
+  --live:#1d4bff;
+  --arm:'Noto Serif Armenian',Georgia,serif;
+  --mono:'Space Mono',ui-monospace,Menlo,monospace;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden}
-body{background:var(--void);color:var(--core);font-family:'Space Mono',monospace}
+html,body{height:100%;overflow:hidden;background:var(--paper)}
+body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
 canvas{display:block;cursor:grab}
 canvas.grabbing{cursor:grabbing}
-.chrome{position:fixed;pointer-events:none;font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:lowercase}
-#hd{top:18px;left:20px}
-#hd b{color:var(--core);font-weight:700}
-#hd .arm{color:var(--gantegh);letter-spacing:.5em;margin-top:5px;font-size:10px}
-#count{top:18px;right:20px;text-align:right;line-height:1.9}
-#count .n{color:var(--gantegh);font-weight:700}
-#cta{bottom:18px;left:20px;pointer-events:auto}
-#cta a{color:var(--stitch);text-decoration:none;border:1px solid #23303f;padding:9px 16px;display:inline-block;letter-spacing:.2em}
-#cta a{transition:border-color .25s,box-shadow .25s,letter-spacing .25s}
-#cta a:hover{border-color:var(--stitch);box-shadow:0 0 26px rgba(0,229,255,.18);letter-spacing:.28em}
+#frame{position:fixed;inset:10px;border:1px solid var(--hairline);z-index:1;pointer-events:none}
+@media (max-width:560px){#frame{inset:8px}}
+.hud{position:fixed;z-index:2;pointer-events:none;font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--graphite);line-height:1.9}
+#hd{top:0;left:0;padding:1.35rem;color:var(--ink)}
+#hd b{font-weight:400}
+#hd .arm{font-family:var(--arm);font-weight:300;color:var(--graphite);
+  letter-spacing:.5em;margin-top:.3rem;font-size:.6rem;text-transform:none}
+#count{top:0;right:0;padding:1.35rem;text-align:right}
+#count .n{color:var(--ink);font-weight:400}
+#cta{bottom:0;left:0;padding:1.35rem;pointer-events:auto}
+#cta a{color:var(--live);text-decoration:none;border-bottom:1px solid var(--hairline);
+  padding-bottom:.25rem;transition:border-color .25s}
+#cta a:hover{border-color:var(--live)}
+#hint{bottom:0;right:0;padding:1.35rem;text-align:right}
+#mode{bottom:0;left:50%;transform:translateX(-50%);padding:1.35rem;pointer-events:auto;
+  background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.55rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+#mode:hover{color:var(--live)}
 @media (prefers-reduced-motion: no-preference){
-  .chrome{opacity:0;animation:fade 1.2s .3s ease forwards}
+  .hud,#frame{opacity:0;animation:fade 1.2s .3s ease forwards}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
   @keyframes fade{to{opacity:1}}
 }
-#hint{bottom:18px;right:20px;text-align:right;line-height:1.9}
+@media (max-width:560px){#hd,#count,#cta,#hint{padding:1.1rem}#hint{display:none}}
 </style>
 </head>
 <body>
+<div id="frame"></div>
 <canvas id="c"></canvas>
-<div class="chrome" id="hd"><b>vi.ritual</b> · the field · br_id_ge<div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div></div>
-<div class="chrome" id="count"><span class="n" id="n">0</span> stones<br>each one = a crossing of the bridge<br><span id="others"></span></div>
-<div class="chrome" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
-<div class="chrome" id="hint">drag orbit · scroll zoom</div>
-<script>
-// The field reads THE ONE SPACE. Same-origin on di.iiii; absolute from the
-// Pages mirror (CORS on scene reads is open). ?api= overrides for local work.
-const API=(new URLSearchParams(location.search).get('api'))||
-  (location.hostname.endsWith('github.io')?'https://di-studio.xyz/serverXR/api/spaces/br_id_ge':'/serverXR/api/spaces/br_id_ge');
+<div class="hud" id="hd"><b>br_id_ge</b> · vi.ritual · the field<div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div></div>
+<div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
+<div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
+<button class="hud" id="mode">all together →</button>
+<div class="hud" id="hint">drag orbit · scroll zoom</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
+"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three'
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js'
 
+// The field reads THE ONE SPACE. Same-origin only when actually served from
+// di.iiii; everywhere else (Pages mirror, file://, serve.mjs) the absolute URL
+// is the default — serve.mjs rewrites it to the chosen tier. ?api= overrides.
+const API=(new URLSearchParams(location.search).get('api'))||
+  (location.hostname.endsWith('di-studio.xyz')
+    ?'/serverXR/api/spaces/br_id_ge':'https://di-studio.xyz/serverXR/api/spaces/br_id_ge');
+
+const PAPER=0xf3f1ec
 const canvas=document.getElementById('c');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x05080d,0.016);
-const camera=new THREE.PerspectiveCamera(52,1,0.1,300);
+scene.fog=new THREE.FogExp2(PAPER,0.020);
+scene.environment=new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),0.04).texture;
+const camera=new THREE.PerspectiveCamera(46,1,0.1,300);
 camera.position.set(0,7,26);camera.lookAt(0,1,0);
 const world=new THREE.Group();scene.add(world);
 
-const glyphCache={};
-function glyphTex(ch,color){const k=ch+color;if(glyphCache[k])return glyphCache[k];
-  const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d');
-  g.font='96px "Space Mono", serif';g.textAlign='center';g.textBaseline='middle';
-  g.shadowColor=color;g.shadowBlur=22;g.fillStyle=color;g.fillText(ch,64,66);
-  const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;glyphCache[k]=t;return t;}
+// every crossing leaves its OWN form — seeded by the inscription id, so the
+// shape is as permanent as the word: the same knot on every load, unique to
+// that one crossing. One chrome for all of them: many bodies, one matter.
+const coreMat=new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:1,roughness:0.16,
+  iridescence:1,iridescenceIOR:1.55,envMapIntensity:1.15});
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const PQ=[[2,3],[2,5],[3,4],[3,5],[4,5],[5,2],[3,2],[5,3],[4,3],[5,4]];
+function coreGeoFor(id){const r=rng(hash(String(id)));
+  const [p,q]=PQ[Math.floor(r()*PQ.length)];
+  return new THREE.TorusKnotGeometry(0.62+r()*0.36,0.2+r()*0.22,200,28,p,q);}
 
-// gantegh — one warm lamp at the center of the field
-{const m=new THREE.SpriteMaterial({map:glyphTex('●','#ffb347'),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false});
- const s=new THREE.Sprite(m);s.scale.set(2.2,2.2,1);s.position.set(0,2.2,0);world.add(s);
- world.add(new THREE.PointLight(0xffb347,1.1,60));}
+// the ground is the page: a hairline ring where the field begins
+{const ring=new THREE.Mesh(new THREE.RingGeometry(3.2,3.24,128),
+  new THREE.MeshBasicMaterial({color:0xdcd8cf,side:THREE.DoubleSide}));
+ ring.rotation.x=-Math.PI/2;ring.position.y=0.01;world.add(ring);}
 
-// dust
-{const p=new Float32Array(420);for(let i=0;i<p.length;i++)p[i]=(Math.random()-.5)*90;
+// graphite dust — printed specks, not embers
+{const p=new Float32Array(390);for(let i=0;i<p.length;i++)p[i]=(Math.random()-.5)*80;
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(p,3));
- scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0x1b2430,size:.09,transparent:true,opacity:.8})));}
+ scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0x8f8b83,size:.07,transparent:true,opacity:.5})));}
 
-const stones=new Map(); // objectId -> group
+const cores=new Map(); // objectId -> group
 // word + name rendered as ONE billboard texture — a sprite always faces the
 // camera, so a single texture can never read mirrored as the field rotates
 function labelTex(word,name){const cv=document.createElement('canvas');cv.width=512;cv.height=192;
   const g=cv.getContext('2d');g.textAlign='center';
-  g.font='700 52px "Space Mono", serif';g.shadowColor='#cdb98f';g.shadowBlur=16;g.fillStyle='#cdb98f';
-  g.fillText(word.slice(0,12),256,78);
-  g.font='26px "Space Mono", serif';g.shadowBlur=6;g.shadowColor='#5b6674';g.fillStyle='#5b6674';
-  g.fillText(name.slice(0,20),256,132);
+  g.font='300 54px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
+  g.fillText(word.slice(0,12),256,80);
+  g.font='22px "Space Mono", monospace';g.fillStyle='#8f8b83';
+  g.fillText(name.slice(0,20),256,134);
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;}
-function placeStone(tag,i){
+// a soft contact shadow, so each core sits on the page instead of floating off it
+const shadowTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;
+  const g=cv.getContext('2d');const gr=g.createRadialGradient(64,64,4,64,64,60);
+  gr.addColorStop(0,'rgba(19,19,19,0.30)');gr.addColorStop(1,'rgba(19,19,19,0)');
+  g.fillStyle=gr;g.fillRect(0,0,128,128);
+  const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;})();
+function placeCore(tag,i,id){
   const a=i*2.399,r=4+i*0.85;
-  const pos=new THREE.Vector3(Math.cos(a)*r,1.3+Math.sin(i*1.7)*.4,Math.sin(a)*r);
+  const pos=new THREE.Vector3(Math.cos(a)*r,1.5+Math.sin(i*1.7)*.3,Math.sin(a)*r);
   const grp=new THREE.Group();grp.position.copy(pos);
-  const cross=new THREE.Sprite(new THREE.SpriteMaterial({map:glyphTex('☩','#ffd9a0'),transparent:true,opacity:.6,blending:THREE.AdditiveBlending,depthWrite:false}));
-  cross.scale.set(2.4,3.0,1);grp.add(cross);
+  const rnd=rng(hash(String(id)+'~'));
+  const knot=new THREE.Mesh(coreGeoFor(id),coreMat);
+  const s=0.52+rnd()*0.2;knot.scale.setScalar(s);
+  knot.rotation.set(rnd()*Math.PI*2,rnd()*Math.PI*2,rnd()*Math.PI*2);
+  grp.add(knot);
+  const sh=new THREE.Sprite(new THREE.SpriteMaterial({map:shadowTex,transparent:true,depthWrite:false}));
+  sh.position.set(0,-pos.y+0.06,0);sh.scale.set(2.6,2.6,1);grp.add(sh);
   const parts=String(tag).split('·');const word=(parts.pop()||'').trim();const name=parts.join('·').trim();
-  const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(word,name),transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
-  label.position.set(0,-2.6,0);label.scale.set(4.6,1.725,1);grp.add(label);
-  grp.userData={phase:i*1.31,baseY:pos.y};
+  const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(word,name),transparent:true,depthWrite:false}));
+  label.position.set(0,1.55,0);label.scale.set(4.2,1.575,1);grp.add(label);
+  grp.userData={phase:i*1.31,home:pos.clone(),gather:new THREE.Vector3(),m:0,word,
+    speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,born:performance.now()};
   world.add(grp);return grp;}
+
+// TOGETHER — the same cores, gathered into one shared body. Each core keeps
+// its own form; only the distance between them goes. The keeper sits at the
+// heart. Seats on a tight fibonacci sphere so no crossing is ever "outside".
+function gatherSeats(){
+  const list=[...cores.values()],total=Math.max(list.length,1),g=(1+Math.sqrt(5))/2;
+  list.forEach((grp,i)=>{
+    const y=1-2*(i+0.5)/total,rr=Math.sqrt(Math.max(0,1-y*y)),th=2*Math.PI*i/g;
+    const rad=1.35+Math.cbrt(total)*0.42;
+    grp.userData.gather.set(Math.cos(th)*rr*rad,3.1+y*rad,Math.sin(th)*rr*rad);});}
+let together=false;
+const modeBtn=document.getElementById('mode');
+const countLine=document.getElementById('countLine');
+function setMode(t){together=t;
+  modeBtn.textContent=together?'← each alone':'all together →';
+  countLine.textContent=together?'one shared body':'each one = a crossing';}
+modeBtn.addEventListener('click',()=>setMode(!together));
+
+// THE KEEPER — the ai among us. Asleep it is graphite; when the jetson
+// (di_bot) is on the mesh it wakes to the one live blue and joins the body.
+const keeperMat=new THREE.MeshPhysicalMaterial({color:0x8f8b83,metalness:.85,roughness:.32,envMapIntensity:.9});
+const keeper=(()=>{
+  const grp=new THREE.Group();grp.position.set(0,1.2,0);
+  const knot=new THREE.Mesh(new THREE.TorusKnotGeometry(0.5,0.19,160,24,2,3),keeperMat);
+  knot.scale.setScalar(0.55);grp.add(knot);
+  const sh=new THREE.Sprite(new THREE.SpriteMaterial({map:shadowTex,transparent:true,depthWrite:false}));
+  sh.position.set(0,-1.14,0);sh.scale.set(2.2,2.2,1);grp.add(sh);
+  const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('պահապան','keeper · asleep'),transparent:true,depthWrite:false}));
+  label.position.set(0,1.35,0);label.scale.set(4.2,1.575,1);grp.add(label);
+  grp.userData={home:grp.position.clone(),gather:new THREE.Vector3(0,3.1,0),m:0,speed:0.03,
+    scale:0.55,phase:0,knot,label,shadow:sh,born:performance.now()};
+  world.add(grp);return grp;})();
+let keeperSeen=-1e9,keeperName='';
+function keeperOnline(){return performance.now()-keeperSeen<15000;}
+let keeperWas=null;
+function keeperFace(){
+  const on=keeperOnline();if(on===keeperWas)return;keeperWas=on;
+  keeperMat.color.set(on?0x1d4bff:0x8f8b83);
+  keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'di_bot')+' awake'):'keeper · asleep');
+  keeper.userData.label.material.needsUpdate=true;}
+
+// the mesh — same room the rite crosses in; the field only listens
+const MESH=(new URLSearchParams(location.search).get('mesh'))||'wss://di-studio.xyz/serverXR/mesh';
+(function meshConnect(){
+  let u;try{u=new URL(MESH)}catch(e){return}
+  u.searchParams.set('room','bridge');u.searchParams.set('node','f'+Math.random().toString(36).slice(2,8));
+  let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
+  ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}
+    if(m.type==='mesh:event'&&m.channel==='keeper'){keeperSeen=performance.now();
+      keeperName=String((m.payload&&m.payload.name)||'').slice(0,14);}};
+  ws.onclose=()=>setTimeout(meshConnect,5000);
+  ws.onerror=()=>{};})();
+// show-rig probe: lets the rig (and tests) ask whether the ai is with us
+window.__keeper=()=>({online:keeperOnline(),name:keeperName});
 
 async function loadField(){
   try{
     const r=await fetch(API+'/scene');if(!r.ok)return;
     const objects=((await r.json()).scene||{}).objects||[];
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
-    insc.forEach((o,i)=>{if(!stones.has(o.id))stones.set(o.id,placeStone(o.data||'',stones.size));});
-    {const el=document.getElementById('n'),to=stones.size,from=parseInt(el.textContent)||0;
+    insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id));});
+    gatherSeats();receive();
+    {const el=document.getElementById('n'),to=cores.size,from=parseInt(el.textContent)||0;
      if(matchMedia('(prefers-reduced-motion: reduce)').matches||to<=from){el.textContent=to;}
      else{let v=from;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t);},60);}}
-    // the field is not only stones — anything carried into this space counts
+    // the field is not only cores — anything carried into this space counts
     const carried=objects.length-insc.length;
     document.getElementById('others').textContent=carried>0?`+ ${carried} other things carried in`:'';
   }catch(e){}}
 loadField();setInterval(loadField,20000);
 addEventListener('focus',loadField);
 
-let dragging=false,px=0,vy=0,vx=0;
+// AFTER A CROSSING — the rite hands over with ?just=<word>. The field receives
+// the newcomer: goes to their core, lets it grow in before their eyes, then
+// shows what they joined — the whole field gathers into the one shared body,
+// holds, and releases. The transformation, seen from inside it.
+const JUST=new URLSearchParams(location.search).get('just');
+let focus=null,received=false;
+function receive(){
+  if(received||!JUST||!cores.size)return;received=true;
+  let target=null;
+  cores.forEach(g=>{if(g.userData.word===JUST)target=g;});
+  target=target||[...cores.values()].pop();
+  target.userData.born=performance.now();
+  focus={grp:target,until:performance.now()+5200};
+  setTimeout(()=>setMode(true),5600);
+  setTimeout(()=>{setMode(false);},14000);}
+
+let dragging=false,px=0,vy=0;
 canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;canvas.classList.add('grabbing');});
 addEventListener('pointerup',()=>{dragging=false;canvas.classList.remove('grabbing');});
 addEventListener('pointermove',e=>{if(!dragging)return;vy=(e.clientX-px)*.004;px=e.clientX;});
+let zoom=1;
 canvas.addEventListener('wheel',e=>{e.preventDefault();
-  camera.position.multiplyScalar(1+e.deltaY*.0009);
-  const d=camera.position.length();if(d<10)camera.position.setLength(10);if(d>70)camera.position.setLength(70);
+  zoom=Math.min(2.7,Math.max(0.4,zoom*(1+e.deltaY*.0009)));
 },{passive:false});
 
 const resize=()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();};
 addEventListener('resize',resize);resize();
 
+const CAM_HOME=new THREE.Vector3(0,7,26),LOOK_HOME=new THREE.Vector3(0,1,0);
+const camPos=CAM_HOME.clone(),look=LOOK_HOME.clone();
+const _p=new THREE.Vector3(),_l=new THREE.Vector3(),_wp=new THREE.Vector3(),_d=new THREE.Vector3();
 renderer.setAnimationLoop(()=>{
   const t=performance.now()*.001;
-  world.rotation.y+=vy+(dragging?0:.0016);vy*=.9;
-  stones.forEach(g=>{g.position.y=g.userData.baseY+Math.sin(t*.6+g.userData.phase)*.25;});
-  camera.lookAt(0,1,0);
+  world.rotation.y+=vy+(dragging?0:.0012);vy*=.9;
+  keeperFace();
+  const step=g=>{
+    const u=g.userData;
+    u.m+=((together?1:0)-u.m)*u.speed;
+    const m=u.m*u.m*(3-2*u.m);
+    g.position.lerpVectors(u.home,u.gather,m);
+    g.position.y+=Math.sin(t*.5+u.phase)*.18*(1-m*.7);
+    u.knot.rotation.y+=0.0035;u.knot.rotation.x+=0.0011;
+    // a new core arrives the way the rite makes one: it grows into place
+    const age=(performance.now()-u.born)/1600;
+    if(age<1)u.knot.scale.setScalar(u.scale*(1-Math.pow(1-Math.max(0,age),3)));
+    else if(g===keeper&&keeperOnline())u.knot.scale.setScalar(u.scale*(1+Math.sin(t*2.2)*.05));
+    u.label.material.opacity=g===keeper?1:1-m;
+    u.shadow.material.opacity=1-m*.85;
+    u.shadow.position.y=-g.position.y+0.06;};
+  cores.forEach(step);step(keeper);
+  // the camera has one seat; a fresh crossing borrows it to meet its own core
+  _p.copy(CAM_HOME).multiplyScalar(zoom);_l.copy(LOOK_HOME);
+  if(focus&&focus.grp){
+    focus.grp.getWorldPosition(_wp);
+    _d.copy(_wp).setY(0);if(_d.lengthSq()<1e-6)_d.set(0,0,1);else _d.normalize();
+    _p.copy(_wp).addScaledVector(_d,6).y+=2.2;_l.copy(_wp);
+    if(performance.now()>focus.until)focus=null;
+  }
+  camPos.lerp(_p,0.03);look.lerp(_l,0.04);
+  camera.position.copy(camPos);camera.lookAt(look);
   renderer.render(scene,camera);
 });
 </script>
