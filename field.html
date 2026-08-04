@@ -100,7 +100,12 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js'
 // The field reads THE ONE SPACE. Same-origin only when actually served from
 // di.iiii; everywhere else (Pages mirror, file://, serve.mjs) the absolute URL
 // is the default — serve.mjs rewrites it to the chosen tier. ?api= overrides.
-const API=(new URLSearchParams(location.search).get('api'))||
+// published pages run inside a srcdoc iframe, which has no URL of its own —
+// location.search is empty there and the viewer hands the shell's query down
+// as diiPageQuery instead. Local mirror still uses the real one.
+const QRY=new URLSearchParams(window.diiPageQuery||location.search);
+
+const API=QRY.get('api')||
   (location.hostname.endsWith('di-studio.xyz')
     ?'/serverXR/api/spaces/br_id_ge':'https://di-studio.xyz/serverXR/api/spaces/br_id_ge');
 
@@ -288,7 +293,7 @@ function keeperFace(){
 
 // the mesh — same room the rite crosses in. the field listens for the keeper's
 // heartbeat, its eye, and its words — and carries the visitor's words back.
-const MESH=(new URLSearchParams(location.search).get('mesh'))||'wss://di-studio.xyz/serverXR/mesh';
+const MESH=QRY.get('mesh')||'wss://di-studio.xyz/serverXR/mesh';
 let meshWs=null;
 (function meshConnect(){
   let u;try{u=new URL(MESH)}catch(e){return}
@@ -353,7 +358,7 @@ addEventListener('focus',loadField);
 // the newcomer: goes to their core, lets it grow in before their eyes, then
 // shows what they joined — the whole field gathers into the one shared body,
 // holds, and releases. The transformation, seen from inside it.
-const JUST=new URLSearchParams(location.search).get('just');
+const JUST=QRY.get('just');
 let focus=null,received=false;
 function receive(){
   if(received||!JUST||!cores.size)return;received=true;

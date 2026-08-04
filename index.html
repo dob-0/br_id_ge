@@ -450,7 +450,7 @@ async function openSeg(){
 }
 function readSeg(now){
   if(!seg||!camOn||!video||video.readyState<2)return false
-  if(now-segAt<80)return true
+  if(now-segAt<(inscribed?200:80))return true
   segAt=now
   try{ seg.segmentForVideo(video,now,(res)=>{
     const m=res&&res.categoryMask; if(!m){res&&res.close&&res.close();return}
@@ -512,6 +512,16 @@ function readPose(now){
   let r;try{r=pose.detectForVideo(video,now)}catch(e){return}
   poseLM=(r&&r.landmarks&&r.landmarks[0])||null
 }
+// after the crossing the hand and the pose are let go for good — their GPU work
+// was the whole cost of the ending
+let rested=false
+function restDetectors(){
+  if(rested)return;rested=true
+  try{hl&&hl.close&&hl.close()}catch(e){}
+  try{pose&&pose.close&&pose.close()}catch(e){}
+  hl=null;pose=null;handLM=null;poseLM=null;hand.has=false
+}
+
 // ── the reveal — the digitization, shown once ─────────────────────────────
 // When the lamp opens: the actual frame for a breath, then the analysis drawn
 // over it — bones, wash, one slow line — then the photograph drains and only
@@ -1212,8 +1222,12 @@ function presence(){
 
 function frame(now){
   const t=(now-t0)/1000
-  readHand(now)
-  readPose(now)
+  // Once the crossing is made, the hand and the pose have nothing left to read:
+  // no pinch, no bones. Leaving all three detectors running on an ending that
+  // only needs a centroid is what made this screen crawl. The lamp stays open —
+  // the shared body still answers where you stand — just slower, and alone.
+  if(inscribed)restDetectors()
+  else{readHand(now);readPose(now)}
   readSeg(now)
   const dt=Math.min(0.1,t-lastT); lastT=t
   // one mask, two sources: the circle is the ground state, a found body pulls
