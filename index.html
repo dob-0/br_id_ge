@@ -702,6 +702,15 @@ const ACTS=[
 ]
 const KEEPER_AT=0.45, INSCRIBE_AT=0.80
 let act=-1, started=false, readN=0, target=1, name='', word='', done=false
+// How long a rite may read nothing before the pointer is handed the reading back.
+const STALL_S=8
+// How much must be read before the finish line stops moving.
+const READY_AT=20
+let lastReadN=0, lastReadAt=0, targetFixed=false
+// The rite only ever moves toward you. The target still adapts — it has to, or
+// the last act is unreachable on a small frame — but the fraction the acts ride
+// is a high-water mark, so a growing target can no longer walk it backwards.
+let fracHigh=0
 let asking=null, inscribed=false, condense=0
 let breathAt=-9   // when an act turned: a breath sweeps the letter field once
 
@@ -721,7 +730,7 @@ function showCard(a){
   clearTimeout(showCard._t)
   showCard._t=setTimeout(()=>{if(!asking&&!done)show(null)},2600)
 }
-function frac(){return clamp(readN/target,0,1)}
+function frac(){return fracHigh}
 
 // ── the keeper — a local LLM if one is running, scripted lines if not ─────
 const KEEPER_URL=(Q.get('keeper')||($('meta[name="keeper-url"]')||{}).content||'').replace(/\/+$/,'')
@@ -877,8 +886,15 @@ Mesh.connect()
 // ── acts ──────────────────────────────────────────────────────────────────
 function advance(){
   const f=frac()
-  for(let i=ACTS.length-1;i>=0;i--){
-    if(f>=ACTS[i].at&&act<i){act=i;SND.actSwell(i);breathAt=(performance.now()-t0)/1000;$('#hudAct').textContent=ACTS[i].lat;if(!asking)showCard(ACTS[i]);break}
+  // One act at a time, and never over a card still on screen. Scanning from the
+  // top meant a fast reading jumped straight from the threshold to the notation:
+  // the crossing and the witness — two of the five — were never seen at all, and
+  // the rite that is supposed to be walked was skipped through.
+  const next=act+1
+  if(next<ACTS.length&&f>=ACTS[next].at&&performance.now()>=cardUntil){
+    act=next;SND.actSwell(next);breathAt=(performance.now()-t0)/1000
+    $('#hudAct').textContent=ACTS[next].lat
+    if(!asking)showCard(ACTS[next])
   }
   if(asking||done||performance.now()<cardUntil)return
   if(!name&&f>=KEEPER_AT)openAsk('name')
@@ -1325,15 +1341,43 @@ function frame(now){
   // only a mask that is mostly body reads by edge-heat; a circle (or the way
   // back to one) hands the reading to the pointer instead
   const embodied=camOn&&segHas&&morph>0.5
+  // How much of the frame the body swallows. Needed before the reading is
+  // handed out, not after: a mask over ~90% has no edge left to read.
+  let cover=0
+  if(embodied){for(let k=0;k<GW*GH;k++)cover+=bodyMask[k];cover/=GW*GH}
+  // "Is a body seen" was never the right question — "is a body giving an edge"
+  // is. A torso filling a phone's front camera at arm's length is very much a
+  // body and reads nothing, and the advice that follows from it — step back —
+  // is impossible for someone holding the camera. So the phone was told to do
+  // the one thing it cannot, while the one input it has was switched off.
+  const edged=embodied&&cover<=0.9
+  let stalled=false
   if(started&&!inscribed){
     rebuildOutline(t,dt,embodied)
     // The target has to be reachable. A fixed 180 was not: the dreamed figure only
     // ever offers ~162 distinct cells at this size, so the final act sat just under
     // the threshold, and on a smaller frame the rite could not be finished at all.
-    // Scale to what the outline has actually offered — it grows as you sweep.
-    target=clamp(Math.round(everSeen*0.62),32,220)
-    // the pointer only reads when the body cannot
-    if(P.has&&!embodied){
+    // Scale to what the outline has actually offered — but stop, once the
+    // reading is genuinely under way. everSeen only ever grows, so a target
+    // recomputed forever retreats as fast as the sweep reveals new cells: the
+    // last act never arrives and the fraction walks *backwards* while the
+    // visitor is doing everything right. Fixed from the first frame it would be
+    // the opposite mistake — unreachable on a small outline. So it grows while
+    // the outline opens out, and fixes itself once something has been read.
+    if(!targetFixed){
+      target=clamp(Math.round(everSeen*0.62),32,220)
+      if(readN>=READY_AT)targetFixed=true
+    }
+    // belt and braces: the rite only ever moves toward you
+    fracHigh=Math.max(fracHigh,clamp(readN/target,0,1))
+    // Reading has not moved in a while: whatever is supposed to be reading it
+    // isn't, and the visitor is looking at a rite that appears to be over.
+    if(readN!==lastReadN){lastReadN=readN;lastReadAt=t}
+    if(!lastReadAt)lastReadAt=t
+    stalled=t-lastReadAt>STALL_S
+    // the pointer reads whenever the body cannot — no camera, no edge, or an
+    // edge that has read nothing for long enough to count as none
+    if(P.has&&(!edged||stalled)){
       const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
       for(const [,m] of marks){
         if(m.read)continue
@@ -1343,16 +1387,16 @@ function frame(now){
       }
     }
     $('#sRead').textContent=readN
-  // The lamp says what it can actually see, so "is it working?" is never a guess.
-  // A mask that swallows the frame has no edge to read — the only honest advice
-  // is distance.
-  if(embodied){
-    let cover=0;for(let k=0;k<GW*GH;k++)cover+=bodyMask[k]
-    cover/=GW*GH
-    $('#sLamp').textContent=cover>0.9
-      ? 'step back — the lamp needs your edge'
-      : 'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
-  }
+    // The lamp says what it can actually see, so "is it working?" is never a
+    // guess. When it cannot see an edge it now says what to do instead of what
+    // is impossible — the hand is already on the glass.
+    if(embodied){
+      $('#sLamp').textContent=!edged
+        ? 'too close for the lamp — touch to read'
+        : (stalled?'touch to read · ':'')+'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+    }else if(stalled&&started){
+      $('#sLamp').textContent='touch to read'
+    }
     advance()
     Mesh.send(clamp(P.x/W,0,1),clamp(P.y/H,0,1),frac())
     if(((now/1000)|0)%3===0)Mesh.sweep()
@@ -1536,8 +1580,11 @@ function frame(now){
 
   if(started&&!inscribed)drawTracking()
 
-  // the lamp itself: a single ring. One mark, not three.
-  if(started&&!inscribed&&P.has&&!(camOn&&segHas)){
+  // the lamp itself: a single ring. One mark, not three — but it has to be
+  // there whenever the finger is what reads. Hidden the moment a camera was
+  // present, the ring vanished exactly when the reading fell back to touch,
+  // and the visitor was left sweeping a page with no mark under the hand.
+  if(started&&!inscribed&&P.has&&(!(camOn&&segHas)||!edged||stalled)){
     ctx.globalAlpha=0.6*quiet
     ctx.strokeStyle=INK;ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
