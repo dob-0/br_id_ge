@@ -21,7 +21,53 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
-## This pass (2026-08-04, second) — the ending reads, and every tier gets it
+## This pass (2026-08-05) — the keeper has a second body, and the names are settled
+
+- **Names, decided.** **jet.di** = the robot car (repo `dibot`, hostname stays
+  `di_bot`) · **di.bo** = the Telegram messenger on the VPS (repo `di-bo`).
+  "the jetson" is gone from the field's copy. Written down once, in
+  **[docs/KEEPER.md](docs/KEEPER.md)** — the canonical keeper doc: both bodies,
+  the four channels, how to bring either up, the four states to LOOK at, and the
+  failure modes. READMEs in all three repos point at it.
+- **di.bo now keeps the field** while jet.di is off (`di-bo/keeper.mjs`, wired
+  into `bot.mjs`): heartbeat as `di.bo`, `keeper:ask` → one fixed line back →
+  the visitor's words into the owner's Telegram, and it **stands down within
+  15s** of hearing jet.di. `/say` (owner DM) speaks the real answer into the
+  field; `/status` names whoever holds the room.
+- **Bug found by the handover test and fixed in `field.html`:** `keeperFace()`
+  redrew only on the awake/asleep flip, so jet.di taking the room from di.bo left
+  the page printing the old name — during a show, the wrong body. The name is now
+  part of the compared face. The eye also clears when the keeper sleeps, so no
+  stale frame hangs over a keeper that cannot see.
+- **Verified on prod's mesh, with eyes on the page** (local `serve.mjs --to prod`):
+  asleep → di.bo blue and answering a typed question → both bodies up, page says
+  jet.di, di.bo logs "standing down" → jet.di gone, di.bo keeps again. di-bo's
+  test suite covers the handover and the throttle on a fake clock (all passed).
+- **di.bo is LIVE on the VPS**: prod's field shows `di.bo · awake — it can hear
+  you` with no laptop involved. **It does not think** — a local model lasted one
+  evening and answered a visitor's Armenian in transliterated mush, so it is out
+  (user call). di.bo answers ONE fixed line in the same breath the visitor
+  spoke; the ask lands in the owner's Telegram and `/say` speaks the real answer
+  into the field. A voice worth having will be jet.di's, out loud in the room.
+- **A dead-pipe bug the human pass caught:** the first deploy went silent within
+  minutes — the mesh websocket stopped carrying without ever closing, so every
+  publish "succeeded" into a void while the field said asleep. The heartbeat now
+  carries a `control:ping` and rebuilds a pipe that goes deaf for 20s.
+- **Nothing is committed** in any of the three repos; the VPS is ahead of git.
+  Note `908dd2b` (another session) already pushed the field.html *copy* changes,
+  but NOT the `keeperFace()` name fix — prod will print a stale body name at the
+  first jet.di handover until that lands.
+- **jet.di is still offline** (no ping to 192.168.1.11): `keeper_agent.py` +
+  `dibot-keeper.service` remain uninstalled from the 2026-08-01 drop.
+- **What visiting prod as a stranger showed, unfixed:** the door sits **~15s
+  black** before it paints and the field ~10s, with nothing on screen saying
+  anything is coming · the keeper window **opens by itself** on plain arrival
+  though every hint and doc says *tap the lattice* · the **invisible wire is no
+  longer invisible** — awake, 28 cores each sewn to the keeper turn the field
+  into a dominant blue web, a state nobody had seen because until tonight the
+  keeper was never actually awake.
+
+## Previous pass (2026-08-04, second) — the ending reads, and every tier gets it
 
 - **The tiers had drifted three ways, and each held something the others lacked.**
   Prod carried two fixes that were never in git (the ink cursor `#cur` in the rite;
@@ -117,6 +163,11 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 
 ## Open
 
+- **Three uncommitted repos** (`br_id_ge`, `di-bo`, `dibot`) — the VPS runs
+  ahead of git, and prod's `field.html` still lacks the `keeperFace()` name fix.
+- **Three calls owed on the field as it now reads:** tone the awake wire back to
+  a hairline? keep or drop the keeper window's auto-open? the black screen
+  before paint is di.iiii's viewer, not this repo — a bigger fix.
 - **Next session starts here:** build the field seeding from `programme.json` —
   generalise `scripts/sync-space.mjs` to emit entities from a manifest. Nothing about
   di.iiii needs to change first.

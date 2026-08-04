@@ -284,9 +284,14 @@ function sewWire(t){
   wireMat.color.set(keeperOnline()?0x1d4bff:0x8f8b83);}
 let keeperSeen=-1e9,keeperName='';
 function keeperOnline(){return performance.now()-keeperSeen<15000;}
+// Redrawing only on the awake/asleep flip was enough while one body could ever
+// keep. Two can now, and jet.di taking the room from di.bo never crosses that
+// flip — the page went on printing di.bo while the robot in the room answered.
+// The name is part of the face, so it is part of what is compared.
 let keeperWas=null;
 function keeperFace(){
-  const on=keeperOnline();if(on===keeperWas)return;keeperWas=on;
+  const on=keeperOnline(),face=on?(keeperName||'jet.di'):'';
+  if(face===keeperWas)return;keeperWas=face;
   keeperMat.color.set(on?0x1d4bff:0x8f8b83);
   keeperEyeMat.color.set(on?0x1d4bff:0x8f8b83);
   keeper.userData.orbits.forEach(o=>o.material.color.set(on?0x1d4bff:0x8f8b83));

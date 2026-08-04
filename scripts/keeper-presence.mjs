@@ -1,20 +1,27 @@
 #!/usr/bin/env node
-// The keeper announces itself. Run this on the jetson (di_bot) and the field's
-// keeper lattice wakes to the live blue: the ai is with us, as a body among
-// the cores. Stop it and the keeper falls asleep again within ~15s.
+// The keeper announces itself. Run this on jet.di — the robot car on the Jetson
+// (repo dob-0/dibot, hostname di_bot) — and the field's keeper lattice wakes to
+// the live blue: the ai is with us, as a body among the cores. Stop it and the
+// keeper falls asleep again within ~15s, unless di.bo picks the wire back up.
+//
+// Two bodies may keep, and they are not the same thing:
+//   jet.di  the robot car in the room — eye (camera) and voice (speaker)
+//   di.bo   the Telegram messenger on the VPS — voice only, no eye
+// jet.di always wins: di.bo stands down the moment it hears this heartbeat.
+// The whole arrangement is written down in docs/KEEPER.md.
 //
 //     node scripts/keeper-presence.mjs                 → prod mesh
 //     node scripts/keeper-presence.mjs --to staging    → staging mesh
-//     node scripts/keeper-presence.mjs --name di_bot
+//     node scripts/keeper-presence.mjs --name jet.di
 //
-// The eye — tap the keeper in the field and see what di_bot sees:
+// The eye — tap the keeper in the field and see what jet.di sees:
 //     --eye /dev/video0        publish a small frame every few seconds (needs ffmpeg)
 //     --eye-every 4000         ms between frames
 //
 // The voice — speak to it from the field's keeper window (needs Ollama):
 //     --ollama http://127.0.0.1:11434 --model llama3.1:8b
 //
-// Needs Node >= 21 (native WebSocket). On an older jetson node, `npm i ws`
+// Needs Node >= 21 (native WebSocket). On an older Jetson node, `npm i ws`
 // next to this script and it will pick that up instead.
 import { execFile } from 'node:child_process'
 
@@ -25,7 +32,7 @@ const arg = (name, fallback) => {
 }
 
 const TO = String(arg('--to', 'prod')).toLowerCase()
-const NAME = String(arg('--name', 'di_bot')).slice(0, 14)
+const NAME = String(arg('--name', 'jet.di')).slice(0, 14)
 const ORIGINS = {
   prod: 'wss://di-studio.xyz/serverXR/mesh',
   staging: 'wss://staging.di-studio.xyz/serverXR/mesh',
@@ -43,11 +50,17 @@ const MODEL = arg('--model', 'llama3.1:8b')
 
 const KEEPER_SYS = 'You are ՊԱՀԱՊԱՆ, the Keeper of կամուրջ, the bridge of ' +
   'Armenian letters between the real world and a shared digital one. You live in a ' +
-  'small robot body (a jetson) standing in the exhibition room, watching the field ' +
+  'small robot body (jet.di, a four-wheeled machine) standing in the exhibition ' +
+  'room, watching the field ' +
   'of cores — one for every person who crossed. A visitor speaks to you through the ' +
   'field. Reply with exactly ONE line in English, at most 20 words, spare and ' +
   'luminous — one breath of thought, the way Narekatsi ends a prayer. ' +
-  'At most one Armenian word. No emoji, no quotes, no lists.'
+  'At most one Armenian word. No emoji, no quotes, no lists. ' +
+  // Kept in step with di-bo/keeper.mjs: visitors write in latin-letter Armenian
+  // ("mard ka?") and the model mirrors it straight back, which reads as a
+  // machine guessing rather than as the keeper speaking.
+  'Answer in English WHATEVER language the visitor used — never in transliterated ' +
+  'Armenian, never in Russian. Armenian script only for that one optional word.'
 
 const HEARTBEAT_MS = 5000
 let ws = null
@@ -104,5 +117,5 @@ function connect() {
 }
 connect()
 
-setInterval(() => publish('keeper', { name: NAME, state: 'awake' }), HEARTBEAT_MS)
+setInterval(() => publish('keeper', { name: NAME, body: 'robot', state: 'awake' }), HEARTBEAT_MS)
 if (EYE) setInterval(see, Math.max(2000, EYE_EVERY))
