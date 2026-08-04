@@ -21,7 +21,34 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
-## This pass (2026-08-05) — the keeper has a second body, and the names are settled
+## This pass (2026-08-05, second) — the rite can be crossed on a phone, and it is live
+
+- **`9190846` — three faults in the rite, each fatal alone.** (1) Touch only read when
+  the camera saw *no body*, but a torso filling a front camera IS a body with no edge —
+  so a phone's only input was switched off and the advice was "step back", impossible for
+  whoever holds the camera. The test is now whether the body gives an **edge**; over ~90%
+  cover the finger takes the reading back. An 8s stall guard catches everything else.
+  (2) `target` was recomputed each frame from `everSeen`, which only grows — progress went
+  *down* while the visitor did everything right; it now fixes at 20 marks read, and
+  `frac()` is a high-water mark. (3) `advance()` scanned from the top, so a fast reading
+  skipped **the crossing** and **the witness** entirely; it steps one act at a time now.
+  Plus: the pointer ring was hidden whenever a camera existed — exactly when reading had
+  fallen back to touch.
+- **Seen, not assumed.** Complete crossing on a Pixel 7 viewport at DPR 2.6, touch only,
+  through the real di.iiii viewer iframe on staging: acts i → ii → iii → iv → echo in
+  order, both questions, the core, "you are part of it now."
+- **All three repos are committed and `main` is pushed** — br_id_ge `c3ff684`, di-bo
+  `303974a`, dibot `94cef99`, every tree clean. CI ran: **prod and staging both carry the
+  rite fix and the `keeperFace()` name fix**; the dash answers 200 at `/br_id_ge/needs`.
+- **di.bo learned di.iiii** (in `di-bo`, deployed to the Mac): `--add-dir` onto a live
+  `origin/dev` checkout that was 121 commits behind, a daily ff-only refresh, a knowledge
+  `CLAUDE.md`, a narrow tool allowlist, and a `dii` wrapper as the *only* network it gets —
+  so a prompt-injected question cannot POST anywhere.
+- **Ollama is gone from both machines** and from di.iiii's 13 documenting files
+  (`377a8110`, 402 deletions). The reason is recorded, not just the removal: this desktop
+  goes offline, which made a local-only fallback the least available thing in the stack.
+
+## Previous pass (2026-08-05, first) — the keeper has a second body, and the names are settled
 
 - **Names, decided.** **jet.di** = the robot car (repo `dibot`, hostname stays
   `di_bot`) · **di.bo** = the Telegram messenger on the VPS (repo `di-bo`).
@@ -53,10 +80,8 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   minutes — the mesh websocket stopped carrying without ever closing, so every
   publish "succeeded" into a void while the field said asleep. The heartbeat now
   carries a `control:ping` and rebuilds a pipe that goes deaf for 20s.
-- **Nothing is committed** in any of the three repos; the VPS is ahead of git.
-  Note `908dd2b` (another session) already pushed the field.html *copy* changes,
-  but NOT the `keeperFace()` name fix — prod will print a stale body name at the
-  first jet.di handover until that lands.
+- ~~Nothing is committed in any of the three repos~~ — all three landed later the same
+  day; the `keeperFace()` name fix is on prod.
 - **jet.di is still offline** (no ping to 192.168.1.11): `keeper_agent.py` +
   `dibot-keeper.service` remain uninstalled from the 2026-08-01 drop.
 - **What visiting prod as a stranger showed, unfixed:** the door sits **~15s
@@ -163,11 +188,26 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 
 ## Open
 
-- **Three uncommitted repos** (`br_id_ge`, `di-bo`, `dibot`) — the VPS runs
-  ahead of git, and prod's `field.html` still lacks the `keeperFace()` name fix.
+- **⚠ Unconfirmed by the user: the mobile stuck.** The three fixes are live, but the
+  original symptom was never reproduced here — a fake camera emits a test pattern, not a
+  human silhouette, so the lamp correctly sits at "needs your edge" forever, which is
+  indistinguishable from the reported bug. **Needs one crossing on a real phone at
+  https://di-studio.xyz/br_id_ge/rite.**
+- **A counter disagreement, undecided:** the rite dedupes by `name · word` (23) while the
+  field counts objects (28) — `գևորգ · կամուրջ` appears 6 times. Whether a repeat crossing
+  makes a second core is a design call, not a bug.
+- **di.iiii viewer chrome sits on the piece:** the `br_id_ge ▾` space chip
+  (`ProjectSwitcher.jsx:155`, `position:absolute; top:1rem; left:1rem; zIndex:30`) lands on
+  the rite's header, and `◈ Made with di.iiii` on its bottom status line. Affects every
+  published project — owner's call, not a repo fix.
+- **Staging has `openInscriptions: false`**, so a test crossing there ends "the far field
+  did not answer". Correct, not a regression. Prod is `true`.
 - **Three calls owed on the field as it now reads:** tone the awake wire back to
   a hairline? keep or drop the keeper window's auto-open? the black screen
   before paint is di.iiii's viewer, not this repo — a bigger fix.
+- **⚠ Still user-only: the `DI_SPACE_TOKEN_STAGING` repo secret.** Without it CI skips
+  staging and every staging surface is synced by hand; since `c3ff684` a skipped tier at
+  least turns the run red instead of passing green.
 - **Next session starts here:** build the field seeding from `programme.json` —
   generalise `scripts/sync-space.mjs` to emit entities from a manifest. Nothing about
   di.iiii needs to change first.
@@ -176,8 +216,6 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   a Telegram Desktop export of full history + media saves them, and the group is
   dispersing. Also worth asking hosq for the *aritsts mapping & archive* data (Uliana
   Pyadushkina + Christian Ginosyan) and the zine.
-- **`docs/notations/` is committed but NOT pushed** — pushing `main` fires CI (Pages +
-  space sync), so it waits for a deliberate call.
 - Notations date conflict is **closed**: esora confirms lab Jul 20–31, festival Aug 1–2,
   Philharmonia + National Gallery + Hayfilm, hosq as host.
 - **New face shipped 2026-07-31 — paper & ink & chrome** (user brief: contemporary /

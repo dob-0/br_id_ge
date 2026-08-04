@@ -432,38 +432,83 @@ function markScreen(m){
 // ── the lamp: camera in, outline out ─────────────────────────────────────
 const CAM_FACING=Q.get('cam')||'user'
 let video=null,camOn=false
+// What the lamp cannot do, in words. The loop prints it, so a body-reader that
+// died on the way is never mistaken for a rite that is simply over — the whole
+// failure used to be a status line still cheerfully reading "lamp open".
+let lampNote=''
 async function openLamp(){
+  let s
   try{
-    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:CAM_FACING,width:{ideal:640},height:{ideal:360}},audio:false})
-    video=document.createElement('video');video.srcObject=s;video.muted=true
-    video.setAttribute('playsinline','');await video.play();camOn=true
+    // A phone is portrait and the constraint asked for 16:9 landscape, so the
+    // mask arrived rotated against the screen it is drawn on.
+    const tall=innerHeight>innerWidth
+    const size=tall?{width:{ideal:360},height:{ideal:640}}:{width:{ideal:640},height:{ideal:360}}
+    s=await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:CAM_FACING},size),audio:false})
+  }catch(e){
+    $('#sLamp').textContent='lamp closed — the bridge still carries you'
+    lampNote='the bridge still carries you — touch to read';return
+  }
+  try{
+    video=document.createElement('video')
+    // iOS will not decode a stream into an element that is not in the document.
+    // An off-DOM video is the classic way a phone ends up holding a camera it
+    // never reads — present, hidden, and the failure separated from a refusal.
+    video.setAttribute('playsinline','');video.setAttribute('autoplay','')
+    video.muted=true
+    video.style.cssText='position:fixed;left:-9px;top:-9px;width:1px;height:1px;opacity:0;pointer-events:none'
+    document.body.appendChild(video)
+    video.srcObject=s
+    await video.play();camOn=true
     $('#sLamp').textContent='lamp open'
     startReveal()
-    openSeg()
-  }catch(e){ $('#sLamp').textContent='lamp closed — the bridge still carries you' }
+  }catch(e){
+    $('#sLamp').textContent='lamp closed — the bridge still carries you'
+    lampNote='the camera would not start — touch to read';return
+  }
+  // The body reader goes first and alone. Hands and pose only draw bones; the
+  // segmenter IS the reading. Started together they fetch one wasm build three
+  // times over and the only one that matters lands last — twelve seconds last
+  // on 4G, which is a phone showing "lamp open" and doing nothing.
+  await openSeg()
 }
 
 // MediaPipe, entirely optional: without it (no GPU, no CDN, ?body=0) the dreamed
 // figure stands in and every mechanic behaves identically.
 const MP='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14'
-let seg=null,segAt=0,segHas=false
+let seg=null,segAt=0,segHas=false,segFresh=0
 // the segmenter writes here, never straight into bodyMask — the drawn mask is
 // always the morph between this and the circle, one code path for both worlds
 const segMask=new Uint8Array(GW*GH)
 let segCover=0
+const SEG_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite'
 async function openSeg(){
-  if(Q.get('body')==='0')return
+  if(Q.get('body')==='0'){lampNote='body reading is off — touch to read';return}
+  let v,files
   try{
-    const v=await import(MP+'/vision_bundle.mjs')
-    const files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
-    seg=await v.ImageSegmenter.createFromOptions(files,{
-      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/1/selfie_segmenter.tflite',delegate:'GPU'},
-      runningMode:'VIDEO',outputCategoryMask:true,outputConfidenceMasks:false})
-    $('#sLamp').textContent='lamp open — move, and it reads you'
-  }catch(e){seg=null}
+    v=await import(MP+'/vision_bundle.mjs')
+    files=await v.FilesetResolver.forVisionTasks(MP+'/wasm')
+  }catch(e){seg=null;lampNote='the body reader did not arrive — touch to read';return}
+  // A phone that refuses the GPU delegate used to lose the body silently and for
+  // the whole session: one throw, one `seg=null`, and nothing said. CPU is
+  // slower and still reads.
+  for(const delegate of ['GPU','CPU']){
+    try{
+      seg=await v.ImageSegmenter.createFromOptions(files,{
+        baseOptions:{modelAssetPath:SEG_MODEL,delegate},
+        runningMode:'VIDEO',outputCategoryMask:true,outputConfidenceMasks:false})
+      lampNote=''
+      $('#sLamp').textContent='lamp open — move, and it reads you'
+      return
+    }catch(e){seg=null}
+  }
+  lampNote='the lamp cannot read bodies here — touch to read'
 }
 function readSeg(now){
   if(!seg||!camOn||!video||video.readyState<2)return false
+  // segHas was one-way: once a mask had landed the rite believed in a body
+  // forever. A lost GPU context or a stream the OS suspended then left it
+  // reading a frozen silhouette with no way back to the pointer.
+  if(segHas&&now-segFresh>2000){segHas=false;segCover=0}
   if(now-segAt<(inscribed?200:80))return true
   segAt=now
   try{ seg.segmentForVideo(video,now,(res)=>{
@@ -474,11 +519,20 @@ function readSeg(now){
       for(let i=0;i<GW;i++){const sx=Math.min(w-1,((i+0.5)/GW*w)|0)
         const on=d[sy*w+sx]>0?1:0;segMask[j*GW+i]=on;cnt+=on}}
     segCover=cnt
-    segHas=true   // a real silhouette has landed — from here your body does the reading
+    segHas=true;segFresh=performance.now()   // a real silhouette has landed — from here your body does the reading
     m.close&&m.close();res.close&&res.close()
   })}catch(e){}
   return true
 }
+
+// Coming back from the home screen or a locked phone: the OS may have paused
+// the stream, and a paused stream is a body that never returns. Only audio was
+// ever told the page had been away.
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden||!video)return
+  segHas=false;segCover=0
+  if(video.paused)video.play().catch(()=>{})
+})
 
 // ── where you are pointing ───────────────────────────────────────────────
 const P={x:-999,y:-999,has:false}
@@ -1269,7 +1323,9 @@ function begin(){
   started=true
   SND.unlock()
   door.classList.add('gone')
-  openLamp().then(()=>{openHands();openPose()})
+  // hands and pose are decoration and cost a second wasm build each — no camera,
+  // no reason to fetch them at all
+  openLamp().then(()=>{if(camOn){openHands();openPose()}})
   showCard(ACTS[0])
 }
 door.addEventListener('click',begin)
@@ -1309,7 +1365,12 @@ function frame(now){
   const dt=Math.min(0.1,t-lastT); lastT=t
   // one mask, two sources: the circle is the ground state, a found body pulls
   // the boundary toward itself (~1.5s in), a lost one lets it return (~2.5s)
-  const bodyNow=camOn&&segHas&&segCover>12
+  // A mask that swallows the whole frame has no edge, and an outline with no
+  // edge is a BLANK PAGE — the visitor opens the lamp and is given nothing at
+  // all to read. Standing at arm's length from a phone does exactly this. So
+  // "all body" counts as "no body": the circle comes back, and with it letters.
+  const swallowed=camOn&&segHas&&segCover/(GW*GH)>0.9
+  const bodyNow=camOn&&segHas&&segCover>12&&!swallowed
   if(REDUCED)morph=bodyNow?1:0
   else morph=clamp(morph+(bodyNow?dt/1.5:-dt/2.5),0,1)
   const R0=Math.min(W,H)*0.21
@@ -1390,10 +1451,14 @@ function frame(now){
     // The lamp says what it can actually see, so "is it working?" is never a
     // guess. When it cannot see an edge it now says what to do instead of what
     // is impossible — the hand is already on the glass.
-    if(embodied){
-      $('#sLamp').textContent=!edged
-        ? 'too close for the lamp — touch to read'
-        : (stalled?'touch to read · ':'')+'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+    if(swallowed||(embodied&&!edged)){
+      $('#sLamp').textContent='too close for the lamp — touch to read'
+    }else if(embodied){
+      $('#sLamp').textContent=(stalled?'touch to read · ':'')+'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+    }else if(lampNote){
+      // said the moment it is known, not eight seconds later: waiting for a
+      // reader that is never coming is the whole of the stuck
+      $('#sLamp').textContent=lampNote
     }else if(stalled&&started){
       $('#sLamp').textContent='touch to read'
     }
