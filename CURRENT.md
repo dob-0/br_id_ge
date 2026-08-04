@@ -21,7 +21,26 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
-## This pass (2026-08-01)
+## This pass (2026-08-04) — the record, no code
+
+- **The festival is now data.** Scraped all 76 esora programme pages (JSON-LD) into
+  `docs/notations/programme.json` — 57 works, 186 named people, ~28 rooms, credits and
+  times. Rendered as `PROGRAMME.md` (by time), `ARTISTS.md` (by person, with the
+  name-variant table), `ROOMS.md` (by place). **`programme.json` is the build input.**
+- **`docs/notations/PLATFORM.md`** — audit of what di.iiii already carries: the three
+  shipped exhibition patterns (wcc portal hub · recordar landing→scene · repo-synced),
+  19 entity types, portals with `mode: portal | embed`, live inscriptions + mesh +
+  `deviceAccess` camera. Missing piece is batch authoring, not platform features.
+- **Advice (in `docs/notations/README.md`): the field IS the exhibition.** Seed the 57
+  works into the field as cores that were already there; rooms become portal clusters;
+  one vanity slug per work; feed `programme.json` to the keeper. Keeps the 2026-07-31
+  one-public-face rule — no new published sibling, no `notations` space.
+- Chat reading kept OUT of this public repo → `br_id_ge-ops/notations/CHAT_READING.md`.
+- Corrections owed to hosq: Artak's *Matagh* missing from the programme entirely;
+  *Short Songs* merges two people into one name; recurring misspellings (table in
+  `ARTISTS.md`).
+
+## Previous pass (2026-08-01)
 
 - **Door redesigned** to the paper-and-ink face, minimal: կամուրջ serif title, one lede,
   cross + field links, event essentials in the frame corners. Old void/cyan face gone.
@@ -67,6 +86,18 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 
 ## Open
 
+- **Next session starts here:** build the field seeding from `programme.json` —
+  generalise `scripts/sync-space.mjs` to emit entities from a manifest. Nothing about
+  di.iiii needs to change first.
+- **⚠ Time-sensitive, user-only:** the 278 photos/videos in the hosq Telegram group are
+  NOT recoverable from di-bo's log (media type recorded, no `file_id` — verified). Only
+  a Telegram Desktop export of full history + media saves them, and the group is
+  dispersing. Also worth asking hosq for the *aritsts mapping & archive* data (Uliana
+  Pyadushkina + Christian Ginosyan) and the zine.
+- **`docs/notations/` is committed but NOT pushed** — pushing `main` fires CI (Pages +
+  space sync), so it waits for a deliberate call.
+- Notations date conflict is **closed**: esora confirms lab Jul 20–31, festival Aug 1–2,
+  Philharmonia + National Gallery + Hayfilm, hosq as host.
 - **New face shipped 2026-07-31 — paper & ink & chrome** (user brief: contemporary /
   brutalist / minimalist / metamodern): warm paper ground, hairline frame, mono HUD
   corners, ink letters, one live blue; the core is the piece's single Three.js
