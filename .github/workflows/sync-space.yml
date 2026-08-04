@@ -20,17 +20,23 @@ on:
       - 'index.html'
       - 'bridge.html'
       - 'field.html'
+      - 'dash.html'
       - 'di-space.json'
       - 'di-space.landing.json'
       - 'di-space.field.json'
+      - 'di-space.dash.json'
       - 'assets/**'
       - 'scripts/sync-space.mjs'
       - '.github/workflows/sync-space.yml'
   workflow_dispatch: {}
 
+# Never cancel a sync in flight. A cancelled run can die between staging and prod,
+# or between two manifests, leaving a new door over an old rite — and a cancelled
+# run sends no failure mail, so the split would be silent. These runs take ~20s;
+# queueing the next one costs nothing.
 concurrency:
   group: sync-space
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -69,13 +75,22 @@ jobs:
               return 1
             fi
             echo "──────── $tier → $base"
-            for m in di-space.json di-space.landing.json di-space.field.json; do
+            for m in di-space.json di-space.landing.json di-space.field.json di-space.dash.json; do
               LIVE_API_TOKEN="$token" node scripts/sync-space.mjs --repo . --manifest "$m" --to "$base"
             done
           }
 
           # rehearsal first — but never let it hold the live space back
+          staging_ok=1
           sync_tier staging https://staging.di-studio.xyz/serverXR "${STAGING_TOKEN:-}" \
-            || echo "::warning::staging sync did not complete — prod continues, staging is now behind."
+            || { staging_ok=0; echo "::warning::staging sync did not complete — prod continues, staging is now behind."; }
 
           sync_tier prod https://di-studio.xyz/serverXR "$PROD_TOKEN"
+
+          # Prod is synced; now let the run go red. A skipped tier used to leave the
+          # job green, so staging drifted a whole redesign behind with nothing to
+          # show for it but an annotation nobody opens.
+          if [ "$staging_ok" -eq 0 ]; then
+            echo "::error::staging did not sync. Prod is current; staging is behind and will stay behind until this is fixed."
+            exit 1
+          fi
