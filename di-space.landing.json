@@ -7,6 +7,5 @@
   "entry": "bridge.html",
   "include": [],
   "assets": [],
-  "publish": true,
-  "live": "https://di-studio.xyz/serverXR"
+  "publish": true
 }

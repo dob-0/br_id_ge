@@ -8,6 +8,5 @@
   "include": [],
   "assets": [],
   "publish": false,
-  "deviceAccess": true,
-  "live": "https://di-studio.xyz/serverXR"
+  "deviceAccess": true
 }

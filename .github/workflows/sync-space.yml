@@ -1,9 +1,17 @@
 name: Sync di.iiii Space
 
-# Pushes the repo's landing page into the linked di.iiii space (di-studio.xyz/br_id_ge)
-# on every change to the content. The binding lives in di-space.json; the engine is
-# scripts/sync-space.mjs. Requires repo secret DI_SPACE_TOKEN (a di.iiii editor token
-# scoped to this space). Runs alongside pages.yml (GitHub Pages) — both stay in sync.
+# Pushes the repo's surfaces into the linked di.iiii space (/br_id_ge) on every
+# change to the content. The binding lives in the di-space*.json manifests; the
+# engine is scripts/sync-space.mjs.
+#
+# EVERY TIER, EVERY TIME. This used to sync prod alone, and staging silently
+# drifted four days and a whole redesign behind — the old void-and-cyan door was
+# still standing there while prod wore paper and ink. Staging goes first, as the
+# rehearsal it is; a staging failure warns but never holds the live space back.
+#
+# Secrets: DI_SPACE_TOKEN (prod) and DI_SPACE_TOKEN_STAGING (staging) — di.iiii
+# editor tokens scoped to this space, one per tier because the tiers do not
+# share a database. A tier with no token is skipped with a loud warning.
 
 on:
   push:
@@ -11,8 +19,10 @@ on:
     paths:
       - 'index.html'
       - 'bridge.html'
+      - 'field.html'
       - 'di-space.json'
       - 'di-space.landing.json'
+      - 'di-space.field.json'
       - 'assets/**'
       - 'scripts/sync-space.mjs'
       - '.github/workflows/sync-space.yml'
@@ -32,7 +42,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Guard — token must be present
+      - name: Guard — the live token must be present
         env:
           DI_SPACE_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
         run: |
@@ -43,12 +53,29 @@ jobs:
           fi
 
       # Repo is the single source of truth for ALL projects in the space.
-      # The landing (bridge.html) is the published face; the rite syncs with
-      # publish:false so it never steals the pointer.
-      - name: Sync all projects to di.iiii space
+      # The landing (bridge.html) is the published face; the rite and the field
+      # sync with publish:false so they never steal the pointer.
+      - name: Sync every surface to every tier
         env:
-          LIVE_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
+          PROD_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
+          STAGING_TOKEN: ${{ secrets.DI_SPACE_TOKEN_STAGING }}
         run: |
-          node scripts/sync-space.mjs --repo .                                    # v.oooooo 2 (rite)   → newww
-          node scripts/sync-space.mjs --repo . --manifest di-space.landing.json   # the landing (face)  → landing (published)
-          node scripts/sync-space.mjs --repo . --manifest di-space.field.json     # the field           → br-id-ge-field
+          set -euo pipefail
+
+          sync_tier () {
+            tier="$1"; base="$2"; token="$3"
+            if [ -z "$token" ]; then
+              echo "::warning::$tier skipped — no token secret set. That tier WILL drift out of sync."
+              return 1
+            fi
+            echo "──────── $tier → $base"
+            for m in di-space.json di-space.landing.json di-space.field.json; do
+              LIVE_API_TOKEN="$token" node scripts/sync-space.mjs --repo . --manifest "$m" --to "$base"
+            done
+          }
+
+          # rehearsal first — but never let it hold the live space back
+          sync_tier staging https://staging.di-studio.xyz/serverXR "${STAGING_TOKEN:-}" \
+            || echo "::warning::staging sync did not complete — prod continues, staging is now behind."
+
+          sync_tier prod https://di-studio.xyz/serverXR "$PROD_TOKEN"

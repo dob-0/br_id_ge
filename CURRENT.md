@@ -21,7 +21,38 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
-## This pass (2026-08-04) — the record, no code
+## This pass (2026-08-04, second) — the ending reads, and every tier gets it
+
+- **The tiers had drifted three ways, and each held something the others lacked.**
+  Prod carried two fixes that were never in git (the ink cursor `#cur` in the rite;
+  `revealAll()` on plain arrival at the field) — hand-applied, unrecorded. The repo
+  carried two prod never got (the srcdoc `?just=` hand-off, the detector rest that
+  stopped the ending grinding). Staging was a whole redesign behind — still wearing
+  the old void-and-cyan door from before the 2026-07-31 declutter. All four are now
+  in the repo, which is master again.
+- **The ending overlapped itself.** The shared body's floor was a guessed `H*0.66`
+  while the closing block — line, count, three links — is fixed rem and reaches up
+  past `0.62H` on a short screen. On a 1440×800 laptop the bottom arc of letters ran
+  straight through "you are part of it now." The floor is now measured off the live
+  box (`endFloor()`), and the block is written before the body is laid out.
+- **The shared body arrived nearly empty on a phone.** The outline was sampled on the
+  96×54 reading grid, whose cells are 4× taller than wide in portrait; every ordinary
+  step between neighbours exceeded the concavity threshold and was skipped. It now
+  samples on a square-celled grid of its own, and the threshold is measured in cells
+  rather than glyphs. Verified at 430×932, 1280×720, 1440×800, 1290×1300.
+- **CI syncs every tier, staging first.** It only ever pushed prod, which is how
+  staging drifted; and its `paths:` filter never listed `field.html` at all, so field
+  changes did not trigger a sync. `sync-space.mjs` now retargets `di-studio.xyz` to
+  the tier it is syncing into, so a staging copy stops writing crossings to the live
+  field. The manifests no longer pin `live` — the caller names the tier.
+- **⚠ Needs the user:** a `DI_SPACE_TOKEN_STAGING` repo secret (the tiers do not share
+  a database, so the prod token will not work there). Until it exists the workflow
+  warns and skips staging, and staging keeps drifting.
+- `window.__end()` in the rite — the twin of the field's `window.__keeper()`. The
+  ending is a camera, a crossing and twenty seconds away, which made the screen with
+  the most text on it the one hardest to look at.
+
+## Previous pass (2026-08-04) — the record, no code
 
 - **The festival is now data.** Scraped all 76 esora programme pages (JSON-LD) into
   `docs/notations/programme.json` — 57 works, 186 named people, ~28 rooms, credits and
@@ -40,7 +71,7 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   *Short Songs* merges two people into one name; recurring misspellings (table in
   `ARTISTS.md`).
 
-## Previous pass (2026-08-01)
+## Earlier pass (2026-08-01)
 
 - **Door redesigned** to the paper-and-ink face, minimal: կամուրջ serif title, one lede,
   cross + field links, event essentials in the frame corners. Old void/cyan face gone.
@@ -82,7 +113,7 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 - Full loop LIVE on prod: cross at /br_id_ge/rite → core lands in the space →
   visible in the field and Act V. Camera lamp opens on mobile.
 - CI: push main → GitHub Pages (mirror) + Sync di.iiii Space (rite + landing manifests).
-- Staging mirrors prod (space-bundle realign 2026-07-31).
+- CI syncs staging AND prod on every push to main (staging needs its own token secret).
 
 ## Open
 

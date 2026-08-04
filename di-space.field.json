@@ -7,6 +7,5 @@
   "entry": "field.html",
   "include": [],
   "assets": [],
-  "publish": false,
-  "live": "https://di-studio.xyz/serverXR"
+  "publish": false
 }

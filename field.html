@@ -80,10 +80,12 @@ canvas.grabbing{cursor:grabbing}
 <div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
 <div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
 <button class="hud" id="mode">all together →</button>
-<!-- the keeper's window — tap the lattice: see through di_bot's eye, speak to it -->
+<!-- the keeper's window — tap the lattice: see through jet.di's eye, speak to it.
+     Two bodies may keep: jet.di, the robot in the room (eye + speaker), and
+     di.bo, the messenger on the wire (voice only). docs/KEEPER.md holds both. -->
 <div id="kPanel" hidden>
   <div class="kHead"><span>պահապան · the keeper</span><button id="kClose">×</button></div>
-  <div id="kState">asleep — the jetson is not on the mesh</div>
+  <div id="kState">asleep — no body is on the mesh</div>
   <img id="kEye" alt="" hidden>
   <div id="kLog"></div>
   <form id="kForm"><input id="kIn" placeholder="speak to it" autocomplete="off" maxlength="120"></form>
@@ -234,8 +236,9 @@ modeBtn.addEventListener('click',()=>setMode(!together));
 
 // THE KEEPER — the ai among us, and it does not pretend to be a crossing:
 // where every core is a closed knot of chrome, the keeper is an open lattice —
-// a thing that is all structure and no body. Asleep it is graphite; when the
-// jetson (di_bot) is on the mesh it wakes to the one live blue.
+// a thing that is all structure and no body. Asleep it is graphite; when a body
+// is on the mesh it wakes to the one live blue. Two can keep it: jet.di, the
+// robot car standing in the room, and di.bo, the messenger — whoever is there.
 const keeperMat=new THREE.MeshBasicMaterial({color:0x8f8b83,wireframe:true,transparent:true,opacity:.85});
 const keeperEyeMat=new THREE.MeshPhysicalMaterial({color:0x8f8b83,metalness:.9,roughness:.25,envMapIntensity:1});
 const keeper=(()=>{
@@ -287,9 +290,12 @@ function keeperFace(){
   keeperMat.color.set(on?0x1d4bff:0x8f8b83);
   keeperEyeMat.color.set(on?0x1d4bff:0x8f8b83);
   keeper.userData.orbits.forEach(o=>o.material.color.set(on?0x1d4bff:0x8f8b83));
-  keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'di_bot')+' awake'):'keeper · asleep');
+  keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'jet.di')+' awake'):'keeper · asleep');
   keeper.userData.label.material.needsUpdate=true;
-  document.getElementById('kState').textContent=on?((keeperName||'di_bot')+' · awake — it can hear you'):'asleep — the jetson is not on the mesh';}
+  // The eye belongs to jet.di alone. When di.bo keeps, the window must not
+  // leave a stale frame hanging over a keeper that cannot see.
+  if(!on){const e=document.getElementById('kEye');e.hidden=true;e.removeAttribute('src');}
+  document.getElementById('kState').textContent=on?((keeperName||'jet.di')+' · awake — it can hear you'):'asleep — no body is on the mesh';}
 
 // the mesh — same room the rite crosses in. the field listens for the keeper's
 // heartbeat, its eye, and its words — and carries the visitor's words back.
@@ -344,6 +350,12 @@ async function loadField(){
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id));});
     gatherSeats();receive();
+    // The field IS the crossings. Cores are built hidden (placeCore) and only
+    // revealAll() shows them — which ran solely from the ALL TOGETHER gather
+    // and the rite's ?just= hand-off. So arriving straight at /field gave an
+    // empty page that still counted "N cores" and invited a tap no visible
+    // core could receive.
+    revealAll();
     {const el=document.getElementById('n'),to=cores.size,from=parseInt(el.textContent)||0;
      if(matchMedia('(prefers-reduced-motion: reduce)').matches||to<=from){el.textContent=to;}
      else{let v=from;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t);},60);}}

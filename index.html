@@ -36,11 +36,21 @@ html,body{height:100%;overflow:hidden;background:var(--paper);
 body{color:var(--ink);font-family:var(--mono);cursor:none;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.ask input{touch-action:auto;-webkit-user-select:text;user-select:text}
+.ask input{touch-action:auto;-webkit-user-select:text;user-select:text;cursor:text}
 
 /* the frame — a printed sheet's edge */
 #frame{position:fixed;inset:10px;border:1px solid var(--hairline);z-index:1;pointer-events:none}
 @media (max-width:560px){#frame{inset:8px}}
+
+/* the pointer, set in ink. The page hides the system cursor so the letters
+   are the only marks on the sheet — but a mouse with nothing under it is a
+   mouse you've lost. One printed dot, no glow: print, not sparks. Coarse
+   pointers keep the system cursor (see the rule further down) and never
+   show this. */
+#cur{position:fixed;top:0;left:0;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;
+  border-radius:50%;background:var(--ink);z-index:10;pointer-events:none;display:none}
+#cur.on{display:block}
+@media (pointer:coarse){#cur{display:none}}
 
 /* LAYER 1 — the reading (2D ink) and the core (WebGL, mounted late) */
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
@@ -75,8 +85,11 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 
 .end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
   align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
+/* two lines are reserved: the keeper's blessing lands here after the body is
+   already laid out, and a block that grows upward would walk back into it */
 .end .said{font-family:var(--arm);font-weight:300;font-size:clamp(1.1rem,3.6vw,1.6rem);
-  line-height:1.45;max-width:26ch;color:var(--ink)}
+  line-height:1.45;min-height:2.9em;max-width:26ch;color:var(--ink);
+  display:flex;align-items:center;justify-content:center}
 .end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
   color:var(--graphite);max-width:34ch;text-transform:lowercase}
 .end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
@@ -122,6 +135,7 @@ body.inframe #hudTitle{top:2.9rem}
 </head>
 <body>
 
+<div id="cur"></div>
 <div id="frame"></div>
 <canvas id="c"></canvas>
 <canvas id="g3"></canvas>
@@ -469,7 +483,13 @@ function readSeg(now){
 // ── where you are pointing ───────────────────────────────────────────────
 const P={x:-999,y:-999,has:false}
 function point(x,y){P.x=x;P.y=y;P.has=true}
-addEventListener('pointermove',e=>{if(!hand.has)point(e.clientX,e.clientY)},{passive:true})
+const curEl=document.getElementById('cur')
+function drawCursor(x,y){if(!curEl)return;
+  curEl.style.transform='translate('+x+'px,'+y+'px)';curEl.classList.add('on')}
+addEventListener('pointermove',e=>{if(!hand.has)point(e.clientX,e.clientY);
+  drawCursor(e.clientX,e.clientY)},{passive:true})
+addEventListener('pointerdown',e=>drawCursor(e.clientX,e.clientY),{passive:true})
+document.addEventListener('mouseleave',()=>{if(curEl)curEl.classList.remove('on')})
 // a touch rings outward through the field — a slow wave of opacity, print not sparks
 const ripples=[]
 function ripple(x,y){
@@ -955,26 +975,51 @@ function inscribe(){
 // name and word, so the body is literally composed of the crossings themselves.
 let shared=null
 function buildSharedBody(){
-  // the canonical standing figure, sampled as an outline
+  // The closing text is written FIRST, so its real height is on the page before
+  // the outline is laid out. The floor used to be a guessed H*0.66 while the
+  // block itself — line, count, and three links — reached up past 0.62H, so the
+  // body's bottom arc ran straight through "you are part of it now."
+  openEnd()
+  // The canonical standing figure, sampled as an outline — on a grid of its
+  // own, with square cells. The reading grid is 96×54 for the whole screen, so
+  // on a portrait phone one cell is four times taller than it is wide: the
+  // outline came back as a ladder of far-apart rows that the walk could only
+  // zigzag through and the resampler could not letter, and the shared body —
+  // the last thing anyone sees — arrived nearly empty on the show's own
+  // device. Same mask, same field; only the resolution it is read at is the
+  // screen's rather than the reading's.
+  const SW=Math.max(96,Math.min(220,Math.round(W>=H?170:170*Math.sqrt(W/H))))
+  const SH=Math.max(48,Math.min(320,Math.round(SW*H/W)))
   const pts=[]
-  const mask=new Uint8Array(GW*GH)
-  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)mask[j*GW+i]=dreamed(i,j,0)
-  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
-    const k=j*GW+i
+  const mask=new Uint8Array(SW*SH)
+  for(let j=0;j<SH;j++)for(let i=0;i<SW;i++)
+    mask[j*SW+i]=dreamed(i*(GW/SW),j*(GH/SH),0)
+  for(let j=0;j<SH;j++)for(let i=0;i<SW;i++){
+    const k=j*SW+i
     if(!mask[k])continue
-    const l=i>0?mask[k-1]:1,r=i<GW-1?mask[k+1]:1,u=j>0?mask[k-GW]:1,d=j<GH-1?mask[k+GW]:1
+    const l=i>0?mask[k-1]:1,r=i<SW-1?mask[k+1]:1,u=j>0?mask[k-SW]:1,d=j<SH-1?mask[k+SW]:1
     if(l&&r&&u&&d)continue
-    if(STEP>1&&((i%STEP)||(j%STEP)))continue
-    pts.push([(1-(i+0.5)/GW)*W,((j+0.5)/GH)*H])
+    pts.push([(1-(i+0.5)/SW)*W,((j+0.5)/SH)*H])
   }
   if(!pts.length)return
   // Fill the frame. The dreamed figure is narrow, and at its natural size the shared
   // body read as a clot in the middle of a large black screen.
   let lo=Infinity,hi=-Infinity,xlo=Infinity,xhi=-Infinity
   for(const [x,y] of pts){if(y<lo)lo=y;if(y>hi)hi=y;if(x<xlo)xlo=x;if(x>xhi)xhi=x}
-  // the floor stays above the closing text — the body never writes over it
-  const top=H*0.05, bot=H*0.66, span=Math.max(1,hi-lo)
+  // the floor stays above the closing text — the body never writes over it.
+  // Measured, not guessed: whatever the block ends up being (a long keeper
+  // blessing, three links or one, a short screen) the letters stop a clear
+  // line above it. The clamp keeps a squat viewport from crushing the figure.
+  const top=H*0.05, bot=endFloor(), span=Math.max(1,hi-lo)
   const cxm=(xlo+xhi)/2, wide=Math.min(1.55, (W*0.62)/Math.max(1,xhi-xlo))
+  // How far apart two NEIGHBOURING outline samples end up once the figure has
+  // been stretched to fill the sheet. Anything much wider than this is a real
+  // concavity, not a step. It has to be measured, because the stretch is not
+  // the same on every screen: the reading grid is 96×54, so on a portrait
+  // phone one cell is four times taller than it is wide and the fill scales
+  // the outline nearly 3x — every ordinary step read as a jump, every segment
+  // was skipped, and the shared body arrived empty on the show's own device.
+  const cellStep=Math.hypot((W/SW)*wide, (H/SH)*((bot-top)/span))
   for(const p of pts){
     p[1]=top+((p[1]-lo)/span)*(bot-top)
     p[0]=cxm+(p[0]-cxm)*wide
@@ -1014,12 +1059,13 @@ function buildSharedBody(){
   // never on top of each other — the grid cells are far narrower than a glyph.
   // A jump in the angular order is a concavity: break there, never letter across it.
   const gap=FS*0.85
+  const jump=Math.max(gap*3, cellStep*2.5)
   const slots=[]
   let carry=0
   for(let i=0;i<chain.length-1;i++){
     const a=chain[i], b=chain[i+1]
     const seg=Math.hypot(b[0]-a[0],b[1]-a[1])
-    if(seg>gap*3){carry=0;continue}
+    if(seg>jump){carry=0;continue}
     let d=carry
     while(d<seg){const f=d/seg;slots.push([a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]);d+=gap}
     carry=d-seg
@@ -1050,6 +1096,12 @@ function buildSharedBody(){
   $('#hudAct').textContent='echo \u00b7 act v'
   SND.sharedPad()
   CORE3.recede()
+}
+
+// The closing block, opened before the body is laid out so the outline can be
+// measured against it. Idempotent — buildSharedBody is the only caller.
+function openEnd(){
+  if(endOpen)return
   const n=field.length
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
@@ -1060,6 +1112,15 @@ function buildSharedBody(){
   endOpen=true
   endLinks()
   show(end)
+}
+
+// Where the shared body's feet must stop: a clear line above the closing text.
+// Read from the live box, so it is right on any screen and after any wording.
+function endFloor(){
+  const r=end.getBoundingClientRect()
+  const gap=Math.max(18,H*0.03)
+  if(!r.height)return H*0.66
+  return Math.max(H*0.40,Math.min(H*0.66,r.top-gap))
 }
 
 // ── the choice at the end — keep a copy, or unmake the crossing ───────────
@@ -1487,6 +1548,20 @@ function frame(now){
   ctx.globalAlpha=1
   requestAnimationFrame(frame)
 }
+// show-rig probe, the twin of field.html's window.__keeper(). The ending is a
+// camera, a crossing and twenty seconds away, which makes the one screen with
+// the most text on it the one hardest to check. This jumps straight to it.
+window.__end=(n=22)=>{
+  started=true;inscribed=true;done=true
+  if(!name)name='—'
+  if(!word)word='շունչ'
+  for(let i=field.length;i<n;i++)field.push('name'+i+' · բառ'+i)
+  crossing=crossing||{id:'insc-probe',proof:'probe'}  // so the third link shows too
+  $('#door').classList.add('gone')
+  buildSharedBody()
+  return {n:field.length}
+}
+
 resize()
 requestAnimationFrame(frame)
 </script>
