@@ -115,6 +115,24 @@ blue before trusting that it does (asks print to the console):
 node ~/di-bo/keeper.mjs
 ```
 
+### The rehearsal tier
+
+A body holds **one** room. `di-bo` keeps prod, and staging's copy of this page
+is retargeted by `sync-space.yml` to `wss://staging.di-studio.xyz/serverXR/mesh`
+— so until 2026-08-05 staging's field sat at `asleep` with nobody on its mesh,
+and anyone rehearsing there saw the piece with its centre missing.
+
+Unit `di-bo-staging` on the same VPS now keeps that room: standalone
+`keeper.mjs --mesh wss://staging.di-studio.xyz/serverXR/mesh`, logging to
+`/var/log/di-bo-staging.log`. It is deliberately **not** a second `bot.mjs` —
+two would long-poll Telegram with the same token and fight over every update.
+Standalone still answers the visitor, because `startKeeper` publishes
+`KEPT_LINE` itself; it simply has no Telegram to carry the ask into, which is
+right for a tier where nobody is meant to answer by hand.
+
+Never point the two units at one mesh — that is the "two answers to one
+question" failure below, arranged on purpose.
+
 ---
 
 ## Seeing that it works
