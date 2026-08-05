@@ -21,6 +21,113 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
+## This pass (2026-08-05, fourth) — the crossing keeps the drawing, and the end moves
+
+**NOT COMMITTED — br_id_ge working tree is dirty; the di.iiii half is a worktree.**
+
+- **The mark.** The threshold ink used to dry in seven seconds and be thrown away,
+  and the form a crossing wore in the field was a torus knot picked by a hash of
+  its own id — unique, permanent, and nobody's. The drawing is now KEPT: quantized
+  to a byte per axis inside its own box, carried as an opaque `m1.…` base64url
+  token (~1KB), and stood up in the field as a chrome tube in the same material as
+  every knot. A crossing with no mark still gets its knot.
+- **The end is a page you can write on again.** Once the shared body has finished
+  arriving the ink returns; what you leave there replaces what you left at the
+  door. Letters are NOT born at the ending — the page is already full of everyone's
+  words, and a letter born there would belong to nobody. The mark writes itself
+  back in where the core stood, at a hand's speed.
+- **The field is IN the ending.** The passage went through three shapes — a 40s
+  lapse, then a 14s rule that travelled by itself — and both were answers to the
+  wrong question. What was wanted was to SEE the field at "you are part of it
+  now.", not to be taken somewhere. So the field itself now opens inside the
+  ending: `field.html?…&embed=1` in a transparent iframe filling everything above
+  the closing line, arriving the moment the shared body has finished. The cores
+  stand among the letters and over the drawn mark. A **tap** goes in; a **drag**
+  is still ink, so the ending is a page you can write on with the field on it. Two
+  hard refusals stay — nothing opens over the unmake question, and nothing opens
+  when the far field refused the crossing. `?embed=1` strips the field's own
+  furniture (hud, frame, keeper panel, ground ring, dust, contact shadows,
+  captions) and skips its mesh socket: the rite is already in that room.
+- **The hand-off is exact.** `?just=<word>` alone matched on a word six people have
+  carried, so "your core is there" could walk a visitor to a stranger's. It now
+  carries `&me=<inscription id>`; the word stays as the fallback.
+- **⚠ A pre-existing showstopper, found and fixed: the rite could not be finished
+  under `prefers-reduced-motion`.** The dreamed circle was snapped onto the
+  fingertip with no lag, which welded its EDGE — the only thing a pointer can read
+  — exactly one radius from the hand, forever. Nothing was ever read, the reading
+  never advanced, and the rite ended at act ii. Reproduced on committed HEAD before
+  the fix. The lag is the mechanic, not decoration; it is now the same for everyone.
+  Reduced motion can also draw now (it could not lay ink at all, so it had no mark).
+- Two smaller ones: the memento's footer ran off both edges of the sheet whenever
+  the mono font had not loaded into the canvas, and it now carries the drawing.
+- **Every crossing looks like a different crossing.** Ten knot pairs on one
+  geometry made two dozen near-twins; "each one = a crossing" was a caption the
+  picture did not support. The id now seeds a FAMILY first — knot, the same knot
+  pulled to wire, a ring, a line drawn through space, a cut stone — and the family
+  is what the eye tells apart. Same id, same form, forever.
+- **The letters, together.** A crossing's word was a caption that vanished the
+  moment the field gathered. Every core now carries its own Armenian word around
+  itself, letter by letter, and the letters ride the group — so gathering the
+  cores gathers the alphabet. Apart they are a whisper; together they ARE the body.
+
+### The mobile audit (asked for, and it was overdue)
+
+The rule the whole repo runs on is "see it before it ships" — and everything was
+being seen on a desk. Four things were desktop-only by accident:
+
+1. **The reading was a smear on a phone.** The mask grid is 96 × 54 — a landscape
+   grid. Stretched onto 412 × 915 a cell is 4px wide and 17px tall, so capitals
+   overlapped horizontally while whole bands of the screen stayed empty. One
+   `STEP` for both axes could not fix it: thinning enough to stop the collision
+   emptied the vertical. Each axis is now thinned by what that axis actually
+   measures (`STEPX`/`STEPY`, never under 12px between glyphs) and the glyph is
+   sized to the gap it was given. Wide screens are unchanged — the letters are
+   meant to crowd a little there.
+2. **The field's two top corners crossed each other** at 412px (470px of text in
+   412px of room), and "all together" sat on "cross the bridge" in the bottom row.
+   Smaller type, one row per thing, and the keeper's panel — which was a floating
+   card over the middle of the screen, i.e. over the whole phone — is a sheet that
+   stops short of the bottom row.
+3. **The field was framed from a desk seat.** A flat disc seen low is a band across
+   the middle of a wide window and a stripe with empty paper above and below it in
+   a tall one, with half the cores off both edges. On portrait the spiral winds
+   tighter, the seat rises (more of a look down), and the camera steps back by how
+   much taller than wide the screen is. Captions are smaller and sit further clear.
+4. **`#hint` was `display:none` on phones** — and it is the only place the piece
+   says that a tap reveals the crossings, so the field's one mechanic was a desktop
+   feature by accident. It stays now; only the mouse half ("drag orbit · scroll
+   zoom") goes.
+
+### di.iiii side — worktree `.claude/worktrees/inscription-mark`, branch `feat/inscription-mark`, NOT committed
+
+- `POST /inscriptions` accepts an optional `mark`; `PUT /inscriptions/:id/mark`
+  replaces it later with the same proof that unmakes a crossing (the ending's
+  drawing happens after the crossing was posted). Validated by SHAPE and never
+  parsed server-side; a malformed or oversized mark is DROPPED and the crossing
+  still succeeds. Added to `PUBLIC_CORS_ROUTES` alongside its DELETE sibling.
+- 14 new tests (`inscriptionRoutes.test.js`); **282/282 serverXR tests pass**, eslint clean.
+  Wiki entry `open-inscriptions` updated — it still claimed "update and delete are
+  impossible on this path", which the proof-gated DELETE had already made untrue.
+
+### Seen, not assumed
+
+Local mirror on **:8907** (`serve.mjs`, staging tier) and a second rig on **:8912**
+against a local serverXR carrying the change on **:4111**. Playwright at a Pixel-7
+viewport, DPR 2.6, and 1440x800 DPR 2:
+
+- full crossing, threshold drawing to act v, both questions, normal AND reduced motion
+- the ending drawn on, the mark rewritten, the memento downloaded and opened
+- the field opening inside the ending, its iframe reporting its own core count, a
+  drag over it still drawing, and a tap travelling to the real field
+- the reading at 412x915 before and after the per-axis fix — the same screenshot
+  went from an unreadable run of overlapping capitals to separated letters
+- the field at 412x915 and 360x740: measured corner boxes, no overlaps left
+- **a stranger's browser with an empty localStorage seeing the drawn marks** — the
+  proof that the server half works — and a rejected mark falling back to a knot
+- one regression caught by looking: opening the passage grew the closing block and
+  walked "you are part of it now." into the body's bottom arc. The passage now
+  holds its space from the first frame.
+
 ## This pass (2026-08-05, third) — the sync engine, and a keeper that was lying
 
 - **The engine upstream had it backwards.** di.iiii's `scripts/space-sync.mjs` is

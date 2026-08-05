@@ -70,7 +70,35 @@ canvas.grabbing{cursor:grabbing}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
   @keyframes fade{to{opacity:1}}
 }
-@media (max-width:560px){#hd,#count,#cta,#hint{padding:1.1rem}#hint{display:none}}
+/* PHONES. The field was laid out on a desk and then looked at on a desk. At
+   412px the two top corners are 470px of text and simply cross each other, and
+   "all together" sits on top of "cross the bridge" in the bottom row. Smaller
+   type and one row per thing — the same fixes the rite got, applied here. */
+@media (max-width:560px){
+  #hd,#count,#cta,#hint,#mode{padding:1.1rem}
+  /* the hint was simply switched OFF on phones — and it is the only place the
+     piece says that a tap reveals the crossings, so the field's one mechanic was
+     a desktop feature by accident. It stays; the mouse half of it goes. */
+  #hint{bottom:4.6rem;font-size:.44rem}
+  #hint .mouse{display:none}
+  .hud{font-size:.46rem;letter-spacing:.12em}
+  #hd .arm{font-size:.52rem;letter-spacing:.34em}
+  /* the mode switch lifts clear of the link in the corner beneath it */
+  #mode{bottom:2.6rem}
+  /* a panel floating over the middle of a phone IS the screen. It becomes a
+     sheet at the bottom, where a thumb is and the field is not. */
+  /* …and it stops short of the bottom row, so the sheet never sits on top of
+     the two things a visitor might want next */
+  #kPanel{top:auto;bottom:3.6rem;left:0;right:0;width:100%;transform:none;
+    border-width:1px 0;padding:1rem 1.2rem}
+}
+/* EMBEDDED — the field opened inside the rite's own ending, ?embed=1. It keeps
+   the cores and nothing else: no chrome, no paper of its own, so the letters and
+   the mark the visitor just drew stay visible underneath it. It is a view, not a
+   page; every way in and out of it belongs to the ending that holds it. */
+html.embed,html.embed body{background:transparent}
+html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
+html.embed canvas{cursor:default}
 </style>
 </head>
 <body>
@@ -90,7 +118,7 @@ canvas.grabbing{cursor:grabbing}
   <div id="kLog"></div>
   <form id="kForm"><input id="kIn" placeholder="speak to it" autocomplete="off" maxlength="120"></form>
 </div>
-<div class="hud" id="hint">tap — ink finds the crossings<br>drag orbit · scroll zoom</div>
+<div class="hud" id="hint">tap — ink finds the crossings<span class="mouse"><br>drag orbit · scroll zoom</span></div>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
 "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}
@@ -106,6 +134,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js'
 // location.search is empty there and the viewer hands the shell's query down
 // as diiPageQuery instead. Local mirror still uses the real one.
 const QRY=new URLSearchParams(window.diiPageQuery||location.search);
+const EMBED=QRY.get('embed')==='1';
+if(EMBED)document.documentElement.classList.add('embed');
 
 const API=QRY.get('api')||
   (location.hostname.endsWith('di-studio.xyz')
@@ -131,20 +161,98 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const PQ=[[2,3],[2,5],[3,4],[3,5],[4,5],[5,2],[3,2],[5,3],[4,3],[5,4]];
-function coreGeoFor(id){const r=rng(hash(String(id)));
-  const [p,q]=PQ[Math.floor(r()*PQ.length)];
-  return new THREE.TorusKnotGeometry(0.62+r()*0.36,0.2+r()*0.22,200,28,p,q);}
+// Every crossing has to LOOK like a different crossing. Ten knot pairs on one
+// geometry gave the field two dozen near-twins — same torus, same tube, the same
+// read at any distance, so "each one = a crossing" was a caption the picture did
+// not support. The seed now picks a FAMILY first, and the family is what the eye
+// tells apart: a knot, the same knot pulled to wire, a ring, a line drawn through
+// space, a cut stone. Same id, same form, forever — only the vocabulary is wider.
+function coreGeoFor(id){
+  const r=rng(hash(String(id)));
+  const fam=Math.floor(r()*5);
+  if(fam===0){const [p,q]=PQ[Math.floor(r()*PQ.length)];
+    return new THREE.TorusKnotGeometry(0.62+r()*0.30,0.20+r()*0.20,220,26,p,q);}
+  if(fam===1){const [p,q]=PQ[Math.floor(r()*PQ.length)];
+    return new THREE.TorusKnotGeometry(0.70+r()*0.24,0.045+r()*0.05,320,14,p,q);}
+  if(fam===2)return new THREE.TorusGeometry(0.70+r()*0.24,0.09+r()*0.26,26,120);
+  if(fam===3){
+    const a=1+Math.floor(r()*4),b=1+Math.floor(r()*4),c=1+Math.floor(r()*3);
+    const pa=r()*Math.PI*2,pb=r()*Math.PI*2,pts=[];
+    for(let i=0;i<180;i++){const t=i/180*Math.PI*2;
+      pts.push(new THREE.Vector3(Math.sin(a*t+pa)*0.86,Math.sin(b*t+pb)*0.60,Math.cos(c*t)*0.86));}
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),260,0.07+r()*0.09,10,true);}
+  const G=[THREE.IcosahedronGeometry,THREE.OctahedronGeometry,THREE.DodecahedronGeometry,THREE.TetrahedronGeometry];
+  return new G[Math.floor(r()*4)](0.82+r()*0.26,Math.floor(r()*2));}
 
-// the ground is the page: a hairline ring where the field begins
-{const ring=new THREE.Mesh(new THREE.RingGeometry(3.2,3.24,128),
+// THE MARK. A knot is a form this field CHOSE for you out of a hash of your own
+// id — unique, permanent, and not yours in any sense that matters. A mark is the
+// line a hand actually drew at the rite, carried here as text and stood up in the
+// same chrome: the drawing, in the material every other crossing is made of.
+// Same decoder as the rite's, and the same tolerance — anything it cannot read
+// falls back to the knot, so a field with one broken mark in it is still a field.
+function markDecode(str){
+  if(typeof str!=='string'||str.slice(0,3)!=='m1.')return null;
+  let bin;try{bin=atob(str.slice(3).replace(/-/g,'+').replace(/_/g,'/'));}catch(e){return null;}
+  const out=[];let i=0;
+  while(i<bin.length){
+    const n=bin.charCodeAt(i++);
+    if(!n||i+n*2>bin.length)break;
+    const s=[];
+    for(let k=0;k<n;k++){s.push([bin.charCodeAt(i)/255-0.5,bin.charCodeAt(i+1)/255-0.5]);i+=2;}
+    out.push(s);}
+  return out.length?out:null;}
+// The drawing was made on a flat page, so it stays flat — a sheet standing in the
+// field, not a scribble bent into a ball. Depth comes from the tube itself.
+function markObject(str){
+  const st=markDecode(str);if(!st)return null;
+  const grp=new THREE.Group();let made=0;
+  for(const s of st){
+    if(s.length<2||made>=14)continue;
+    // one point every few samples: a hand at 60fps leaves far more than a curve needs
+    const step=Math.max(1,Math.floor(s.length/64));
+    // SPAN is the drawing's whole width in world units, chosen so a mark stands
+    // among the knots as one of them rather than looming over the field it just
+    // joined — a knot is about this far across once its own scale is applied.
+    const SPAN=1.8;
+    const pts=[];
+    for(let i=0;i<s.length;i+=step)pts.push(new THREE.Vector3(s[i][0]*SPAN,-s[i][1]*SPAN,0));
+    const last=s[s.length-1];
+    pts.push(new THREE.Vector3(last[0]*SPAN,-last[1]*SPAN,0));
+    if(pts.length<2)continue;
+    const curve=new THREE.CatmullRomCurve3(pts);
+    // thick enough to be made of the same matter as a knot. A hairline read as a
+    // ghost of a core standing beside solid ones, which is the opposite of what a
+    // mark is for.
+    const R=0.105;
+    grp.add(new THREE.Mesh(new THREE.TubeGeometry(curve,Math.min(220,pts.length*4),R,8,false),coreMat));
+    // a tube is open at both ends: round the stroke off, the way ink does
+    for(const p of [pts[0],pts[pts.length-1]]){
+      const cap=new THREE.Mesh(new THREE.SphereGeometry(R,10,8),coreMat);
+      cap.position.copy(p);grp.add(cap);}
+    made++;}
+  return made?grp:null;}
+// Two places a mark can live, in this order. The SCENE's copy is the real one —
+// it came back from the field, so everyone sees it. localStorage is the fallback
+// for the browser that drew it: the crossing that a server too old for marks
+// refused to carry still wears its own drawing, for the person who made it.
+function markFor(id,carried){
+  if(carried)return carried;
+  try{return localStorage.getItem('br_id_ge_mark_'+id)||'';}catch(e){return '';}}
+
+// the ground is the page: a hairline ring where the field begins. Embedded in the
+// rite's ending the page already exists — a second floor, its dust and its contact
+// shadows only smudge the letters the visitor is standing in. The forms and their
+// words come across; the furniture stays home.
+if(!EMBED){const ring=new THREE.Mesh(new THREE.RingGeometry(3.2,3.24,128),
   new THREE.MeshBasicMaterial({color:0xdcd8cf,side:THREE.DoubleSide}));
  ring.rotation.x=-Math.PI/2;ring.position.y=0.01;world.add(ring);}
 
 // graphite dust — printed specks, not embers
-{const p=new Float32Array(390);for(let i=0;i<p.length;i++)p[i]=(Math.random()-.5)*80;
+if(!EMBED){const p=new Float32Array(390);for(let i=0;i<p.length;i++)p[i]=(Math.random()-.5)*80;
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(p,3));
  scene.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0x8f8b83,size:.07,transparent:true,opacity:.5})));}
 
+const PORT=innerWidth<innerHeight*0.95;   // a phone held upright, or the ending's window
 const cores=new Map(); // objectId -> group
 // word + name rendered as ONE billboard texture — a sprite always faces the
 // camera, so a single texture can never read mirrored as the field rotates
@@ -155,28 +263,68 @@ function labelTex(word,name){const cv=document.createElement('canvas');cv.width=
   g.font='22px "Space Mono", monospace';g.fillStyle='#8f8b83';
   g.fillText(name.slice(0,20),256,134);
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;}
+// THE LETTERS. The word a crossing left was only ever a caption under its core —
+// small, flat, and gone the moment the field gathered. But the rite is made of
+// Armenian letters: they are what is read off a body, one at a time, for twenty
+// minutes. So every core carries its own word around itself, letter by letter,
+// and when the field gathers the words gather with it — every crossing's letters
+// in one place, which is the only picture of this thing that is literally true.
+// One texture per character, shared by every core that ever wrote it.
+const glyphCache=new Map();
+function glyphTex(ch){
+  let t=glyphCache.get(ch);if(t)return t;
+  const cv=document.createElement('canvas');cv.width=cv.height=128;
+  const g=cv.getContext('2d');g.textAlign='center';g.textBaseline='middle';
+  g.font='300 96px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
+  g.fillText(ch,64,68);
+  t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;
+  glyphCache.set(ch,t);return t;}
+function letterRing(word,rnd){
+  const chars=[...String(word||'')].filter(c=>c.trim()).slice(0,10);
+  if(!chars.length)return null;
+  const ring=new THREE.Group(),R=1.15+rnd()*0.3,tilt=(rnd()-0.5)*0.5;
+  chars.forEach((ch,i)=>{
+    // sprites: a letter is never read mirrored, however the field is turned
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glyphTex(ch),
+      transparent:true,depthWrite:false,opacity:0}));
+    const a=i/chars.length*Math.PI*2+rnd()*0.2;
+    sp.position.set(Math.cos(a)*R,Math.sin(i*1.9)*0.2,Math.sin(a)*R);
+    sp.scale.set(0.5,0.5,1);ring.add(sp);});
+  ring.rotation.z=tilt;return ring;}
+
 // a soft contact shadow, so each core sits on the page instead of floating off it
 const shadowTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;
   const g=cv.getContext('2d');const gr=g.createRadialGradient(64,64,4,64,64,60);
   gr.addColorStop(0,'rgba(19,19,19,0.30)');gr.addColorStop(1,'rgba(19,19,19,0)');
   g.fillStyle=gr;g.fillRect(0,0,128,128);
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;})();
-function placeCore(tag,i,id){
-  const a=i*2.399,r=4+i*0.85;
-  const pos=new THREE.Vector3(Math.cos(a)*r,1.5+Math.sin(i*1.7)*.3,Math.sin(a)*r);
+function placeCore(tag,i,id,carriedMark){
+  // the spiral was drawn for a landscape window. On a phone the same spiral runs
+  // straight off both sides — so it winds tighter and leans on height instead,
+  // which is the axis a phone actually has.
+  const a=i*2.399,r=PORT?3.0+i*0.52:4+i*0.85;
+  const pos=new THREE.Vector3(Math.cos(a)*r,1.5+Math.sin(i*1.7)*(PORT?1.15:.3),Math.sin(a)*r);
   const grp=new THREE.Group();grp.position.copy(pos);
   const rnd=rng(hash(String(id)+'~'));
-  const knot=new THREE.Mesh(coreGeoFor(id),coreMat);
+  const drawn=markObject(markFor(id,carriedMark));
+  const knot=drawn||new THREE.Mesh(coreGeoFor(id),coreMat);
   const s=0.52+rnd()*0.2;knot.scale.setScalar(s);
-  knot.rotation.set(rnd()*Math.PI*2,rnd()*Math.PI*2,rnd()*Math.PI*2);
+  // a drawing read edge-on is a line. It faces the way it was drawn and only
+  // sways, where a knot — which has no front — turns all the way round.
+  if(!drawn)knot.rotation.set(rnd()*Math.PI*2,rnd()*Math.PI*2,rnd()*Math.PI*2);
   grp.add(knot);
   const sh=new THREE.Sprite(new THREE.SpriteMaterial({map:shadowTex,transparent:true,depthWrite:false}));
-  sh.position.set(0,-pos.y+0.06,0);sh.scale.set(2.6,2.6,1);grp.add(sh);
+  sh.position.set(0,-pos.y+0.06,0);sh.scale.set(2.6,2.6,1);sh.visible=!EMBED;grp.add(sh);
   const parts=String(tag).split('·');const word=(parts.pop()||'').trim();const name=parts.join('·').trim();
   const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex(word,name),transparent:true,depthWrite:false}));
-  label.position.set(0,1.55,0);label.scale.set(4.2,1.575,1);grp.add(label);
-  grp.userData={phase:i*1.31,home:pos.clone(),gather:new THREE.Vector3(),m:0,word,
-    rev:0,revT:0,speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,born:performance.now()};
+  // captions crowd each other the moment cores are close and the window is
+  // narrow — on a phone they are smaller and sit further clear of the form
+  label.position.set(0,PORT?1.75:1.55,0);
+  label.scale.set(PORT?3.2:4.2,PORT?1.2:1.575,1);label.visible=!EMBED;grp.add(label);
+  const ring=letterRing(word,rnd);if(ring)grp.add(ring);
+  grp.userData={phase:i*1.31,home:pos.clone(),gather:new THREE.Vector3(),m:0,word,id,flat:!!drawn,
+    rev:0,revT:0,speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,ring,
+    spin:0.0012+rnd()*0.0016,born:performance.now()};
   grp.visible=false;
   world.add(grp);return grp;}
 
@@ -256,11 +404,15 @@ const keeper=(()=>{
     o.rotation.set(Math.PI/2*Math.random()+i,i*1.1,i*.7);knot.add(o);orbits.push(o);}
   knot.scale.setScalar(0.55);grp.add(knot);
   const sh=new THREE.Sprite(new THREE.SpriteMaterial({map:shadowTex,transparent:true,depthWrite:false}));
-  sh.position.set(0,-1.14,0);sh.scale.set(2.2,2.2,1);grp.add(sh);
+  sh.position.set(0,-1.14,0);sh.scale.set(2.2,2.2,1);sh.visible=!EMBED;grp.add(sh);
   const label=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTex('պահապան','keeper · asleep'),transparent:true,depthWrite:false}));
-  label.position.set(0,1.35,0);label.scale.set(4.2,1.575,1);grp.add(label);
+  label.position.set(0,1.35,0);label.scale.set(4.2,1.575,1);label.visible=!EMBED;grp.add(label);
   grp.userData={home:grp.position.clone(),gather:new THREE.Vector3(0,3.1,0),m:0,speed:0.03,
     scale:0.55,phase:0,knot,label,shadow:sh,orbits,born:performance.now()};
+  // Inside the rite's ending the mesh is not joined, so this body could only ever
+  // be drawn asleep — and a keeper that is grey because nobody asked is a lie
+  // about the room. It stays home; the preview is the crossings.
+  grp.visible=!EMBED;
   world.add(grp);return grp;})();
 
 // THE WIRE — the almost-invisible thread through everything. Every revealed
@@ -307,6 +459,9 @@ function keeperFace(){
 const MESH=QRY.get('mesh')||'wss://di-studio.xyz/serverXR/mesh';
 let meshWs=null;
 (function meshConnect(){
+  // embedded in the ending, the rite is already in that room — a second socket
+  // from inside its own page would double the field's count of who is present
+  if(EMBED)return;
   let u;try{u=new URL(MESH)}catch(e){return}
   u.searchParams.set('room','bridge');u.searchParams.set('node','f'+Math.random().toString(36).slice(2,8));
   let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
@@ -353,7 +508,7 @@ async function loadField(){
     const r=await fetch(API+'/scene');if(!r.ok)return;
     const objects=((await r.json()).scene||{}).objects||[];
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
-    insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id));});
+    insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id,o.mark));});
     gatherSeats();receive();
     // The field IS the crossings. Cores are built hidden (placeCore) and only
     // revealAll() shows them — which ran solely from the ALL TOGETHER gather
@@ -375,12 +530,16 @@ addEventListener('focus',loadField);
 // the newcomer: goes to their core, lets it grow in before their eyes, then
 // shows what they joined — the whole field gathers into the one shared body,
 // holds, and releases. The transformation, seen from inside it.
-const JUST=QRY.get('just');
+const JUST=QRY.get('just'),ME=QRY.get('me');
 let focus=null,received=false;
 function receive(){
-  if(received||!JUST||!cores.size)return;received=true;
-  let target=null;
-  cores.forEach(g=>{if(g.userData.word===JUST)target=g;});
+  if(received||(!JUST&&!ME)||!cores.size)return;received=true;
+  // The word alone was never an identity — `գևորգ · կամուրջ` has been carried
+  // across six times, and matching on it walked a visitor to a stranger's core
+  // and called it theirs. The id is exact; the word stays as the fallback for a
+  // hand-off from a rite that was never granted one.
+  let target=(ME&&cores.get(ME))||null;
+  if(!target)cores.forEach(g=>{if(g.userData.word===JUST)target=g;});
   target=target||[...cores.values()].pop();
   revealAll();
   target.userData.born=performance.now();
@@ -396,15 +555,29 @@ addEventListener('pointerup',e=>{
   dragging=false;canvas.classList.remove('grabbing');});
 addEventListener('pointermove',e=>{if(!dragging)return;
   moved+=Math.abs(e.clientX-px);vy=(e.clientX-px)*.004;px=e.clientX;});
-let zoom=1;
+// inside the ending the window is a wide letterbox, and a field framed for a whole
+// desk screen reads as a distant smudge in it — the seat comes in a little
+let zoom=EMBED&&!PORT?0.8:1;
 canvas.addEventListener('wheel',e=>{e.preventDefault();
   zoom=Math.min(2.7,Math.max(0.4,zoom*(1+e.deltaY*.0009)));
 },{passive:false});
 
-const resize=()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();};
+// A camera framed on a desk shows a phone the middle of the field and nothing
+// else: the cores spread sideways, and a portrait window is narrow exactly where
+// they spread. The seat steps back by however much the screen is taller than it
+// is wide, so the same field arrives whole on both.
+let fit=1;
+const resize=()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;
+  fit=camera.aspect<1?Math.min(2.1,Math.pow(1/camera.aspect,0.75)*1.08):1;
+  camera.updateProjectionMatrix();};
 addEventListener('resize',resize);resize();
 
-const CAM_HOME=new THREE.Vector3(0,7,26),LOOK_HOME=new THREE.Vector3(0,1,0);
+// A field is a flat disc. Seen from a desk's low seat it is a band across the
+// middle of the screen — fine in a wide window, and in a tall one it is a stripe
+// with empty paper above and below it. On a phone the seat rises: more of a look
+// down, so the disc opens into the height the screen actually has.
+const CAM_HOME=PORT?new THREE.Vector3(0,13,19):new THREE.Vector3(0,7,26),
+      LOOK_HOME=new THREE.Vector3(0,1,0);
 const camPos=CAM_HOME.clone(),look=LOOK_HOME.clone();
 const _p=new THREE.Vector3(),_l=new THREE.Vector3(),_wp=new THREE.Vector3(),_d=new THREE.Vector3();
 renderer.setAnimationLoop(()=>{
@@ -420,13 +593,20 @@ renderer.setAnimationLoop(()=>{
     const m=u.m*u.m*(3-2*u.m);
     g.position.lerpVectors(u.home,u.gather,m);
     g.position.y+=Math.sin(t*.5+u.phase)*.18*(1-m*.7);
-    u.knot.rotation.y+=0.0035;u.knot.rotation.x+=0.0011;
+    if(u.flat){u.knot.rotation.y=Math.sin(t*.25+u.phase)*.6;u.knot.rotation.z=Math.sin(t*.17+u.phase)*.04;}
+    else{u.knot.rotation.y+=0.0035;u.knot.rotation.x+=0.0011;}
     // a new core arrives the way the rite makes one: it grows into place
     const age=(performance.now()-u.born)/1600;
     if(age<1)u.knot.scale.setScalar(u.scale*rev*(1-Math.pow(1-Math.max(0,age),3)));
     else if(g===keeper&&keeperOnline())u.knot.scale.setScalar(u.scale*(1+Math.sin(t*2.2)*.05));
     else u.knot.scale.setScalar(u.scale*rev);
     u.label.material.opacity=(g===keeper?1:1-m)*rev;
+    // the caption fades as the field gathers and the letters take over from it:
+    // apart, a word is a whisper around its own core; together, the letters ARE
+    // the body. They ride the group, so gathering the cores gathers the alphabet.
+    if(u.ring){u.ring.rotation.y+=u.spin;
+      const o=(0.26+0.62*m)*rev;
+      for(const s of u.ring.children)s.material.opacity=o;}
     u.shadow.material.opacity=(1-m*.85)*rev;
     u.shadow.position.y=-g.position.y+0.06;};
   cores.forEach(step);step(keeper);
@@ -439,7 +619,9 @@ renderer.setAnimationLoop(()=>{
     st.scale.setScalar(st.userData.size*e);
     st.material.opacity=.34-.22*e;}
   // the camera has one seat; a fresh crossing borrows it to meet its own core
-  _p.copy(CAM_HOME).multiplyScalar(zoom);_l.copy(LOOK_HOME);
+  // stepping back is for a field that is spread out. Gathered, it is one small
+  // body in the middle of the screen and the same step back turns it into a speck.
+  _p.copy(CAM_HOME).multiplyScalar(zoom*(together?1+(fit-1)*0.28:fit));_l.copy(LOOK_HOME);
   if(focus&&focus.grp){
     focus.grp.getWorldPosition(_wp);
     _d.copy(_wp).setY(0);if(_d.lengthSq()<1e-6)_d.set(0,0,1);else _d.normalize();

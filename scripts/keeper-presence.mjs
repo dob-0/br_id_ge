@@ -39,6 +39,10 @@ const ORIGINS = {
   local: 'ws://localhost:4000/serverXR/mesh',
 }
 const MESH = ORIGINS[TO] || TO // any full ws:// url passes through
+// MESH_KEEPER_SECRET gates the reserved `keeper-*` id and nothing else;
+// MESH_ROOM_SECRET closes the whole relay and stands in when it is the only one
+// set. Same precedence as the hub — see di.iiii serverXR/src/meshHub.js.
+const SECRET = arg('--secret', process.env.MESH_KEEPER_SECRET || process.env.MESH_ROOM_SECRET || '')
 
 let WS = globalThis.WebSocket
 if (!WS) WS = (await import('ws')).default
@@ -101,6 +105,10 @@ function connect() {
   const u = new URL(MESH)
   u.searchParams.set('room', 'bridge')
   u.searchParams.set('node', 'keeper-' + Math.random().toString(36).slice(2, 8))
+  // `keeper-*` is a reserved id on the relay: the room stays open to visitors,
+  // but claiming the keeper's identity needs the secret. Unset is still valid
+  // (the server only enforces when it has one), so this stays optional.
+  if (SECRET) u.searchParams.set('secret', SECRET)
   ws = new WS(u.toString())
   ws.onopen = () => console.log(`[keeper] on the mesh (${TO}) as ${NAME}` +
     (EYE ? ' · eye open' : '') + (OLLAMA ? ` · voice ${MODEL}` : ''))

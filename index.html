@@ -99,6 +99,30 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
   border-bottom:1px solid var(--hairline);padding-bottom:.3rem;pointer-events:auto}
 .end .field-link:hover{border-color:var(--live)}
 .end .field-link .yn{color:var(--ink);border-bottom:1px solid var(--graphite);cursor:pointer}
+/* the passage — one line, and it holds its space from the first frame while
+   staying invisible. The shared body's floor is measured off this box once,
+   before the letters are laid out; a block that GROWS afterwards walks the
+   closing line straight back into the body's bottom arc, which is the fault
+   endFloor() exists to prevent. */
+.end .passage{font-family:var(--mono);font-size:.55rem;letter-spacing:.22em;
+  text-transform:lowercase;color:var(--graphite);visibility:hidden}
+.end .passage.on{visibility:visible}
+
+/* LAYER 2½ — the field, opened INSIDE the ending. Not a link to a place: the
+   place itself, arriving in the space the shared body already stands in. It is
+   transparent, so the letters and the drawn mark stay under the cores — you see
+   what you joined while still standing in what you made. It never covers the
+   closing words: its floor is the same line the body's feet stop at. */
+#fieldWin{position:fixed;left:0;top:0;width:100%;height:60%;z-index:1;opacity:0;
+  transition:opacity 2.4s ease}
+#fieldWin.on{opacity:1}
+#fieldWin iframe{width:100%;height:100%;border:0;display:block;background:none}
+/* the iframe would otherwise swallow every pointer event over the top of the
+   page — and the ending is still a page you can draw on. The veil takes them
+   back: they bubble to the window handlers exactly as before, and only a tap
+   that did not travel is treated as a door. */
+#fieldWin .veil{position:absolute;inset:0;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#fieldWin{transition:none}}
 
 /* LAYER 3 — the HUD: data pinned to the frame's corners. Everything it says is true. */
 .hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
@@ -143,6 +167,8 @@ body.inframe #hudTitle{top:2.9rem}
 <div class="hud" id="hudTitle"><b>br_id_ge</b> · vi.ritual</div>
 <div class="hud" id="hudAct"></div>
 
+<div id="fieldWin" hidden><iframe id="fieldFrame" title="the field" scrolling="no"></iframe><span class="veil" id="fieldVeil"></span></div>
+
 <div id="type">
   <div class="card" id="card"><div class="arm"></div><div class="lat"></div></div>
   <div class="ask" id="ask">
@@ -157,6 +183,7 @@ body.inframe #hudTitle{top:2.9rem}
     <a class="field-link" id="fieldLink" href="https://di-studio.xyz/br_id_ge/field" target="_top" hidden>see the field · your core is there →</a>
     <a class="field-link" id="keepLink" href="#" hidden>keep a copy ↓</a>
     <a class="field-link" id="unmakeLink" href="#" hidden>unmake my crossing</a>
+    <div class="passage" id="passage">the field is above you · tap it to go in</div>
   </div>
 </div>
 
@@ -346,13 +373,22 @@ function drawSilhouette(alpha){
   ctx.drawImage(silCv,0,0,W,H)
   ctx.restore()
 }
-// STEP thins the outline on narrow screens: at 96 columns across a phone the cells
-// are ~4px apart while a letter is ~13px, so every glyph collided with its
-// neighbours. FS keeps the letter proportional to the space it actually has.
-let STEP=1,FS=13
+// The grid is 96 x 54 — a landscape grid, and a phone is not landscape. Stretched
+// onto 412 x 915 a cell is 4px wide and 17px tall, so the reading came out as a
+// horizontal SMEAR of overlapping capitals with wide empty bands between the rows.
+// One STEP for both axes could not fix that: thinning enough to stop the collision
+// emptied the vertical, and keeping the vertical kept the smear.
+// So each axis is thinned by what that axis actually measures, and the glyph is
+// sized to the gap it was given. On a wide screen nothing changes: the letters are
+// meant to crowd a little there, and they still do.
+const CELL_MIN=12        // never less than this between two glyphs, in px
+let STEPX=1,STEPY=1,FS=13
 function fitFigure(){
-  STEP=W<560?2:1
-  FS=clamp((W/GW)*STEP*1.35,10,17)
+  const cw=W/GW, ch=H/GH
+  STEPX=1;while(STEPX<4&&cw*STEPX<CELL_MIN)STEPX++
+  STEPY=1;while(STEPY<4&&ch*STEPY<CELL_MIN)STEPY++
+  const gap=cw*STEPX
+  FS=clamp(gap*(cw>=CELL_MIN?1.35:0.95),10,17)
 }
 
 // the circle before the body — the ground state of the mask. Before the lamp
@@ -393,7 +429,7 @@ function rebuildOutline(t,dt,embodied){
     const l=i>0?bodyMask[k-1]:1, r=i<GW-1?bodyMask[k+1]:1
     const u=j>0?bodyMask[k-GW]:1, d=j<GH-1?bodyMask[k+GW]:1
     if(l&&r&&u&&d)continue
-    if(STEP>1&&((i%STEP)||(j%STEP)))continue
+    if((STEPX>1&&(i%STEPX))||(STEPY>1&&(j%STEPY)))continue
     cur.add(k)
     let m=marks.get(k)
     // a cell the edge just arrived at is the moving edge — it wakes stirred,
@@ -559,17 +595,131 @@ const PLAY_MIN_S=18              // the threshold has a room behind it
 function writing(){return started&&!inscribed&&asking===null&&act<1}
 function inkLift(){inkX=-1;inkRun=0}
 function inkMove(x,y,t){
-  if(!writing()||REDUCED)return
-  if(inkX<0){inkX=x;inkY=y;inkAt=t;strokes.push({x,y,t,w:1,lift:1});return}
+  const w=writing(), f=finishing()
+  if(!w&&!f)return
+  if(inkX<0){
+    inkX=x;inkY=y;inkAt=t
+    // reduced motion loses the wet ink — the weather, not the writing. The
+    // drawing itself is still made, still kept, still the mark that crosses.
+    if(!REDUCED)strokes.push({x,y,t,w:1,lift:1})
+    pennedPush(x,y,true);return
+  }
   const d=Math.hypot(x-inkX,y-inkY)
   if(d<2)return
   // a fast hand leaves a thin line, a slow one pools — the only thing that makes
   // a drawn stroke read as ink rather than as a cursor trail
   const v=d/Math.max(0.016,t-inkAt)
-  strokes.push({x,y,t,w:clamp(1-v/2600,0.18,1),lift:0})
-  if(strokes.length>460)strokes.splice(0,strokes.length-460)
-  inkRun+=d;inkX=x;inkY=y;inkAt=t
+  if(!REDUCED){
+    strokes.push({x,y,t,w:clamp(1-v/2600,0.18,1),lift:0})
+    if(strokes.length>460)strokes.splice(0,strokes.length-460)
+  }
+  pennedPush(x,y,false)
+  inkX=x;inkY=y;inkAt=t
+  // Letters are born at the threshold only. At the end the page is already full
+  // of them — every crossing's words are standing in the shared body — and a new
+  // one born there would be a letter belonging to nobody, spiralling into a core
+  // that closed minutes ago. What the ending takes is the line, not the letters.
+  if(!w)return
+  inkRun+=d
   while(inkRun>=SPAWN_EVERY){inkRun-=SPAWN_EVERY;bornAt(x,y,t)}
+}
+
+// ── the mark: what the hand actually left ─────────────────────────────────
+// The wet ink above is weather. It dries in seven seconds and is thrown away,
+// and until now so was the drawing — the one thing in the whole rite that is
+// AUTHORED rather than measured. The lamp measures you; the letters are drawn
+// from a grid; the form your crossing wore in the field was picked by a hash of
+// its own id. This is the exception, so it is the thing that ought to survive:
+// into the ending, into the memento, and into the field, where it stands in
+// place of a shape a random number chose for you.
+const MARK_MAX=900               // points kept; the oldest stroke goes first
+let penned=[]                    // [[x,y],…] per stroke, in screen px
+let pennedN=0, pennedAt=0
+function pennedPush(x,y,fresh){
+  if(fresh||!penned.length)penned.push([])
+  penned[penned.length-1].push([x,y]);pennedN++
+  pennedAt=performance.now()
+  while(pennedN>MARK_MAX&&penned.length>1){pennedN-=penned[0].length;penned.shift()}
+}
+function pennedClear(){penned=[];pennedN=0}
+
+// A mark travels as TEXT, because everything that leaves this page is text: it
+// has to fit one JSON field with a cap on it. Quantized to a byte per axis
+// inside its OWN box, one scale for both axes so a circle never arrives as an
+// ellipse. Two bytes a point, base64 on top — a full drawing is about a
+// kilobyte, which is the size that makes the field's copy possible later.
+function markEncode(strokes2){
+  const use=[];for(const s of strokes2)if(s.length>1)use.push(s)
+  if(!use.length)return ''
+  let xlo=Infinity,xhi=-Infinity,ylo=Infinity,yhi=-Infinity
+  for(const s of use)for(const p of s){
+    if(p[0]<xlo)xlo=p[0];if(p[0]>xhi)xhi=p[0]
+    if(p[1]<ylo)ylo=p[1];if(p[1]>yhi)yhi=p[1]}
+  const span=Math.max(1,xhi-xlo,yhi-ylo)
+  const ox=(xlo+xhi)/2, oy=(ylo+yhi)/2
+  let bin=''
+  for(const s of use){
+    for(let i=0;i+1<s.length;){
+      const n=Math.min(255,s.length-i)
+      if(n<2)break
+      bin+=String.fromCharCode(n)
+      for(let k=0;k<n;k++){
+        const p=s[i+k]
+        bin+=String.fromCharCode(clamp(Math.round(((p[0]-ox)/span+0.5)*255),0,255))
+        bin+=String.fromCharCode(clamp(Math.round(((p[1]-oy)/span+0.5)*255),0,255))
+      }
+      i+=n
+    }
+  }
+  if(!bin)return ''
+  return 'm1.'+btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')
+}
+// back to strokes in a unit box centred on nothing at all — [-0.5,0.5] on the
+// long axis, less on the short one, exactly as it was drawn
+function markDecode(str){
+  if(typeof str!=='string'||str.slice(0,3)!=='m1.')return null
+  let bin;try{bin=atob(str.slice(3).replace(/-/g,'+').replace(/_/g,'/'))}catch(e){return null}
+  const out=[];let i=0
+  while(i<bin.length){
+    const n=bin.charCodeAt(i++)
+    if(!n||i+n*2>bin.length)break
+    const s=[]
+    for(let k=0;k<n;k++){s.push([bin.charCodeAt(i)/255-0.5,bin.charCodeAt(i+1)/255-0.5]);i+=2}
+    out.push(s);
+  }
+  return out.length?out:null
+}
+let mark=''        // this crossing's mark, encoded — '' until something is drawn
+let markIn=0       // how much of it has written itself back in
+let finishOn=false // the ending has become a page you can write on
+// Kept beside the crossing it belongs to, not loose: the field looks it up by
+// the id the hand-off carries, so an old mark can never be worn by a new
+// crossing. This is the client-side half — the same string is what a server
+// copy would carry, which is why it is a capped, sanitized, text-only field.
+function markStore(){
+  if(!mark||!crossing)return
+  try{localStorage.setItem('br_id_ge_mark_'+crossing.id,mark)}catch(e){}
+}
+function markTake(){
+  const m=markEncode(penned)
+  if(!m||m===mark)return false
+  mark=m;markIn=0;markStore();fieldHref();markSend()
+  return true
+}
+// The far half. A mark made at the ENDING arrives after the crossing has already
+// been posted, so it has to be sent on its own — with the same proof that unmakes
+// a crossing, because it is the same authority: this is mine to change. A server
+// without the route answers 404 and nothing is lost; the local copy is still what
+// this browser shows, and the field falls back to it.
+let markSent=''
+function markSend(){
+  if(!FIELD_URL||!crossing||!mark||mark===markSent)return
+  const sending=mark
+  fetch(FIELD_URL+'/inscriptions/'+encodeURIComponent(crossing.id)+'/mark',{method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({proof:crossing.proof,mark:sending})})
+    .then(r=>{if(r.ok)markSent=sending})
+    .catch(()=>{})
 }
 function bornAt(x,y,t){
   const i=clamp(Math.round((1-x/W)*GW-0.5),0,GW-1)
@@ -590,8 +740,8 @@ function bornAt(x,y,t){
   m.read=1;m.t=t;m.bloom=1;m.born=1;drawnN++
   SND.grain(x,y,0.75)
 }
-addEventListener('pointerup',inkLift,{passive:true})
-addEventListener('pointercancel',inkLift,{passive:true})
+addEventListener('pointerup',()=>{inkLift();if(finishing())markTake()},{passive:true})
+addEventListener('pointercancel',()=>{inkLift();if(finishing())markTake()},{passive:true})
 
 // a touch rings outward through the field — a slow wave of opacity, print not sparks
 const ripples=[]
@@ -1055,6 +1205,9 @@ function said(line){
 // ── the core ──────────────────────────────────────────────────────────────
 function inscribe(){
   inscribed=true;done=true
+  // whatever the hand left at the threshold is the mark this crossing carries,
+  // until the ending is given a chance to overwrite it
+  mark=markEncode(penned);pennedClear()
   SND.settle()
   // the letters fold inward first; the chrome core grows out of the gathering,
   // never on top of it
@@ -1075,18 +1228,25 @@ function inscribe(){
   // it did not achieve. Silence here is what hid nine days of refused crossings.
   if(FIELD_URL){
     fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:name||'—',word})})
-      .then(r=>{if(!r.ok)throw new Error(String(r.status));return r.json().catch(()=>null)})
+      body:JSON.stringify(mark?{name:name||'—',word,mark}:{name:name||'—',word})})
+      .then(r=>{if(!r.ok)throw new Error(String(r.status));joined=true;fieldHref();return r.json().catch(()=>null)})
       .then(d=>{
         // newer servers grant a proof — the one key that can unmake this crossing
         if(d&&d.id&&d.proof){
           crossing={id:String(d.id),proof:String(d.proof)}
           try{localStorage.setItem('br_id_ge_last_crossing',JSON.stringify(crossing))}catch(e){}
+          markStore();fieldHref();markSend()
           endLinks()
         }
       })
-      .catch(()=>{end.querySelector('.note').textContent=
-        'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'})
+      .catch(()=>{
+        end.querySelector('.note').textContent=
+          'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'
+        // and the link stops claiming otherwise. It read "your core is there"
+        // directly under a line saying it is not, and the passage would have
+        // carried the visitor off to see a field their crossing never reached.
+        fieldHref()
+      })
   }
   askKeeper('The visitor has crossed. Their name: '+(name||'a nameless one')+'. They carried the word: '+word+
     '. Their outline became a core, joining '+others+' before them. Bless it in one line.',
@@ -1237,11 +1397,41 @@ function openEnd(){
   end.querySelector('.body-line').textContent=
     n+' crossing'+(n===1?'':'s')+' · one body'
   // the hand-over: the field opens on YOUR core, then plays the gathering
-  const fl=$('#fieldLink')
-  if(word&&!unmade){fl.href='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word);fl.hidden=false}
   endOpen=true
+  fieldHref()
   endLinks()
   show(end)
+}
+
+// The hand-off. It carried the WORD alone, and the field matched on it — but
+// `գևորգ · կամուրջ` has been crossed six times, so "your core is there" walked
+// a visitor to a stranger's. The id is exact; the word stays as the fallback for
+// a server too old to grant one, and now the mark rides with it so the field can
+// show the drawing that was actually made rather than a hash of the id.
+function fieldHref(){
+  const fl=$('#fieldLink')
+  if(!word||unmade){fl.hidden=true;return}
+  let u='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word)
+  if(crossing)u+='&me='+encodeURIComponent(crossing.id)
+  if(mark)u+='&mark=1'
+  fl.href=u
+  // The field is always worth seeing; only the promise about YOUR core has to
+  // be true. It said "your core is there" directly beneath a note explaining
+  // that it is not — and a passage that travels on its own must never carry
+  // anyone somewhere their crossing did not reach.
+  // once the field is on the screen the link stops describing it and becomes
+  // the way in — nobody needs to be told the field is there while looking at it
+  fl.textContent=fieldOn?'go in →'
+    :joined?'see the field · your core is there →':'see the field · the others are there →'
+  if(endOpen)fl.hidden=false
+}
+
+// The end is a page you can still write on. You wrote at the threshold, you were
+// read across the middle, and here — once the shared body has finished arriving —
+// the ink comes back one last time. Whatever you leave now replaces what you left
+// at the door: the mark is the last thing you say, not the first.
+function finishing(){
+  return inscribed&&endOpen&&!!shared&&shared.t>0.995&&asking===null&&!unmade&&!gone
 }
 
 // Where the shared body's feet must stop: a clear line above the closing text.
@@ -1255,6 +1445,7 @@ function endFloor(){
 
 // ── the choice at the end — keep a copy, or unmake the crossing ───────────
 let crossing=null      // {id,proof} if the field's server grants one
+let joined=false       // the far field actually took it — not merely that we asked
 let unmade=false       // once unmade, nothing may re-open the door to the field
 let endOpen=false
 function endLinks(){
@@ -1273,13 +1464,32 @@ $('#keepLink').addEventListener('click',e=>{
   let fs=170
   k.font='300 '+fs+'px "Noto Serif Armenian",Georgia,serif'
   while(fs>52&&k.measureText(word||'—').width>880){fs-=8;k.font='300 '+fs+'px "Noto Serif Armenian",Georgia,serif'}
+  // the mark comes with it — a memento of a drawing that shows the word and not
+  // the drawing would be a memento of the half that was measured
+  const ms=markDecode(mark)
+  if(ms){
+    k.save()
+    k.translate(540,300);k.scale(300,300)
+    k.strokeStyle='#1d4bff';k.lineWidth=1/110;k.lineCap='round';k.lineJoin='round'
+    for(const s of ms){
+      k.beginPath();k.moveTo(s[0][0],s[0][1])
+      for(let i=1;i<s.length;i++)k.lineTo(s[i][0],s[i][1])
+      k.stroke()
+    }
+    k.restore()
+  }
   k.fillStyle='#131313'
   k.fillText(word||'—',540,580)
   k.fillStyle='#8f8b83'
   k.font='44px "Space Mono",ui-monospace,Menlo,monospace'
   k.fillText(name||'—',540,760)
-  k.font='30px "Space Mono",ui-monospace,Menlo,monospace'
-  k.fillText('br_id_ge · vi.ritual · notations #2 · di-studio.xyz/br_id_ge',540,1240)
+  // the footer ran off both edges of the sheet whenever the mono font had not
+  // loaded into the canvas and a wider fallback stood in for it
+  const foot='br_id_ge · vi.ritual · notations #2 · di-studio.xyz/br_id_ge'
+  let ffs=30
+  k.font=ffs+'px "Space Mono",ui-monospace,Menlo,monospace'
+  while(ffs>14&&k.measureText(foot).width>940){ffs-=2;k.font=ffs+'px "Space Mono",ui-monospace,Menlo,monospace'}
+  k.fillText(foot,540,1240)
   kc.toBlob(b=>{
     if(!b)return
     const a=document.createElement('a')
@@ -1301,6 +1511,10 @@ unmakeLink.addEventListener('click',e=>{
         if(r.ok){
           end.querySelector('.note').textContent='your crossing is unmade — the field forgets you.'
           unmakeLink.hidden=true;$('#fieldLink').hidden=true
+          // the field is a place this person is no longer in — it closes with them
+          $('#passage').classList.remove('on')
+          const fw=$('#fieldWin');fw.classList.remove('on');fw.hidden=true
+          $('#fieldFrame').removeAttribute('src');fieldOn=false
           crossing=null;unmade=true
           try{localStorage.removeItem('br_id_ge_last_crossing')}catch(e2){}
         }else{
@@ -1322,6 +1536,57 @@ unmakeLink.addEventListener('click',e=>{
     unmakeLink.append(y,document.createTextNode(' / '),n2)
   }
 })
+
+// ── the passage ───────────────────────────────────────────────────────────
+// A crossing should not end on a page with a link on it, waiting to be clicked
+// by someone who has already done the thing. "you are part of it now" is the
+// last thing the rite has to say, and the field is where that sentence is true —
+// so the moment the shared body has finished arriving, the field starts opening
+// BY ITSELF. The same hand-off the link makes, made by the piece.
+//
+// It began as a lapse — forty seconds untouched, on the theory that leaving is
+// only consented to by silence. That was wrong twice over: it read as broken
+// (nothing on screen for most of a minute, then a link nobody was going to click)
+// and the ending is not a decision point, it is an ending. The consent it was
+// protecting is protected better by the rule itself: the passage is VISIBLE for
+// its whole length, it says what it is about to do, and one touch stays. Nothing
+// is taken away — keep a copy and unmake are on screen the entire time, and
+// reaching for either one stops the passage by touching the page at all.
+//
+// The two hard refusals stay. It will not travel while the unmake question is
+// open, and it will not travel when the far field refused the crossing: nobody
+// is carried to a field their core is not in.
+const FIELD_IN_MS=2400           // the window is not a door until it is really there
+let gone=false, fieldOn=false, fieldAt=0
+function fieldWindow(){
+  if(gone||unmade||fieldOn||!endOpen)return
+  if(!shared||shared.t<0.999)return             // the body first; the field after it
+  const link=$('#fieldLink')
+  if(link.hidden||!joined)return                // never show anyone a field their core is not in
+  if(unmakeLink.querySelector('.yn'))return     // a question is on the screen
+  fieldOn=true
+  const w=$('#fieldWin')
+  w.style.height=Math.round(endFloor())+'px'
+  $('#fieldFrame').src=link.href+'&embed=1'
+  w.hidden=false
+  requestAnimationFrame(()=>{w.classList.add('on');fieldAt=performance.now()})
+  $('#passage').classList.add('on')
+  $('#fieldLink').textContent='go in →'
+}
+addEventListener('resize',()=>{if(fieldOn)$('#fieldWin').style.height=Math.round(endFloor())+'px'})
+// a tap is a door; a drag is still ink. The ending never stopped being a page
+// you can write on, and the window sits on top of most of it.
+let tapX=0,tapY=0,tapT=0
+$('#fieldVeil').addEventListener('pointerdown',e=>{tapX=e.clientX;tapY=e.clientY;tapT=performance.now()},{passive:true})
+$('#fieldVeil').addEventListener('pointerup',e=>{
+  if(gone||!fieldOn||performance.now()-fieldAt<FIELD_IN_MS)return
+  if(Math.hypot(e.clientX-tapX,e.clientY-tapY)>10)return
+  if(performance.now()-tapT>700)return
+  gone=true
+  // the anchor does the travelling, not location: it carries target="_top",
+  // which is what gets a published page out of the di.iiii viewer's iframe
+  $('#fieldLink').click()
+},{passive:true})
 
 // ── the core, in glass and chrome ─────────────────────────────────────────
 // The one Three.js moment in the piece. The whole page is flat print; what a
@@ -1441,8 +1706,16 @@ function frame(now){
   let ctx2=W/2,cty=H/2
   if(!camOn&&P.has){ctx2=clamp(P.x,R0+14,W-R0-14);cty=clamp(P.y,R0+14,H-R0-14)}
   if(circle.x<0){circle.x=W/2;circle.y=H/2}
-  circle.x+=(ctx2-circle.x)*(REDUCED?1:0.06)
-  circle.y+=(cty-circle.y)*(REDUCED?1:0.06)
+  // The circle's LAG is not decoration — it is the reading. It trails the hand, so
+  // its edge passes under the fingertip and gives up letters. Reduced motion used
+  // to snap it onto the fingertip instead, welding the edge exactly one radius
+  // away from the hand on every screen and for the whole rite: nothing could be
+  // read, the reading never advanced, and the piece ended at act ii. Uncompletable
+  // for anyone who asks their machine not to animate, since the day the circle was
+  // written. What reduced motion switches off here is the wet ink, the ripples, the
+  // reveal and the transitions — never the mechanic that makes the rite finishable.
+  circle.x+=(ctx2-circle.x)*0.06
+  circle.y+=(cty-circle.y)*0.06
   if(morph>=0.999)bodyMask.set(segMask)
   else if(morph<=0.001){for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)bodyMask[j*GW+i]=circleField(i,j,t)>0?1:0}
   else{
@@ -1732,6 +2005,38 @@ function frame(now){
     }
   }
 
+  // YOUR MARK, written back to you. It stands where the core stood — the chrome
+  // form recedes and the line you drew takes its place, which is the same
+  // exchange the whole rite makes: the measured thing gives way to the made one.
+  // It writes itself in rather than appearing, at the speed of a hand, so what
+  // you see is the drawing happening again and not a picture of it.
+  if(shared&&shared.t>0.55&&mark){
+    const ms=markDecode(mark)
+    if(ms){
+      markIn=Math.min(1,markIn+(REDUCED?0.06:0.014))
+      const e=markIn<0.5?2*markIn*markIn:1-Math.pow(-2*markIn+2,2)/2
+      let total=0;for(const s of ms)total+=s.length-1
+      let budget=Math.max(1,total*e)
+      const R=Math.min(W,H)*0.22   // the core's own footprint, near enough
+      // a hand still on the page is still writing: the finished mark steps aside
+      // for the wet ink rather than sitting under it
+      const wet=finishing()&&pennedN&&performance.now()-pennedAt<1400
+      ctx.save()
+      ctx.translate(coreCX,coreCY);ctx.scale(R,R)
+      ctx.strokeStyle=LIVE;ctx.lineWidth=1.7/R;ctx.lineCap='round';ctx.lineJoin='round'
+      ctx.globalAlpha=(0.42+0.5*shared.t)*(wet?0.3:1)
+      for(const s of ms){
+        if(budget<=0)break
+        ctx.beginPath();ctx.moveTo(s[0][0],s[0][1])
+        const n=Math.min(s.length-1,budget)
+        for(let i=1;i<=n;i++)ctx.lineTo(s[i][0],s[i][1])
+        ctx.stroke();budget-=s.length-1
+      }
+      ctx.restore()
+      ctx.globalAlpha=1
+    }
+  }
+
   // the others, one faint point each — no labels, no lamps, no rings
   if(Mesh.peers.size){
     for(const[,pr]of Mesh.peers){
@@ -1755,21 +2060,46 @@ function frame(now){
     ctx.beginPath();ctx.arc(P.x,P.y,1.4,0,6.2832);ctx.fill()
   }
 
+  // the ending, once it is fully arrived, becomes a page again
+  if(finishing()){
+    if(!finishOn){finishOn=true;pennedClear()}
+    $('#sLamp').textContent=pennedN
+      ?'your mark · draw again to change it'
+      :'draw your mark — it goes with you'
+  }
+  if(inscribed)fieldWindow()
+
   ctx.globalAlpha=1
   requestAnimationFrame(frame)
 }
 // show-rig probe, the twin of field.html's window.__keeper(). The ending is a
 // camera, a crossing and twenty seconds away, which makes the one screen with
 // the most text on it the one hardest to check. This jumps straight to it.
-window.__end=(n=22)=>{
+window.__end=(n=22,drawn=true)=>{
   started=true;inscribed=true;done=true
   if(!name)name='—'
   if(!word)word='շունչ'
   for(let i=field.length;i<n;i++)field.push('name'+i+' · բառ'+i)
   crossing=crossing||{id:'insc-probe',proof:'probe'}  // so the third link shows too
+  joined=true                                          // …and so the field may open
+  // a mark, drawn the way a hand draws one — the ending's last twenty seconds
+  // are now about a thing that only exists if somebody made it
+  if(drawn&&!mark){
+    const c=[],cx=W/2,cy=H/2,r=Math.min(W,H)*0.16
+    for(const k of [0,1]){
+      const s=[]
+      for(let i=0;i<=90;i++){
+        const a=i/90*Math.PI*(k?1.1:1.9)+k*2.2
+        s.push([cx+Math.cos(a)*r*(0.5+0.5*k)+Math.sin(i*0.3)*4,cy+Math.sin(a)*r*(1-0.3*k)])
+      }
+      c.push(s)
+    }
+    mark=markEncode(c)
+  }
   $('#door').classList.add('gone')
   buildSharedBody()
-  return {n:field.length}
+  markStore();fieldHref()
+  return {n:field.length,mark:mark.length}
 }
 
 resize()

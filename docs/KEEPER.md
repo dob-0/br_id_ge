@@ -148,7 +148,13 @@ node ~/br_id_ge/scripts/serve.mjs --to prod  # the real field, locally
 
 Or watch the mesh from outside, which is the check that catches a keeper that
 *thinks* it is publishing (see the dead-pipe note below) — a bare listener on
-room `bridge` should print a `keeper` heartbeat every 5s.
+room `bridge` should print a `keeper` heartbeat every 5s. That listener now
+exists, and it is the only check that has never lied:
+
+```bash
+node ~/di-bo/check-keeper.mjs                 # prod   — exit 0 kept, 1 silent, 2 mesh down
+node ~/di-bo/check-keeper.mjs --to staging    # staging
+```
 
 Four states, all of which must be *looked at*:
 
@@ -177,6 +183,29 @@ stays live. Bring the tab to the front before believing what it says.
   its heartbeat and rebuilds any pipe that hears nothing back for 20s. The way
   to *check* — never trust the sender's log — is to listen on room `bridge`
   from a third machine and watch for a `keeper` heartbeat every 5s.
+- **The log says "keeper on the mesh", the process is `active`, `checkMesh` is
+  green — and there is no socket at all.** Found 2026-08-06, after 22 hours
+  asleep on the live field. The dead-pipe watchdog above only ever ran on an OPEN
+  socket, and a websocket dial that never resolves sits in `readyState 0` forever
+  — no `open`, no `close`, no `error` — so nothing retried and nothing said a
+  word. The reconnect was deliberately "unconditional and quiet", which is why it
+  left no trace. Now: a dial has a 12s deadline, being off the mesh is itself a
+  redial trigger on the same heartbeat, and di.bo alerts on its OWN presence
+  rather than on the proxy's willingness to upgrade. **Also, both tiers run from
+  `/opt/di-bo` — the local file being right is not the same as the deployed file
+  being right, and restarting `di-bo` does not restart `di-bo-staging`.**
+- **The `keeper-*` reserved id was not actually reserved.** Both keeper clients
+  sent `&secret=` on the understanding that the relay enforced it for `keeper-*`
+  node ids. It did not — a bare `keeper-anything` joined prod with no secret,
+  free to publish `keeper:say` in the piece's own voice. The relay only had
+  `MESH_ROOM_SECRET`, which closes the WHOLE mesh (useless for an anonymous
+  rite), and the compose deployment passed no `MESH_*` var through at all.
+  **Fixed 2026-08-06** in di.iiii `serverXR/src/meshHub.js`: `MESH_KEEPER_SECRET`
+  gates only the reserved ids (4401) and leaves the room open to visitors. To
+  turn it on, once that lands: set `MESH_KEEPER_SECRET` (and
+  `STAGING_MESH_KEEPER_SECRET`) in the VPS `.env`, the same value in di-bo's
+  `.env` and on jet.di, then `check-keeper.mjs` on both tiers. Until a secret is
+  configured the relay behaves exactly as it does today — open.
 - **Keeper stuck awake with nobody there** — a stale `keeper.mjs` on some other
   machine. The name in the panel tells you which body claims the room.
 - **Two answers to one question** — both bodies answering. Should be impossible
