@@ -52,6 +52,22 @@ actors, not decoration. The rite and the door carry the artwork's own face.
 - edit `docs/MASTER_CONTEXT.md` for curatorial updates (do not let it drift from `docs/PROJECT.md`)
 - do not commit `.env` or any API keys — secret scan in `auto-push-readme.sh` will block it
 
+## Golden Rule — the repo declares the space, and the audit proves it
+
+`di-space.space.json` owns the space (label, tiers, which pages must exist);
+`di-space.<page>.json` owns one page. Sync with **one** command and check with
+another:
+
+```bash
+node scripts/sync-space.mjs --all --tier staging
+node scripts/sync-space.mjs --audit        # all tiers, read-only, exit 1 on drift
+```
+
+Never hand-sync a single manifest and call the space synced — that is how prod,
+staging and the dev box ended up with three different names for it. Never edit
+`scripts/sync-space.mjs` here: it is vendored from di.iiii's
+`scripts/space-sync.mjs`.
+
 ## Golden Rule — see it before it ships
 
 Everything we build is LOOKED AT before it graduates, in this order:

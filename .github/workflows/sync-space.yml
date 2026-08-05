@@ -21,6 +21,7 @@ on:
       - 'bridge.html'
       - 'field.html'
       - 'dash.html'
+      - 'di-space.space.json'
       - 'di-space.json'
       - 'di-space.landing.json'
       - 'di-space.field.json'
@@ -75,9 +76,9 @@ jobs:
               return 1
             fi
             echo "──────── $tier → $base"
-            for m in di-space.json di-space.landing.json di-space.field.json di-space.dash.json; do
-              LIVE_API_TOKEN="$token" node scripts/sync-space.mjs --repo . --manifest "$m" --to "$base"
-            done
+            # --all walks the project list in di-space.space.json, so adding a
+            # surface to the repo no longer means remembering to add it here.
+            LIVE_API_TOKEN="$token" node scripts/sync-space.mjs --repo . --all --to "$base"
           }
 
           # rehearsal first — but never let it hold the live space back
@@ -94,3 +95,15 @@ jobs:
             echo "::error::staging did not sync. Prod is current; staging is behind and will stay behind until this is fixed."
             exit 1
           fi
+
+      # A sync that reports success is not the same as tiers that agree. Every
+      # drift this repo has been bitten by was found by a person opening prod
+      # and staging side by side and noticing a name was different — which only
+      # ever works for the surfaces someone happens to look at. This reads both
+      # tiers and fails the run on any difference the manifests do not declare.
+      # Read-only, so it is safe against the live space.
+      - name: Audit — every governed tier must match the repo
+        env:
+          PROD_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN }}
+          LIVE_API_TOKEN: ${{ secrets.DI_SPACE_TOKEN_STAGING }}
+        run: node scripts/sync-space.mjs --repo . --audit
