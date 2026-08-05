@@ -540,10 +540,59 @@ function point(x,y){P.x=x;P.y=y;P.has=true}
 const curEl=document.getElementById('cur')
 function drawCursor(x,y){if(!curEl)return;
   curEl.style.transform='translate('+x+'px,'+y+'px)';curEl.classList.add('on')}
-addEventListener('pointermove',e=>{if(!hand.has)point(e.clientX,e.clientY);
+addEventListener('pointermove',e=>{if(!hand.has){point(e.clientX,e.clientY)
+    inkMove(e.clientX,e.clientY,(performance.now()-t0)/1000)}
   drawCursor(e.clientX,e.clientY)},{passive:true})
-addEventListener('pointerdown',e=>drawCursor(e.clientX,e.clientY),{passive:true})
+addEventListener('pointerdown',e=>{inkLift();drawCursor(e.clientX,e.clientY)},{passive:true})
 document.addEventListener('mouseleave',()=>{if(curEl)curEl.classList.remove('on')})
+// ── writing: the threshold is a page you can play on ─────────────────────
+// Before the crossing the rite is not yet reading you — it is being drawn. A
+// moving hand lays wet ink, and letters are born along the line it leaves. They
+// are ordinary marks from the moment they exist: the body can gather them, the
+// core takes them in with the rest. After the crossing the ink dries and the
+// silhouette's own edge does the reading, as it always did.
+const strokes=[]                 // {x,y,t,w,lift}
+let inkX=-1,inkY=-1,inkRun=0,inkAt=0,drawnN=0
+const INK_LIFE=7                 // seconds a stroke stays wet
+const SPAWN_EVERY=26             // px of travel that earns one letter
+const PLAY_MIN_S=18              // the threshold has a room behind it
+function writing(){return started&&!inscribed&&asking===null&&act<1}
+function inkLift(){inkX=-1;inkRun=0}
+function inkMove(x,y,t){
+  if(!writing()||REDUCED)return
+  if(inkX<0){inkX=x;inkY=y;inkAt=t;strokes.push({x,y,t,w:1,lift:1});return}
+  const d=Math.hypot(x-inkX,y-inkY)
+  if(d<2)return
+  // a fast hand leaves a thin line, a slow one pools — the only thing that makes
+  // a drawn stroke read as ink rather than as a cursor trail
+  const v=d/Math.max(0.016,t-inkAt)
+  strokes.push({x,y,t,w:clamp(1-v/2600,0.18,1),lift:0})
+  if(strokes.length>460)strokes.splice(0,strokes.length-460)
+  inkRun+=d;inkX=x;inkY=y;inkAt=t
+  while(inkRun>=SPAWN_EVERY){inkRun-=SPAWN_EVERY;bornAt(x,y,t)}
+}
+function bornAt(x,y,t){
+  const i=clamp(Math.round((1-x/W)*GW-0.5),0,GW-1)
+  const j=clamp(Math.round((y/H)*GH-0.5),0,GH-1)
+  const k=j*GW+i
+  let m=marks.get(k)
+  // everSeen is what the OUTLINE has offered — it sets the target, and a drawn
+  // cell was never offered by anyone. Counting these would make a page you
+  // covered in ink into a rite twice as long as one you did not.
+  if(!m){m={i,j,g:GLYPHS[(Math.random()*GLYPHS.length)|0],read:0,t:0,heat:0,stir:0,bloom:0};marks.set(k,m)}
+  if(m.read)return
+  // born, not taken. Two consequences, both deliberate. The blue ring is the
+  // mark of the LAMP reading you, and one per letter along a drawn line turns
+  // the page into a blue mesh — the single live colour has to stay the rarest
+  // thing on screen. And a drawn letter does not advance the rite: counting it
+  // would let a fast hand finish all five acts in twenty seconds. At the
+  // threshold you write; from the crossing on, you are read.
+  m.read=1;m.t=t;m.bloom=1;m.born=1;drawnN++
+  SND.grain(x,y,0.75)
+}
+addEventListener('pointerup',inkLift,{passive:true})
+addEventListener('pointercancel',inkLift,{passive:true})
+
 // a touch rings outward through the field — a slow wave of opacity, print not sparks
 const ripples=[]
 function ripple(x,y){
@@ -945,7 +994,18 @@ function advance(){
   // the crossing and the witness — two of the five — were never seen at all, and
   // the rite that is supposed to be walked was skipped through.
   const next=act+1
-  if(next<ACTS.length&&f>=ACTS[next].at&&performance.now()>=cardUntil){
+  // The crossing sits at a tenth of the reading, which on a small outline is
+  // three or four letters — the threshold was over before anyone had touched
+  // anything. It is the one act you arrive at rather than earn, so it also waits
+  // out a floor in seconds: long enough to have drawn something first.
+  // The threshold is not measured in letters. It is a room you are let into and
+  // then let out of: play in it for as long as it lasts. Nothing is read there —
+  // so the crossing is the only act reached by time rather than by reading, and
+  // every act after it is reached the way it always was.
+  const ready=next>=ACTS.length?false
+    :next===1?(performance.now()-t0)/1000>=PLAY_MIN_S
+    :f>=ACTS[next].at
+  if(ready&&performance.now()>=cardUntil){
     act=next;SND.actSwell(next);breathAt=(performance.now()-t0)/1000
     $('#hudAct').textContent=ACTS[next].lat
     if(!asking)showCard(ACTS[next])
@@ -1323,6 +1383,10 @@ function begin(){
   started=true
   SND.unlock()
   door.classList.add('gone')
+  // the threshold is entered by opening the door, not by reading — act stayed at
+  // -1 until the first letter, which was fine while the first letter came in a
+  // second and is a deadlock now that nothing is read here at all
+  act=0
   // hands and pose are decoration and cost a second wasm build each — no camera,
   // no reason to fetch them at all
   openLamp().then(()=>{if(camOn){openHands();openPose()}})
@@ -1414,7 +1478,9 @@ function frame(now){
   const edged=embodied&&cover<=0.9
   let stalled=false
   if(started&&!inscribed){
-    rebuildOutline(t,dt,embodied)
+    // nothing is read at the threshold, by the finger or by the edge — the
+    // Keeper used to ask her question before the crossing had even happened
+    rebuildOutline(t,dt,embodied&&!writing())
     // The target has to be reachable. A fixed 180 was not: the dreamed figure only
     // ever offers ~162 distinct cells at this size, so the final act sat just under
     // the threshold, and on a smaller frame the rite could not be finished at all.
@@ -1438,7 +1504,7 @@ function frame(now){
     stalled=t-lastReadAt>STALL_S
     // the pointer reads whenever the body cannot — no camera, no edge, or an
     // edge that has read nothing for long enough to count as none
-    if(P.has&&(!edged||stalled)){
+    if(P.has&&!writing()&&(!edged||stalled)){
       const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
       for(const [,m] of marks){
         if(m.read)continue
@@ -1455,6 +1521,10 @@ function frame(now){
       $('#sLamp').textContent='too close for the lamp — touch to read'
     }else if(embodied){
       $('#sLamp').textContent=(stalled?'touch to read · ':'')+'body seen'+(handLM?' · hand seen':'')+(poseLM?' · pose seen':'')
+    }else if(writing()){
+      // during the threshold the drawing is the answer to every fault the lamp
+      // could have — the note comes back the moment the crossing starts
+      $('#sLamp').textContent=drawnN?drawnN+' letters drawn':'draw — the letters come'
     }else if(lampNote){
       // said the moment it is known, not eight seconds later: waiting for a
       // reader that is never coming is the whole of the stuck
@@ -1506,6 +1576,24 @@ function frame(now){
   // per-frame constants for the field's three responses: the fingertip's
   // reach, the touch ripples, and the act's breath crossing the page
   const touchR=Math.max(46,Math.min(W,H)*0.1)
+  // a hand in the air writes too — the pointer is not the only pen
+  if(hand.has&&P.has)inkMove(P.x,P.y,t)
+  // wet ink, under the letters it made. Width came from the speed of the hand;
+  // what fades is the water, so an old line thins before it goes.
+  if(strokes.length){
+    while(strokes.length&&t-strokes[0].t>INK_LIFE)strokes.shift()
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=INK
+    for(let n=1;n<strokes.length;n++){
+      const a=strokes[n-1],b=strokes[n]
+      if(b.lift)continue
+      const age=clamp((t-b.t)/INK_LIFE,0,1),wet=1-age
+      ctx.globalAlpha=wet*wet*0.42*quiet*rvLet
+      ctx.lineWidth=0.7+3.6*b.w*wet
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()
+    }
+    ctx.globalAlpha=1
+  }
+
   const touching=P.has&&started&&!inscribed&&!askOpen
   while(ripples.length&&t-ripples[0].t>2.4)ripples.shift()
   const bAge=t-breathAt
@@ -1556,12 +1644,22 @@ function frame(now){
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
       // the taking, seen: a brief ring where a letter was just read
-      if(!inscribed&&!REDUCED){
+      if(!inscribed&&!REDUCED&&!m.born){
         const fa=t-m.t
         if(fa<0.5){
           ctx.globalAlpha=(1-fa/0.5)*0.55*quiet*rvLet
           ctx.strokeStyle=LIVE;ctx.lineWidth=1
           ctx.beginPath();ctx.arc(x,y,5+fa*44,0,6.2832);ctx.stroke()
+        }
+      }
+      // a born letter gets the other signature: ink spreading into wet paper,
+      // dark and small, where the taking gets a blue ring going outward
+      if(!inscribed&&!REDUCED&&m.born){
+        const fa=t-m.t
+        if(fa<0.9){
+          ctx.globalAlpha=(1-fa/0.9)*0.16*quiet*rvLet
+          ctx.fillStyle=INK
+          ctx.beginPath();ctx.arc(x,y,2+fa*13,0,6.2832);ctx.fill()
         }
       }
     }else{
