@@ -21,6 +21,34 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
+## This pass (2026-08-05, third) — the sync engine, and a keeper that was lying
+
+- **The engine upstream had it backwards.** di.iiii's `scripts/space-sync.mjs` is
+  documented as THE copy the linked repos vendor — and it was the stale one, four
+  months behind, still defaulting a target-less sync to the **live site** and missing
+  the staging host rewrite, `deviceAccess`, `minEngine` and slug enforcement. Promoted
+  to v4 in di.iiii `aa2205f7`; all four copies are byte-equal for the first time.
+- **Three reasons nobody saw it**, each now closed: `space-sync-vendor.mjs` — the
+  equality check the engine header has always told people to run — **did not exist**;
+  two literal **NUL bytes** in the glob translator made git call the file binary, so it
+  had no diff and no grep in either drift; and nothing tested it. `space-sync.test.js`
+  guards all three, and every assertion fails against the version it replaced.
+- **The repo is master for names again.** `title` was only ever sent in the POST that
+  creates a project, so a rename in a manifest reached no tier that already had one —
+  `di-space.field.json` read "the field — every crossing, together" while prod and
+  staging both said "the field". PATCHed on every run now; both tiers carry it.
+- **Prod is byte-identical to this repo** on all four surfaces; staging differs only by
+  the host rewrite (+40/+40/+24/+32 chars). Seen on a Pixel 7 viewport at prod: the rite
+  reads, the door opens, and with no camera the lamp now says **"the bridge still
+  carries you — touch to read"** instead of standing there silent. The field draws its
+  15 cores and the keeper panel.
+- **⚠ The keeper was dead on BOTH tiers and said it was fine.** `systemctl` active,
+  log reading `keeper on the mesh as di.bo`, and **not one `keeper` heartbeat on
+  either mesh in 32s** of listening from a third machine. The mesh itself was healthy
+  (a two-client probe carried a message on both tiers). A restart brought both back —
+  6 heartbeats in 32s. This is the dead pipe KEEPER.md describes, and **the DEAF_MS
+  guard written to catch it did not fire**: see Open.
+
 ## This pass (2026-08-05, second) — the rite can be crossed on a phone, and it is live
 
 - **`9190846` — three faults in the rite, each fatal alone.** (1) Touch only read when
@@ -188,6 +216,15 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 
 ## Open
 
+- **⚠ The keeper's dead-pipe guard does not fire.** Both tiers ran ~5h publishing
+  into nothing while logging success. `keeper.mjs` rebuilds a pipe that hears nothing
+  for `DEAF_MS`, but the rebuild path sets `lastHeard = 0` and the guard is written
+  `if (lastHeard && …)` — so between the reset and the next `onopen` the check is
+  disabled, and any state where nothing is ever heard leaves it disabled for good.
+  Restarting both units restored it (verified: 6 heartbeats/32s on each mesh). **Not
+  fixed** — the exact hole needs reproducing before a guess is pushed into a live
+  service. Worse than the bug: nothing alerted. The way to check is never the sender's
+  log — listen on room `bridge` from a third machine.
 - **⚠ Unconfirmed by the user: the mobile stuck.** The three fixes are live, but the
   original symptom was never reproduced here — a fake camera emits a test pattern, not a
   human silhouette, so the lamp correctly sits at "needs your edge" forever, which is
@@ -205,7 +242,7 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
 - **Three calls owed on the field as it now reads:** tone the awake wire back to
   a hairline? keep or drop the keeper window's auto-open? the black screen
   before paint is di.iiii's viewer, not this repo — a bigger fix.
-- **⚠ Still user-only: the `DI_SPACE_TOKEN_STAGING` repo secret.** Without it CI skips
+- ~~Still user-only: the `DI_SPACE_TOKEN_STAGING` repo secret.~~ **Present and working** — run `30961676793` synced staging *and* prod, title change included, on both tiers. Original note: Without it CI skips
   staging and every staging surface is synced by hand; since `c3ff684` a skipped tier at
   least turns the run red instead of passing green.
 - **Next session starts here:** build the field seeding from `programme.json` —
