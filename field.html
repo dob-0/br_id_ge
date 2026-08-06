@@ -96,6 +96,15 @@ canvas.grabbing{cursor:grabbing}
    the cores and nothing else: no chrome, no paper of its own, so the letters and
    the mark the visitor just drew stay visible underneath it. It is a view, not a
    page; every way in and out of it belongs to the ending that holds it. */
+/* INSIDE THE di.iiii VIEWER. A published page is a srcdoc iframe with the
+   viewer's own chrome over it: a project-switcher pill top-left and a "Made with
+   di.iiii" badge bottom-left. Both landed on this page's corners — the badge sat
+   directly on "cross the bridge →", seen on a phone at di-studio.xyz. The rite
+   already steps its title down for the pill; the field now steps out of both. */
+body.inframe #hd{top:2.6rem}
+body.inframe #cta{bottom:2.4rem}
+@media (max-width:560px){body.inframe #cta{bottom:2.9rem}}
+
 html.embed,html.embed body{background:transparent}
 html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
 html.embed canvas{cursor:default}
@@ -133,6 +142,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js'
 // published pages run inside a srcdoc iframe, which has no URL of its own —
 // location.search is empty there and the viewer hands the shell's query down
 // as diiPageQuery instead. Local mirror still uses the real one.
+try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
+
 const QRY=new URLSearchParams(window.diiPageQuery||location.search);
 const EMBED=QRY.get('embed')==='1';
 if(EMBED)document.documentElement.classList.add('embed');
