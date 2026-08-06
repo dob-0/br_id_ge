@@ -103,7 +103,13 @@ canvas.grabbing{cursor:grabbing}
    already steps its title down for the pill; the field now steps out of both. */
 body.inframe #hd{top:2.6rem}
 body.inframe #cta{bottom:2.4rem}
-@media (max-width:560px){body.inframe #cta{bottom:2.9rem}}
+@media (max-width:560px){
+  body.inframe #cta{bottom:2.9rem}
+  /* the sheet clears the bottom row, and the bottom row has just moved up to
+     clear the viewer's badge — measured, not guessed: the panel was sitting on
+     "cross the bridge →" by 50px on the live page */
+  body.inframe #kPanel{bottom:6.6rem}
+}
 
 html.embed,html.embed body{background:transparent}
 html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
