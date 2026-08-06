@@ -3,7 +3,7 @@
   "spaceId": "br_id_ge",
   "label": "br_id_ge",
   "isPublic": true,
-  "minEngine": 5,
+  "minEngine": 6,
   "tiers": {
     "prod": {
       "url": "https://di-studio.xyz/serverXR",

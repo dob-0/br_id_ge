@@ -66,7 +66,15 @@ node scripts/sync-space.mjs --audit        # all tiers, read-only, exit 1 on dri
 Never hand-sync a single manifest and call the space synced — that is how prod,
 staging and the dev box ended up with three different names for it. Never edit
 `scripts/sync-space.mjs` here: it is vendored from di.iiii's
-`scripts/space-sync.mjs`.
+`scripts/space-sync.mjs` (change it upstream, then `npm run space:sync:release`
+in di.iiii — see `docs/ai/space-sync-vendoring.md` there).
+
+**CI checks the vendored engine against di.iiii `dev` on every push and weekly**
+(`.github/workflows/vendor-check.yml`, `scripts/sync-space-check.mjs`) — a fresh
+HTTPS fetch, no token needed, since di.iiii is public. If it goes red, the fix is
+always the same: run `npm run space:sync:release` in di.iiii. `sync-space.yml`
+(the workflow that actually pushes to staging/prod) gates on this passing first —
+a drifted engine must not be allowed to sync production.
 
 ## Golden Rule — see it before it ships
 

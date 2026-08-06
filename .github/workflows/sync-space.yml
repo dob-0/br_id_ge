@@ -40,7 +40,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # A drifted engine must not be allowed to sync production. See vendor-check.yml
+  # and docs/ai/space-sync-vendoring.md (di.iiii) — this is what makes engine drift
+  # fail loudly instead of stalling uncommitted for 15+ hours the way it did on
+  # 2026-08-06, when nothing here was checking against di.iiii at all.
+  vendor-check:
+    uses: ./.github/workflows/vendor-check.yml
+
   sync:
+    needs: vendor-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

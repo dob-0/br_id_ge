@@ -98,8 +98,10 @@ workflow needs no edit.
 
 `scripts/sync-space.mjs` is a **vendored copy** of di.iiii's
 `scripts/space-sync.mjs`. Never edit it here — change it upstream and run
-`node scripts/space-sync-vendor.mjs --write` in di.iiii, or the four copies
-drift apart again.
+`npm run space:sync:release` in di.iiii (one command: writes the engine here,
+bumps `minEngine` to match, commits, pushes — see `docs/ai/space-sync-vendoring.md`
+there), or the copies drift apart again. `scripts/sync-space-check.mjs` (also
+vendored) verifies this in CI on every push and weekly — see `AGENTS.md`.
 
 ---
 
