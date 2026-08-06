@@ -39,10 +39,10 @@ const ORIGINS = {
   local: 'ws://localhost:4000/serverXR/mesh',
 }
 const MESH = ORIGINS[TO] || TO // any full ws:// url passes through
-// MESH_KEEPER_SECRET gates the reserved `keeper-*` id and nothing else;
-// MESH_ROOM_SECRET closes the whole relay and stands in when it is the only one
-// set. Same precedence as the hub — see di.iiii serverXR/src/meshHub.js.
-const SECRET = arg('--secret', process.env.MESH_KEEPER_SECRET || process.env.MESH_ROOM_SECRET || '')
+// The relay gates only the ids worth impersonating: the room stays open to every
+// visitor, and `keeper-*` needs MESH_ROOM_SECRET (di.iiii serverXR/src/meshHub.js,
+// prefixes in MESH_PROTECTED_NODE_PREFIXES). Unset, nothing is enforced.
+const SECRET = arg('--secret', process.env.MESH_ROOM_SECRET || '')
 
 let WS = globalThis.WebSocket
 if (!WS) WS = (await import('ws')).default

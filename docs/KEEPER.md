@@ -200,12 +200,15 @@ stays live. Bring the tab to the front before believing what it says.
   free to publish `keeper:say` in the piece's own voice. The relay only had
   `MESH_ROOM_SECRET`, which closes the WHOLE mesh (useless for an anonymous
   rite), and the compose deployment passed no `MESH_*` var through at all.
-  **Fixed 2026-08-06** in di.iiii `serverXR/src/meshHub.js`: `MESH_KEEPER_SECRET`
-  gates only the reserved ids (4401) and leaves the room open to visitors. To
-  turn it on, once that lands: set `MESH_KEEPER_SECRET` (and
-  `STAGING_MESH_KEEPER_SECRET`) in the VPS `.env`, the same value in di-bo's
-  `.env` and on jet.di, then `check-keeper.mjs` on both tiers. Until a secret is
-  configured the relay behaves exactly as it does today — open.
+  **Closed on di.iiii `dev`** (`f74b7184`, found independently in the same audit
+  week): the upgrade is refused with 401 for any id matching
+  `MESH_PROTECTED_NODE_PREFIXES` (default `keeper`) unless it proves
+  `MESH_ROOM_SECRET` — the room itself stays open, so a visitor still joins with
+  no credential. **It is off until a secret exists.** To arm it: deploy `dev`,
+  set `MESH_ROOM_SECRET` (and `STAGING_MESH_ROOM_SECRET`) in the VPS `.env`, the
+  same value in di-bo's `.env` and on jet.di, then run `check-keeper.mjs` on
+  both tiers — an unarmed relay and an armed one look identical from outside
+  until you try to claim the id.
 - **Keeper stuck awake with nobody there** — a stale `keeper.mjs` on some other
   machine. The name in the panel tells you which body claims the room.
 - **Two answers to one question** — both bodies answering. Should be impossible
