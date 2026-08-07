@@ -9,6 +9,62 @@ active_branch: main · the door: https://di-studio.xyz/br_id_ge · the rite: /br
 **The rite:** `v.oooooo 3` — THE READING (2D canvas, no Three.js): your silhouette reads
 Armenian letters along its own edge. Repo is master; the space syncs from it on push.
 
+## This pass (2026-08-07) — the rite reads by whatever the device has, and they add · LIVE on both tiers
+
+**The bug, reproduced at last.** Driven at 390×844 DPR3 with real touch events
+and human pacing (85px hops, half-second holds — how a person explores a
+screen): **zero letters read in 160s on staging, zero in ten minutes on prod**,
+sitting at act ii while the status line advised "touch to read". This is the
+"people get stuck in the middle" report, and it needed no camera to happen.
+
+**Why it was never found before:** a fake camera emits a test pattern, which
+MediaPipe reads as >90% person, which trips `swallowed` — so every previous
+attempt hit "too close for the lamp" and stopped there, unable to tell the
+environment's fault from the real one. The camera-*less* paths were the proof.
+
+**Root cause — one mistake in three places: sources competed instead of adding.**
+- the circle carrying the letters was keyed on `!camOn`, so a camera that was
+  open and seeing *nothing* still welded the ring to screen centre — one radius
+  (82px) from a finger reading 38px around itself. They could never meet.
+- the pointer was gated on `!edged||stalled`: a camera that thought it saw a
+  body switched touch **off**, and `stalled` needed 8s of total silence to lift,
+  reset by any single stray read.
+- `target` came from `everSeen*0.62`, which a churning silhouette drives to its
+  cap of 220 while the finger can only reach the ~45 cells that exist now.
+
+**Now:** every reader feeds one reading and none can disable another; the circle
+follows whatever is doing the reading; the finger reads along its **path**, not
+the disc around its latest sample (touch reports coarse jumps and the letters
+passed over in between were dropped). Fixing the mechanism made it *too* easy —
+165 letters in five seconds, whole rite over in eighteen — so the reading has a
+**tempo of 4/s**: what your hand passes over is offered, not seized. `target` is
+measured 14s into the crossing, once the outline has opened out.
+
+**The readers row** — `● finger ○ lamp ○ world ○ tilt`, bottom left. A list of
+ways in, not a diagnostic: an unlit one is a door nobody has opened, and tapping
+it asks for exactly that permission. `world` turns the lens around (edges of a
+room instead of a body); `tilt` steers by moving the phone.
+
+**Also fixed:** `Q` came from `location.search`, which is **always empty inside
+the srcdoc iframe the rite is published in** — so `?body=0`, `?cam=`, `?keeper=`,
+`?field=`, `?mesh=` were all dead on the live page and nobody on site could
+rescue a stuck visitor. Reads `window.diiPageParams` now. And the viewer's
+"Made with di.iiii" badge was printing straight through the status line — the
+one sentence that tells a stuck visitor what to do; bottom HUD lifted under
+`body.inframe`.
+
+**Verified live on prod** after the sync (`4ce7ada`, run 31178610329): camera
+denied, 0 → 113 letters, act iii, keeper's question at 44s. Readers row renders,
+badge no longer overlaps. Both tiers carry the code.
+
+**⚠ NOT verified — needs a real device:** a real camera reading a real body
+(still never seen work by anyone), tilt, the rear lens. The camera path was
+confirmed only as *not starving the finger* (0 → 69 with a blind camera where it
+was 0 forever).
+
+**⚠ Shipped straight to `main` at the user's instruction**, without the staging
+look the flow normally takes. Revert is `git revert 4ce7ada` + push.
+
 ## The shape (after the 2026-07-31 declutter)
 
 - **One public face.** The door (`landing`) is the only published entry; its links are
@@ -21,9 +77,61 @@ Armenian letters along its own edge. Repo is master; the space syncs from it on 
   `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
   (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
 
+## This pass (2026-08-06, sixth) — the field is in the ending, and it is LIVE
+
+Shipped: `02846c0` → `9783801` on `main`, synced to prod and Pages, seen on a phone
+at di-studio.xyz.
+
+- **The field opens inside the ending** — `field.html?embed=1` in a transparent frame
+  above "you are part of it now.". A tap goes in, a drag is still ink. The three
+  passage designs before it (40s lapse, 14s rule, auto-travel) are gone.
+- **Every crossing looks like itself** — the id seeds a form FAMILY (knot, wire, ring,
+  a line through space, a cut stone), and each core carries its own Armenian word
+  around it, so gathering the cores gathers the alphabet.
+- **Mobile audit** — the reading was a smear at 412px (96×54 is a landscape grid; each
+  axis is now thinned by what that axis measures), the field's top corners crossed, the
+  camera was framed from a desk seat, and `#hint` was `display:none` on phones.
+- **Two defects found only by looking at the deployed page**: the di.iiii viewer's pill
+  covered the title and its badge sat on "cross the bridge →"; fixing that pushed the
+  bottom row into the keeper sheet. Both measured on the live page, both fixed.
+- **The keeper was asleep for 22 hours** with every signal green — no socket at all, and
+  the watchdog only ever ran on an open one. Fixed in di-bo (dial deadline + off-mesh
+  redial + self-presence alerting + `check-keeper.mjs`), deployed, both tiers verified.
+
+### Open
+
+- **The mesh keeper gate is unarmed.** di.iiii `dev` has it (`f74b7184`:
+  `MESH_ROOM_SECRET` + `MESH_PROTECTED_NODE_PREFIXES`), but with no secret set anyone
+  can still publish as ՊԱՀԱՊԱՆ — proved live. Arming it: deploy dev, set the secret on
+  both tiers and in di-bo's `.env`, then `check-keeper.mjs`.
+- **The mark is client-only in production.** di.iiii `feat/inscription-mark` (pushed,
+  unmerged) carries `POST/PUT …/mark`; until it lands, a drawing lives in localStorage
+  and only its own browser sees it. Verified the rite is safe against a server without
+  those routes — the crossing succeeds, the `PUT` 404 is swallowed.
+- **di-bo has no git remote** — two commits live only on this box.
+- Not mine, still dirty here: `scripts/sync-space.mjs` (engine v5→v6).
+
+## This pass (2026-08-06, fifth) — the dev box stops being the odd one out
+
+Sync-only pass, no rite code touched; another agent held the working tree throughout.
+
+- **Local was the old version, and the audit named why:** the space was still called
+  `br_id_ge XR_ Notations:vi.ritual`, `newww` and `br-id-ge-field` carried `slug=null`
+  (so `/br_id_ge/rite` did not resolve on the dev box at all), `br-id-ge-needs` was
+  missing, and 73 projects sat where 4 are declared. Prod and staging already agreed.
+- **Fixed with one command** — `node scripts/sync-space.mjs --all --tier local`. All four
+  declared pages now read `ok` on prod, staging and local; `✓ every governed tier matches
+  the repo`. The 70 leftover `n2-*` projects are local-only, reported, never deleted.
+- **Seen, not assumed:** door and rite screenshotted at `localhost:5173/br_id_ge`
+  (di.iiii main checkout, branch `fix/audit-2026-08-05`) — paper ground, կ_ա_մ_ու_ր_ջ,
+  "touch to open the lamp". That is the surface to point the user at.
+- **Old rite eras put back up for the look-back:** `7cf2bc9` / `826e800` / `0dfaee4` /
+  `1eaea46` served from git at `localhost:8901` (scratch server, not in the repo) — the
+  user wants a background *mechanic* out of the void era, without its black or its colour.
+
 ## This pass (2026-08-05, fourth) — the crossing keeps the drawing, and the end moves
 
-**NOT COMMITTED — br_id_ge working tree is dirty; the di.iiii half is a worktree.**
+**Shipped 2026-08-06** in `02846c0`; the di.iiii half is `feat/inscription-mark`, pushed and unmerged.
 
 - **The mark.** The threshold ink used to dry in seven seconds and be thrown away,
   and the form a crossing wore in the field was a torus knot picked by a hash of
@@ -322,6 +430,21 @@ viewport, DPR 2.6, and 1440x800 DPR 2:
 - CI syncs staging AND prod on every push to main (staging needs its own token secret).
 
 ## Open
+
+- **⚠ `main` is one commit ahead of `origin/main` — prod and staging do not have it.**
+  `02846c0` ("the field opens inside the ending, and every crossing looks like itself")
+  is committed locally and unpushed, so the dev box is now the *newest* tier, not an
+  equal one. One version everywhere needs that push (CI syncs staging then prod) — held
+  back deliberately: it is another agent's work, mid-festival.
+- **`scripts/sync-space.mjs` is dirty in a repo whose AGENTS.md forbids editing it.**
+  An engine **v6** (space-only declarations — a manifest with an empty `projects` list
+  reconciles the space and touches no content) is being written here rather than in
+  di.iiii's upstream `scripts/space-sync.mjs`. Re-vendor the moment it settles, or this
+  becomes drift #4.
+- **The background question is unanswered.** User: *"the background of the old one is
+  interesting — take the good mechanics but not the design and color."* Which era, and
+  whether the mechanic is the letter-field behind the reading or the drift of the ground
+  itself, is still owed. Eras are on `localhost:8901` while that server lives.
 
 - **⚠ The keeper's dead-pipe guard does not fire.** Both tiers ran ~5h publishing
   into nothing while logging success. `keeper.mjs` rebuilds a pipe that hears nothing
