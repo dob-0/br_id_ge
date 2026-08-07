@@ -863,7 +863,11 @@ addEventListener('pointerdown',e=>{if(!hand.has)point(e.clientX,e.clientY);rippl
 // fixed body. The input keeps its own touch handling so typing is unaffected.
 addEventListener('touchmove',e=>{
   if(e.target&&e.target.tagName==='INPUT')return
-  e.preventDefault()
+  // A touchmove that is already part of a scroll arrives non-cancelable, and
+  // calling preventDefault on it throws "Ignored attempt to cancel a touchmove"
+  // — which on a real phone costs the FIRST DRAG of a gesture, the one that
+  // starts the reading. Ask before cancelling.
+  if(e.cancelable)e.preventDefault()
 },{passive:false})
 
 // ── what the lamp can see, drawn ──────────────────────────────────────────
@@ -1450,9 +1454,17 @@ function inscribe(){
   // The rite never blocks on the network — but it no longer claims a permanence
   // it did not achieve. Silence here is what hid nine days of refused crossings.
   if(FIELD_URL){
-    fetch(FIELD_URL+'/inscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
+    // A server that accepts the connection and never answers used to leave this
+    // promise pending forever: neither .then nor .catch ran, `joined` stayed
+    // false, the field window never opened and NOTHING was said. On a phone
+    // changing cells that is not a rare case. askKeeper already aborts; this is
+    // the one write in the piece and it did not.
+    const ctl=new AbortController()
+    const bail=setTimeout(()=>ctl.abort(),12000)
+    fetch(FIELD_URL+'/inscriptions',{method:'POST',signal:ctl.signal,
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify(mark?{name:name||'—',word,mark}:{name:name||'—',word})})
-      .then(r=>{if(!r.ok)throw new Error(String(r.status));joined=true;fieldHref();return r.json().catch(()=>null)})
+      .then(r=>{clearTimeout(bail);if(!r.ok)throw new Error(String(r.status));joined=true;fieldHref();return r.json().catch(()=>null)})
       .then(d=>{
         // newer servers grant a proof — the one key that can unmake this crossing
         if(d&&d.id&&d.proof){
@@ -1463,6 +1475,7 @@ function inscribe(){
         }
       })
       .catch(()=>{
+        clearTimeout(bail)
         end.querySelector('.note').textContent=
           'the far field did not answer — your core stays here, on this device, and has not yet joined the others.'
         // and the link stops claiming otherwise. It read "your core is there"
@@ -1803,8 +1816,11 @@ let tapX=0,tapY=0,tapT=0
 $('#fieldVeil').addEventListener('pointerdown',e=>{tapX=e.clientX;tapY=e.clientY;tapT=performance.now()},{passive:true})
 $('#fieldVeil').addEventListener('pointerup',e=>{
   if(gone||!fieldOn||performance.now()-fieldAt<FIELD_IN_MS)return
-  if(Math.hypot(e.clientX-tapX,e.clientY-tapY)>10)return
-  if(performance.now()-tapT>700)return
+  // 10px and 700ms is a mouse's idea of a tap. A thumb rolls further than that
+  // on the way down and a considered tap takes longer, and both failed here in
+  // silence — the visitor taps the field, nothing happens, and nothing says why.
+  if(Math.hypot(e.clientX-tapX,e.clientY-tapY)>24)return
+  if(performance.now()-tapT>1200)return
   gone=true
   // the anchor does the travelling, not location: it carries target="_top",
   // which is what gets a published page out of the di.iiii viewer's iframe
@@ -2336,7 +2352,22 @@ function frame(now){
   if(inscribed)fieldWindow()
 
   ctx.globalAlpha=1
-  requestAnimationFrame(frame)
+}
+// The loop re-armed on its own last statement, inside 400 lines with no guard —
+// so ANY throw anywhere in a frame killed the whole piece permanently and
+// silently: canvas frozen, no letters, no advance, nothing said, and no way back
+// but a reload the visitor has no reason to think of. One bad frame must not be
+// the end of the rite. Re-arm first, and let a broken frame be one lost frame.
+function frameLoop(now){
+  requestAnimationFrame(frameLoop)
+  try{frame(now)}
+  catch(e){
+    // say it once, quietly, and keep going — a rite that visibly limps is worth
+    // more than one that stops dead looking finished
+    if(!frameLoop.told){frameLoop.told=true
+      console.error('br_id_ge frame:',e)
+      const s=$('#sLamp');if(s)s.textContent='something faltered — the bridge still carries you'}
+  }
 }
 // show-rig probe, the twin of field.html's window.__keeper(). The ending is a
 // camera, a crossing and twenty seconds away, which makes the one screen with
@@ -2369,7 +2400,7 @@ window.__end=(n=22,drawn=true)=>{
 }
 
 resize()
-requestAnimationFrame(frame)
+requestAnimationFrame(frameLoop)
 </script>
 </body>
 </html>

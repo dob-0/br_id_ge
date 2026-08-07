@@ -13,7 +13,7 @@
     "staging": {
       "url": "https://staging.di-studio.xyz/serverXR",
       "tokenEnv": "LIVE_API_TOKEN",
-      "openInscriptions": false
+      "openInscriptions": true
     },
     "local": {
       "url": "http://localhost:4000/serverXR",

@@ -557,7 +557,11 @@ function receive(){
   // hand-off from a rite that was never granted one.
   let target=(ME&&cores.get(ME))||null;
   if(!target)cores.forEach(g=>{if(g.userData.word===JUST)target=g;});
-  target=target||[...cores.values()].pop();
+  // …but NOT just any core. Falling back to the last one in the map performed
+  // the whole "this one is yours" reveal on a STRANGER'S crossing — someone
+  // else's name and word, presented to a visitor as the thing they had just
+  // left. Better to show the field plainly than to hand them the wrong core.
+  if(!target){revealAll();return;}
   revealAll();
   target.userData.born=performance.now();
   focus={grp:target,until:performance.now()+5200};
