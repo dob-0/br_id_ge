@@ -130,12 +130,29 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 #hudTitle{top:0;left:0;padding:1.35rem max(1.35rem,env(safe-area-inset-left));color:var(--ink)}
 /* inside the di.iiii viewer a project-switcher pill owns that corner */
 body.inframe #hudTitle{top:2.9rem}
+/* …and the viewer floats a "Made with di.iiii" badge over the bottom-left,
+   which was landing straight on top of the status line — obscuring the one
+   sentence that tells a stuck visitor what to do. Lift the bottom HUD clear
+   of it, but only inside the viewer, where the badge actually exists. */
+body.inframe #state,body.inframe #readers{bottom:2.6rem}
 #hudTitle b{font-weight:400}
 #hudAct{top:0;right:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));text-align:right}
 #state{right:0;bottom:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));
   display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
 #state b{font-weight:400;color:var(--ink)}
 #sHere b{color:var(--live)}
+
+/* the readers — bottom left, the one part of the HUD that accepts a touch */
+#readers{left:0;bottom:0;padding:1.35rem max(1.35rem,env(safe-area-inset-left));
+  display:flex;gap:1rem;pointer-events:auto}
+.rd{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--graphite);
+  background:none;border:0;padding:.2rem 0;cursor:pointer;opacity:.45;
+  /* a fingertip needs somewhere to land, and .55rem of text is not it */
+  min-height:44px;display:flex;align-items:center;gap:.35em}
+.rd::before{content:'\25CB'}          /* ○ — a way in nobody has opened */
+.rd.on{opacity:1;color:var(--ink)}
+.rd.on::before{content:'\25CF'}       /* ● — awake, and feeding the reading */
+.rd:disabled{cursor:default}
 
 /* the door — a printed cover page */
 #door{position:fixed;inset:0;z-index:9;background:var(--paper);display:grid;place-items:center;
@@ -154,6 +171,7 @@ body.inframe #hudTitle{top:2.9rem}
   #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
   #hudTitle,#hudAct{padding:1.1rem}
   #state{padding:1.1rem}
+  #readers{padding:1.1rem;gap:.75rem}
 }
 </style>
 </head>
@@ -194,6 +212,18 @@ body.inframe #hudTitle{top:2.9rem}
   <span id="sLamp">lamp closed</span>
 </div>
 
+<!-- What is awake. Every reader feeds one reading and none of them switches
+     another off, so this is a list of ways in, not a diagnostic: an unlit one
+     is a door nobody has opened yet, not a fault. Tapping it asks for exactly
+     the permission that reader needs — which is also the only honest moment to
+     ask, since the visitor just said they wanted it. -->
+<div class="hud" id="readers" hidden>
+  <button class="rd" data-rd="finger">finger</button>
+  <button class="rd" data-rd="lamp">lamp</button>
+  <button class="rd" data-rd="world">world</button>
+  <button class="rd" data-rd="tilt">tilt</button>
+</div>
+
 <div id="door">
   <div>
     <div class="w arm">կամուրջ</div>
@@ -213,7 +243,13 @@ body.inframe #hudTitle{top:2.9rem}
 const $=(s)=>document.querySelector(s)
 const clamp=(v,a,b)=>v<a?a:(v>b?b:v)
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches
-const Q=new URLSearchParams(location.search)
+// The rite is published inside a srcdoc iframe, where location.search is
+// ALWAYS empty — so every escape hatch below (?body=0, ?cam=, ?keeper=,
+// ?field=, ?mesh=) was silently dead on the live page, and a keeper on site
+// had no way to rescue a stuck visitor. The di.iiii shell hands the real query
+// down; take it when it is there and fall back to our own for local files.
+const Q=window.diiPageParams
+  || new URLSearchParams(window.diiPageQuery || location.search)
 try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
 
 // ── ink. The canvas speaks the page's own palette. ────────────────────────
@@ -466,20 +502,31 @@ function markScreen(m){
 }
 
 // ── the lamp: camera in, outline out ─────────────────────────────────────
-const CAM_FACING=Q.get('cam')||'user'
-let video=null,camOn=false
+// which way the lamp looks. Not a constant any more: "world" turns it around,
+// so the edges being read are a room's instead of a body's — the same reading,
+// a different thing carried across.
+let camFacing=Q.get('cam')||'user'
+let video=null,camOn=false,camStream=null
 // What the lamp cannot do, in words. The loop prints it, so a body-reader that
 // died on the way is never mistaken for a rite that is simply over — the whole
 // failure used to be a status line still cheerfully reading "lamp open".
 let lampNote=''
-async function openLamp(){
+async function openLamp(facing){
+  if(facing&&facing!==camFacing){
+    camFacing=facing
+    // a phone will not hand out both lenses at once — let the old one go first
+    try{camStream&&camStream.getTracks().forEach((tr)=>tr.stop())}catch(e){}
+    try{video&&video.remove()}catch(e){}
+    video=null;camOn=false;camStream=null;segHas=false
+  }
   let s
   try{
     // A phone is portrait and the constraint asked for 16:9 landscape, so the
     // mask arrived rotated against the screen it is drawn on.
     const tall=innerHeight>innerWidth
     const size=tall?{width:{ideal:360},height:{ideal:640}}:{width:{ideal:640},height:{ideal:360}}
-    s=await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:CAM_FACING},size),audio:false})
+    s=await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:camFacing},size),audio:false})
+    camStream=s
   }catch(e){
     $('#sLamp').textContent='lamp closed — the bridge still carries you'
     lampNote='the bridge still carries you — touch to read';return
@@ -572,11 +619,25 @@ document.addEventListener('visibilitychange',()=>{
 
 // ── where you are pointing ───────────────────────────────────────────────
 const P={x:-999,y:-999,has:false}
+// Where the finger last read from. Touch reports coarse, jumpy positions — on a
+// phone a fast sweep can skip 80px between events — so reading only the disc
+// around the newest point drops every letter the finger passed over in between.
+// The reading is the PATH, not the sample.
+let rdX=-999,rdY=-999
+// distance² from p to the segment a→b, so the whole stroke reads, not its ends
+function segDist2(px,py,ax,ay,bx,by){
+  const vx=bx-ax,vy=by-ay,wx=px-ax,wy=py-ay
+  const len=vx*vx+vy*vy
+  const s=len>0?clamp((wx*vx+wy*vy)/len,0,1):0
+  const dx=px-(ax+s*vx),dy=py-(ay+s*vy)
+  return dx*dx+dy*dy
+}
 function point(x,y){P.x=x;P.y=y;P.has=true}
 const curEl=document.getElementById('cur')
 function drawCursor(x,y){if(!curEl)return;
   curEl.style.transform='translate('+x+'px,'+y+'px)';curEl.classList.add('on')}
-addEventListener('pointermove',e=>{if(!hand.has){point(e.clientX,e.clientY)
+addEventListener('pointermove',e=>{lastTouchAt=performance.now()
+  if(!hand.has){point(e.clientX,e.clientY)
     inkMove(e.clientX,e.clientY,(performance.now()-t0)/1000)}
   drawCursor(e.clientX,e.clientY)},{passive:true})
 addEventListener('pointerdown',e=>{inkLift();drawCursor(e.clientX,e.clientY)},{passive:true})
@@ -959,6 +1020,69 @@ let act=-1, started=false, readN=0, target=1, name='', word='', done=false
 const STALL_S=8
 // How much must be read before the finish line stops moving.
 const READY_AT=20
+// how long after the crossing opens before its size is fixed. Reading by finger
+// is fast enough to hit READY_AT almost immediately, and a target measured then
+// is measured against an outline that has barely unfolded.
+const CROSS_MEASURE_S=14
+let crossAt=0
+// The reading has a tempo. A finger sweeping a path crosses dozens of cells in
+// one gesture, and reading all of them at once turned the crossing into a
+// scrape — 165 letters in five seconds, the whole rite over in under twenty.
+// The lamp reads at its own pace no matter how fast you move: what your hand
+// passes over is offered, not seized. The body's own reading is already paced
+// by its 0.5s dwell per cell, so this governs the pointer.
+const READ_RATE=4
+let readBudget=0
+
+// ── the readers ──────────────────────────────────────────────────────────
+// Four ways into one reading. They add: a device uses whatever it has, and a
+// reader that never wakes costs the visitor nothing, because another is always
+// already carrying it. Nothing here can switch anything else off — that was the
+// old bug, where an open camera seeing nothing disabled the finger.
+let tiltOn=false,tiltAt=0,lastTouchAt=0
+function startTilt(){
+  const go=()=>{
+    addEventListener('deviceorientation',(e)=>{
+      if(e.gamma==null&&e.beta==null)return
+      tiltOn=true;tiltAt=performance.now()
+      // a hand on the glass outranks a tilt — otherwise the two fight over
+      // where the reading is, and the letters jitter between them
+      if(performance.now()-lastTouchAt<1200)return
+      const gx=clamp((e.gamma||0)/35,-1,1)
+      const gy=clamp(((e.beta||0)-45)/35,-1,1)
+      point(W/2+gx*W*0.42,H/2+gy*H*0.36)
+    })
+  }
+  // iOS hands out orientation only from inside a gesture, and only if asked —
+  // which is exactly what tapping this reader is.
+  const D=window.DeviceOrientationEvent
+  if(D&&typeof D.requestPermission==='function'){
+    D.requestPermission().then((r)=>{if(r==='granted')go()}).catch(()=>{})
+  }else if(D)go()
+}
+const RD={
+  finger:()=>true,                       // always; a screen is the one certainty
+  lamp:()=>camOn&&camFacing==='user',
+  world:()=>camOn&&camFacing==='environment',
+  tilt:()=>tiltOn&&performance.now()-tiltAt<3000,
+}
+function paintReaders(){
+  const row=$('#readers');if(!row)return
+  // only while there is a reading to feed
+  row.hidden=!started||inscribed
+  for(const b of row.querySelectorAll('.rd')){
+    const live=!!RD[b.dataset.rd]()
+    b.classList.toggle('on',live)
+    b.disabled=b.dataset.rd==='finger'
+  }
+}
+$('#readers').addEventListener('click',(e)=>{
+  const b=e.target.closest('.rd');if(!b)return
+  const k=b.dataset.rd
+  if(k==='lamp')openLamp('user')
+  else if(k==='world')openLamp('environment')
+  else if(k==='tilt')startTilt()
+})
 let lastReadN=0, lastReadAt=0, targetFixed=false
 // The rite only ever moves toward you. The target still adapts — it has to, or
 // the last act is unreachable on a small frame — but the fraction the acts ride
@@ -1157,6 +1281,9 @@ function advance(){
     :f>=ACTS[next].at
   if(ready&&performance.now()>=cardUntil){
     act=next;SND.actSwell(next);breathAt=(performance.now()-t0)/1000
+    // when the crossing itself began — the target is measured a little after
+    // this, once the outline has had time to open out
+    if(next===1)crossAt=(performance.now()-t0)/1000
     $('#hudAct').textContent=ACTS[next].lat
     if(!asking)showCard(ACTS[next])
   }
@@ -1704,7 +1831,15 @@ function frame(now){
   else morph=clamp(morph+(bodyNow?dt/1.5:-dt/2.5),0,1)
   const R0=Math.min(W,H)*0.21
   let ctx2=W/2,cty=H/2
-  if(!camOn&&P.has){ctx2=clamp(P.x,R0+14,W-R0-14);cty=clamp(P.y,R0+14,H-R0-14)}
+  // The circle goes where the reading is. Keying this on `!camOn` meant that an
+  // open camera which saw NOTHING still welded the circle to screen centre — so
+  // on a phone, where the lamp opens but the body is never in frame, the ring of
+  // letters sat in the middle of the screen while the finger swept an empty
+  // corner. Letters one radius from centre, a finger reading 38px around itself:
+  // they could never meet, and the crossing was unfinishable by touch. What
+  // matters is not whether a camera is on but whether a body is actually giving
+  // an edge; when it is not, the finger is the reader and the circle follows it.
+  if(!bodyNow&&P.has){ctx2=clamp(P.x,R0+14,W-R0-14);cty=clamp(P.y,R0+14,H-R0-14)}
   if(circle.x<0){circle.x=W/2;circle.y=H/2}
   // The circle's LAG is not decoration — it is the reading. It trails the hand, so
   // its edge passes under the fingertip and gives up letters. Reduced motion used
@@ -1765,8 +1900,15 @@ function frame(now){
     // the opposite mistake — unreachable on a small outline. So it grows while
     // the outline opens out, and fixes itself once something has been read.
     if(!targetFixed){
-      target=clamp(Math.round(everSeen*0.62),32,220)
-      if(readN>=READY_AT)targetFixed=true
+      // Never let the measure shrink under someone mid-crossing.
+      target=Math.max(target,clamp(Math.round(everSeen*0.62),32,220))
+      // Freeze it once the reading is genuinely under way — but the reading is
+      // now reliable enough that READY_AT arrives within a second or two of the
+      // first sweep, when the outline has barely opened. Measured that early the
+      // target came out tiny and the whole crossing was over in eighteen
+      // seconds. Give the outline time to show its size before we decide how
+      // much of it is a crossing.
+      if(readN>=READY_AT&&t-crossAt>CROSS_MEASURE_S)targetFixed=true
     }
     // belt and braces: the rite only ever moves toward you
     fracHigh=Math.max(fracHigh,clamp(readN/target,0,1))
@@ -1777,16 +1919,39 @@ function frame(now){
     stalled=t-lastReadAt>STALL_S
     // the pointer reads whenever the body cannot — no camera, no edge, or an
     // edge that has read nothing for long enough to count as none
-    if(P.has&&!writing()&&(!edged||stalled)){
+    // Every reader adds; none of them switches another off. The old gate
+    // (`!edged||stalled`) let the camera LOCK OUT the finger the moment it
+    // thought it saw a body — and `stalled` needed a full 8s of total silence
+    // to lift, reset by any single stray read. A camera trickling one letter
+    // every few seconds therefore kept touch disabled while delivering nothing.
+    // Whatever the device has, it uses; what one source cannot reach, another
+    // still can.
+    if(P.has&&!writing()){
+      // at most a couple of letters' worth of credit in hand, so pausing does
+      // not bank a burst to spend on the next sweep
+      readBudget=Math.min(readBudget+dt*READ_RATE,2)
       const R=Math.max(38,Math.min(W,H)*0.055), R2=R*R
+      // first touch of a stroke has no previous point — read the disc, not a
+      // segment from wherever the finger happened to be minutes ago
+      const ax=(rdX<-900?P.x:rdX), ay=(rdY<-900?P.y:rdY)
+      // a genuine jump (lifted and put down elsewhere) is not a stroke
+      const far=(P.x-ax)*(P.x-ax)+(P.y-ay)*(P.y-ay)>(R*6)*(R*6)
       for(const [,m] of marks){
         if(m.read)continue
         const [x,y]=markScreen(m)
-        const dx=x-P.x,dy=y-P.y
-        if(dx*dx+dy*dy<R2){m.read=1;m.t=t;readN++;SND.grain(x,y,0.6)}
+        const d2=far
+          ? (x-P.x)*(x-P.x)+(y-P.y)*(y-P.y)
+          : segDist2(x,y,ax,ay,P.x,P.y)
+        if(d2<R2){
+          if(readBudget<1)break
+          readBudget-=1
+          m.read=1;m.t=t;readN++;SND.grain(x,y,0.6)
+        }
       }
+      rdX=P.x;rdY=P.y
     }
     $('#sRead').textContent=readN
+    paintReaders()
     // The lamp says what it can actually see, so "is it working?" is never a
     // guess. When it cannot see an edge it now says what to do instead of what
     // is impossible — the hand is already on the glass.
@@ -2052,7 +2217,8 @@ function frame(now){
   // there whenever the finger is what reads. Hidden the moment a camera was
   // present, the ring vanished exactly when the reading fell back to touch,
   // and the visitor was left sweeping a page with no mark under the hand.
-  if(started&&!inscribed&&P.has&&(!(camOn&&segHas)||!edged||stalled)){
+  // the finger always reads now, so the ring under it is always drawn
+  if(started&&!inscribed&&P.has){
     ctx.globalAlpha=0.6*quiet
     ctx.strokeStyle=INK;ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
