@@ -81,7 +81,32 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 .ask input::placeholder{color:var(--hairline)}
 .ask input:focus{border-bottom-color:var(--live)}
 .ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--graphite);margin-top:1.3rem}
+  color:var(--graphite);margin-top:1.3rem;
+  background:none;border:0;cursor:pointer;pointer-events:auto;
+  /* a fingertip needs somewhere to land */
+  min-height:44px;padding:0 1.4rem}
+.ask .go:hover,.ask .go:focus-visible{color:var(--ink)}
+
+/* Anything that SPEAKS gets paper under it. The keeper's blessing was landing
+   inside a hundred read glyphs and could not be read at all — the letters are
+   the ground, and type printed straight onto them is just more texture. The
+   plate is made with a spread shadow rather than padding so nothing reflows. */
+.card,.ask,.end,#gate{background:rgba(243,241,236,.92);
+  box-shadow:0 0 0 1.15rem rgba(243,241,236,.92)}
+
+/* the gate — the one way on, in the same place every time, so it is learned
+   after the first tap and never hunted for again */
+#gate{position:fixed;z-index:6;left:50%;transform:translateX(-50%);
+  bottom:clamp(4.2rem,12vh,7rem);
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink);background:none;border:0;cursor:pointer;
+  min-height:48px;padding:0 1.6rem;
+  opacity:0;transition:opacity .9s ease}
+#gate.on{opacity:1}
+/* the stalled form is quieter: it is a mercy, not an achievement */
+#gate.quiet{color:var(--graphite)}
+#gate::after{content:'';display:block;height:1px;margin-top:.5rem;
+  background:currentColor;opacity:.35}
 
 .end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
   align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
@@ -192,7 +217,12 @@ body.inframe #state,body.inframe #readers{bottom:2.6rem}
   <div class="ask" id="ask">
     <div class="q"></div><div class="sub"></div>
     <input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
-    <div class="go">press enter</div>
+    <!-- was a label reading "press enter". submit() was bound to a keydown and
+         nothing else, so on a phone — where the soft keyboard may carry no
+         Enter, and where a non-gesture focus never opens one at all — the rite
+         simply stopped here with a question on screen and no way to answer it.
+         It is a button now, and the keydown still works. -->
+    <button class="go" id="go" type="button">answer →</button>
   </div>
   <div class="end" id="end">
     <div class="said"></div>
@@ -224,12 +254,23 @@ body.inframe #state,body.inframe #readers{bottom:2.6rem}
   <button class="rd" data-rd="tilt">tilt</button>
 </div>
 
+<!-- THE GATE. The rite used to decide when you were done and never say so: acts
+     turned on invisible fractions, nothing closed, and there was no way to tell
+     it you were ready. A threshold is something you step over deliberately — so
+     the rite says when it is ready and you choose when to cross. One affordance,
+     one place, one voice, appearing only when the act is genuinely complete. -->
+<button id="gate" type="button" hidden></button>
+
 <div id="door">
   <div>
     <div class="w arm">կամուրջ</div>
+    <!-- "stand where the lamp can see you" is an instruction nobody holding a
+         phone can follow: the camera is a hand's width from their face and their
+         body is never in frame. It told most visitors to do the one thing their
+         device cannot, while the input they actually had went unmentioned. -->
     <div class="t">a bridge between the real world and a shared one.
-      stand where the lamp can see you — move, and your outline is read into
-      letters. then answer once.<br>
+      draw · move · turn it around — the bridge reads you however it can,
+      and your outline is read into letters. then answer once.<br>
       <em>touch to open the lamp</em></div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
   </div>
@@ -452,7 +493,12 @@ function dreamed(i,j,t){return circleField(i,j,t)>0?1:0}
 // are what the lamp has taken, but they are capped so the screen can never fill.
 const marks=new Map()    // cellIndex -> {i,j,g,read,t}
 let everSeen=0           // distinct cells the outline has ever offered
-const MAX_READ=300
+// The reading is a CONTOUR, not a field — read letters persist because they are
+// what the lamp has taken, but past a point they stop being a figure and become
+// noise you cannot read type over. A flat 300 was written for a desktop; on a
+// 390px phone it is simply "the whole screen", which is exactly how the rite
+// came to look like confetti. Scale it to the screen it is drawn on.
+const maxRead=()=>Math.max(64,Math.round(Math.min(W,H)/4.4))
 function rebuildOutline(t,dt,embodied){
   const cur=new Set()
   for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){
@@ -487,8 +533,9 @@ function rebuildOutline(t,dt,embodied){
     if(!cur.has(k))marks.delete(k)          // the body moved on
   }
   // oldest read letters give way, so the reading stays a contour and never a field
-  if(readCount>MAX_READ){
-    let over=readCount-MAX_READ
+  const cap=maxRead()
+  if(readCount>cap){
+    let over=readCount-cap
     for(const [k,m] of marks){
       if(!m.read)continue
       marks.delete(k)
@@ -1279,21 +1326,68 @@ function advance(){
   const ready=next>=ACTS.length?false
     :next===1?(performance.now()-t0)/1000>=PLAY_MIN_S
     :f>=ACTS[next].at
-  if(ready&&performance.now()>=cardUntil){
-    act=next;SND.actSwell(next);breathAt=(performance.now()-t0)/1000
-    // when the crossing itself began — the target is measured a little after
-    // this, once the outline has had time to open out
-    if(next===1)crossAt=(performance.now()-t0)/1000
-    $('#hudAct').textContent=ACTS[next].lat
-    if(!asking)showCard(ACTS[next])
-  }
+  // When a question is due it IS the gate for that act — the keeper asking and a
+  // "the keeper is waiting →" sitting under the question are the same instruction
+  // twice, and they arm on the same frame. The question takes the screen.
+  const askDue=(!name&&f>=KEEPER_AT)||(name&&!word&&f>=INSCRIBE_AT)
+  // The act no longer turns by itself. It becomes AVAILABLE, and the gate says
+  // so; the visitor crosses when they choose. Nothing is lost by waiting.
+  if(ready&&performance.now()>=cardUntil&&!asking&&!done&&!askDue)armGate(next,false)
+  // …and if nothing at all has moved for a while, the way on is offered anyway,
+  // more quietly. Being stranded mid-rite with no exit is the failure this whole
+  // pass exists to end — the rite bends before it breaks.
+  // …never for the crossing itself (next===1): the threshold is a room you are
+  // let out of on a timer, nothing is read there, and a standstill is what it is
+  // FOR. Offering an escape from it reads as the rite giving up on you.
+  else if(!ready&&!asking&&!done&&next>1&&next<ACTS.length&&started
+          &&performance.now()>=cardUntil
+          &&(performance.now()-t0)/1000-lastProgressS>STUCK_S)armGate(next,true)
   if(asking||done||performance.now()<cardUntil)return
   if(!name&&f>=KEEPER_AT)openAsk('name')
   else if(name&&!word&&f>=INSCRIBE_AT)openAsk('word')
 }
+// ── the gate ─────────────────────────────────────────────────────────────
+const GATE_LABEL=['','carry this across →','the keeper is waiting →','set it down →']
+let gateNext=-1,gateQuiet=false
+let lastProgressS=0
+const STUCK_S=15
+function armGate(next,quiet){
+  if(gateNext===next&&gateQuiet===quiet)return
+  gateNext=next;gateQuiet=quiet
+  const g=$('#gate');if(!g)return
+  g.textContent=quiet?'go on →':(GATE_LABEL[next]||'go on →')
+  g.classList.toggle('quiet',quiet)
+  g.hidden=false
+  requestAnimationFrame(()=>g.classList.add('on'))
+}
+function disarmGate(){
+  gateNext=-1
+  const g=$('#gate');if(!g)return
+  g.classList.remove('on')
+  setTimeout(()=>{if(gateNext<0)g.hidden=true},900)
+}
+function crossGate(){
+  const next=gateNext
+  if(next<0||next>=ACTS.length)return
+  disarmGate()
+  act=next;SND.actSwell(next);breathAt=(performance.now()-t0)/1000
+  // when the crossing itself began — the target is measured a little after
+  // this, once the outline has had time to open out
+  if(next===1)crossAt=(performance.now()-t0)/1000
+  noteProgress()
+  $('#hudAct').textContent=ACTS[next].lat
+  if(!asking)showCard(ACTS[next])
+}
+// any forward motion at all — a letter read or an act crossed — resets the
+// mercy clock, so it only ever fires at a genuine standstill
+function noteProgress(){lastProgressS=(performance.now()-t0)/1000}
+$('#gate').addEventListener('click',crossGate)
 function openAsk(kind){
   asking=kind
-  const q=ask.querySelector('.q'),sub=ask.querySelector('.sub')
+  // the question is the only thing on screen — the act gate steps aside
+  disarmGate()
+  const q=ask.querySelector('.q'),sub=ask.querySelector('.sub'),go=ask.querySelector('.go')
+  if(go)go.textContent=kind==='name'?'answer →':'inscribe →'
   if(kind==='name'){
     q.textContent='Ո՞վ ես դու։'
     sub.textContent='who are you'
@@ -1320,6 +1414,8 @@ function submit(){
   }
 }
 input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}})
+// the tap path — the one that works on a phone at all
+$('#go').addEventListener('click',(e)=>{e.preventDefault();submit()})
 
 function said(line){
   end.querySelector('.said').textContent=line
@@ -1773,6 +1869,10 @@ const door=$('#door')
 function begin(){
   if(started)return
   started=true
+  // the mercy clock starts when the rite does, not at page load — otherwise it
+  // is already expired the moment the door opens and offers a way out of an act
+  // nobody has had a chance to be in yet
+  noteProgress()
   SND.unlock()
   door.classList.add('gone')
   // the threshold is entered by opening the door, not by reading — act stayed at
@@ -1914,7 +2014,7 @@ function frame(now){
     fracHigh=Math.max(fracHigh,clamp(readN/target,0,1))
     // Reading has not moved in a while: whatever is supposed to be reading it
     // isn't, and the visitor is looking at a rite that appears to be over.
-    if(readN!==lastReadN){lastReadN=readN;lastReadAt=t}
+    if(readN!==lastReadN){lastReadN=readN;lastReadAt=t;noteProgress()}
     if(!lastReadAt)lastReadAt=t
     stalled=t-lastReadAt>STALL_S
     // the pointer reads whenever the body cannot — no camera, no edge, or an
