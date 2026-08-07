@@ -115,7 +115,7 @@ br_id_ge/
 │   ├── PROJECT.md               # Full project documentation
 │   └── MASTER_CONTEXT.md        # Curatorial ground truth — hosq / Notations #2
 ├── di-space.space.json          # The SPACE: label, tiers, which pages must exist
-├── di-space.*.json              # One per page (landing/rite/field/dash)
+├── di-space.*.json              # One per page (landing/rite/field)
 ├── scripts/
 │   ├── serve.mjs                # Local mirror of the whole space (localhost:8899)
 │   ├── sync-space.mjs           # Linked-space sync engine — VENDORED from di.iiii
@@ -124,7 +124,6 @@ br_id_ge/
 ├── bridge.html                  # The door (published face of the space)
 ├── index.html                   # The rite (Pages entry)
 ├── field.html                   # The field
-├── dash.html                    # Show-rig planning (internal)
 └── .vscode/
     └── tasks.json               # VS Code workflow tasks
 ```

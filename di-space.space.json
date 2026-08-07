@@ -24,7 +24,6 @@
   "projects": [
     "di-space.landing.json",
     "di-space.json",
-    "di-space.field.json",
-    "di-space.dash.json"
+    "di-space.field.json"
   ]
 }
