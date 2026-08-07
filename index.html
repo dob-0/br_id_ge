@@ -91,22 +91,33 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
    inside a hundred read glyphs and could not be read at all — the letters are
    the ground, and type printed straight onto them is just more texture. The
    plate is made with a spread shadow rather than padding so nothing reflows. */
-.card,.ask,.end,#gate{background:rgba(243,241,236,.92);
+.card,.ask,.end{background:rgba(243,241,236,.92);
   box-shadow:0 0 0 1.15rem rgba(243,241,236,.92)}
 
 /* the gate — the one way on, in the same place every time, so it is learned
    after the first tap and never hunted for again */
+/* On a real phone this sat as one line among four at the bottom of the screen,
+   and people stopped there not knowing they could go on. It is the only thing
+   on screen you are being asked to press, so it stands well clear of the HUD,
+   it is bigger than anything else down there, and it breathes — a still line of
+   uppercase mono reads as a label, and nobody presses a label. */
 #gate{position:fixed;z-index:6;left:50%;transform:translateX(-50%);
-  bottom:clamp(4.2rem,12vh,7rem);
-  font-family:var(--mono);font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--ink);background:none;border:0;cursor:pointer;
-  min-height:48px;padding:0 1.6rem;
+  bottom:clamp(6.5rem,20vh,10rem);
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ink);background:rgba(243,241,236,.92);cursor:pointer;
+  border:1px solid var(--hairline);border-radius:2px;
+  min-height:52px;padding:.2rem 1.7rem;
   opacity:0;transition:opacity .9s ease}
-#gate.on{opacity:1}
+#gate.on{opacity:1;animation:gatebreath 3.4s ease-in-out infinite}
 /* the stalled form is quieter: it is a mercy, not an achievement */
-#gate.quiet{color:var(--graphite)}
-#gate::after{content:'';display:block;height:1px;margin-top:.5rem;
-  background:currentColor;opacity:.35}
+#gate.quiet{color:var(--graphite);animation:none}
+@keyframes gatebreath{
+  0%,100%{border-color:var(--hairline)}
+  50%{border-color:var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){
+  #gate.on{animation:none;border-color:var(--ink)}
+}
 
 .end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
   align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
@@ -1117,6 +1128,23 @@ const RD={
   world:()=>camOn&&camFacing==='environment',
   tilt:()=>tiltOn&&performance.now()-tiltAt<3000,
 }
+// One number, and one way on. The bottom of the screen was carrying four lines
+// at once — read count, field count, letters drawn, and the lamp's advice —
+// stacked into the readers row and printing through it on a short screen. Worse,
+// it showed "0 READ" all through the threshold, where nothing is read BY DESIGN:
+// a zero, in the one act you cannot score, right after somebody drew 154 letters.
+// Each act shows only the number that is true of it.
+function paintHud(){
+  const crossingNow=started&&!inscribed&&act>=1
+  const thresholdNow=started&&!inscribed&&act<1
+  // the ids sit on the <b> COUNTERS, inside spans that also carry the word —
+  // hiding the id alone leaves a bare "READ" with no number in front of it
+  const set=(s,on)=>{const e=$(s);if(e&&e.parentElement)e.parentElement.hidden=!on}
+  set('#sRead',crossingNow&&!thresholdNow)
+  // the field's size is the ending's business — before that it is a number
+  // about other people, competing with the one thing you are being asked to do
+  set('#sField',Boolean(inscribed))
+}
 function paintReaders(){
   const row=$('#readers');if(!row)return
   // only while there is a reading to feed
@@ -2067,7 +2095,7 @@ function frame(now){
       rdX=P.x;rdY=P.y
     }
     $('#sRead').textContent=readN
-    paintReaders()
+    paintReaders();paintHud()
     // The lamp says what it can actually see, so "is it working?" is never a
     // guess. When it cannot see an edge it now says what to do instead of what
     // is impossible — the hand is already on the glass.
@@ -2350,6 +2378,10 @@ function frame(now){
       :'draw your mark — it goes with you'
   }
   if(inscribed)fieldWindow()
+
+  // outside the reading block: these have to keep working once the crossing is
+  // over, and the block above stops running the moment it is
+  paintReaders();paintHud()
 
   ctx.globalAlpha=1
 }
