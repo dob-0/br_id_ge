@@ -109,14 +109,23 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
    is how ink on wet paper behaves anyway, and has no edge to see because it has
    no box. Nothing reflows, so endFloor() still measures true. */
 .card,.ask,.end{background:none;box-shadow:none}
-.card .arm,.card .lat,.ask .q,.ask .sub,.ask .go,
+.card .arm,.card .lat,.ask .q,.ask .sub,.ask .go,.ask input,
 .end .said,.end .note,.end .body-line,.end .passage,
-.end .field-link{
+.end .field-link,.hud span,.hud b,.hud .rd{
   text-shadow:
+    0 0 .12rem rgba(243,241,236,1),
     0 0 .22rem rgba(243,241,236,1),
     0 0 .55rem rgba(243,241,236,.99),
     0 0 1.4rem rgba(243,241,236,.95),
     0 0 3.2rem rgba(243,241,236,.8)}
+/* the reading now carries on under an open question, so the one line you are
+   asked to write on gets the same paper the spoken lines do — the placeholder
+   was hairline type printed straight into a hundred glyphs */
+.ask input::placeholder{text-shadow:
+    0 0 .12rem rgba(243,241,236,1),
+    0 0 .22rem rgba(243,241,236,1),
+    0 0 .55rem rgba(243,241,236,.99),
+    0 0 1.4rem rgba(243,241,236,.95)}
 
 /* the gate — the one way on, in the same place every time, so it is learned
    after the first tap and never hunted for again */
@@ -2308,7 +2317,7 @@ function frame(now){
   // being unreadable through the letters, and it is also the right dramaturgy:
   // the reading stops while you are being addressed.
   const askOpen=asking!==null
-  quiet+=((askOpen?0.14:1)-quiet)*(REDUCED?1:0.08)
+  quiet+=((askOpen?0.07:1)-quiet)*(REDUCED?1:0.08)
   SND.tick(quiet,frac())
 
   // per-frame constants for the field's three responses: the fingertip's
@@ -2371,7 +2380,9 @@ function frame(now){
       sw=Math.max(sw,Math.exp(-(rd*rd)/5000)*(1-(t-r.t)/2.4))
     }
     const br=breathing?Math.exp(-((x-bx)*(x-bx))/(2*bw*bw)):0
-    const lift=1+bl*0.5+sw*0.5+br*0.45
+    // while a question is up the finger is writing, not reading — its bloom
+    // must not lift the letters back up through the card it dimmed for
+    const lift=askOpen?1:1+bl*0.5+sw*0.5+br*0.45
     // the moving edge stirs: a freshly arrived cell shows its letter as a
     // faint ghost, weighted by how much the body is actually moving
     const digi=m.read?0:(m.stir||0)*(0.2+0.8*motion)
@@ -2528,7 +2539,9 @@ function frame(now){
   // present, the ring vanished exactly when the reading fell back to touch,
   // and the visitor was left sweeping a page with no mark under the hand.
   // the finger always reads now, so the ring under it is always drawn
-  if(started&&!inscribed&&P.has){
+  if(started&&!inscribed&&P.has&&asking===null){
+    // …and never while a question is open: the finger on its way to the input
+    // rode the transition at near-full ink, printing a ring on the card itself
     ctx.globalAlpha=0.6*quiet
     ctx.strokeStyle=INK;ctx.lineWidth=1
     ctx.beginPath();ctx.arc(P.x,P.y,hand.has?15:11,0,6.2832);ctx.stroke()
