@@ -100,10 +100,23 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 
 /* Anything that SPEAKS gets paper under it. The keeper's blessing was landing
    inside a hundred read glyphs and could not be read at all — the letters are
-   the ground, and type printed straight onto them is just more texture. The
-   plate is made with a spread shadow rather than padding so nothing reflows. */
-.card,.ask,.end{background:rgba(243,241,236,.92);
-  box-shadow:0 0 0 1.15rem rgba(243,241,236,.92)}
+   the ground, and type printed straight onto them is just more texture.
+   But a plate with an EDGE is a card laid on the work: over the lamp's photo it
+   read as a white box stuck to a face.
+   A veil cannot do it either: a background is clipped to its own box, so any plate
+   soft enough to stop being a card is also too small to cover the words. The
+   paper goes on the LETTERFORMS instead — four halos, tight to loose — which
+   is how ink on wet paper behaves anyway, and has no edge to see because it has
+   no box. Nothing reflows, so endFloor() still measures true. */
+.card,.ask,.end{background:none;box-shadow:none}
+.card .arm,.card .lat,.ask .q,.ask .sub,.ask .go,
+.end .said,.end .note,.end .body-line,.end .passage,
+.end .field-link{
+  text-shadow:
+    0 0 .22rem rgba(243,241,236,1),
+    0 0 .55rem rgba(243,241,236,.99),
+    0 0 1.4rem rgba(243,241,236,.95),
+    0 0 3.2rem rgba(243,241,236,.8)}
 
 /* the gate — the one way on, in the same place every time, so it is learned
    after the first tap and never hunted for again */
@@ -1137,7 +1150,52 @@ function startTilt(){
   if(D&&typeof D.requestPermission==='function'){
     D.requestPermission().then((r)=>{if(r==='granted')go()}).catch(()=>{})
   }else if(D)go()
+  // the same tap buys the shake, which is gated behind its own iOS prompt
+  askShake()
 }
+
+// ── the shake: the letters answer the arm, not the fingertip ──────────────
+// Every other gesture here is made with one finger and touches one letter at a
+// time. A shake takes hold of the whole page at once, so it gets the one
+// response nothing else gives: every letter swells and settles back. It reads
+// nothing and advances nothing — the rite does not move because you shook it —
+// and it touches only the glyphs on the canvas. The HUD, the cards, the gate
+// and the questions are left exactly where they are.
+let shake=0, shakeSndAt=0, shakeLive=false
+// how hard a shake has to be before the page answers. Tunable from the phone
+// itself (?shake=6) because the only honest test rig is a hand and an arm.
+const SHAKE_TRIP=clamp(parseFloat(Q.get('shake'))||9,2,40)
+function startShake(){
+  if(shakeLive)return
+  shakeLive=true
+  let px=0,py=0,pz=0,has=false
+  addEventListener('devicemotion',(e)=>{
+    const a=e.accelerationIncludingGravity||e.acceleration
+    if(!a||a.x==null)return
+    if(!has){px=a.x;py=a.y;pz=a.z;has=true;return}
+    // the change between two samples, not the reading itself: gravity is always
+    // in there and a phone lying still must never be mistaken for a shaken one
+    const j=Math.hypot(a.x-px,a.y-py,a.z-pz)
+    px=a.x;py=a.y;pz=a.z
+    if(j<SHAKE_TRIP)return
+    shake=clamp(shake+(j-SHAKE_TRIP)/26,0,1)
+    if(shake>0.35&&performance.now()-shakeSndAt>900){
+      shakeSndAt=performance.now();SND.chord(2+Math.round(shake*2))
+    }
+  },{passive:true})
+}
+function askShake(){
+  const M=window.DeviceMotionEvent
+  if(!M)return
+  if(typeof M.requestPermission==='function'){
+    M.requestPermission().then((r)=>{if(r==='granted')startShake()}).catch(()=>{})
+  }else startShake()
+}
+// how much bigger a letter stands while the page is still ringing. Reduced
+// motion keeps the answer — it is the visitor's own gesture, not weather — but
+// takes it down to a nod. Tunable from the phone for the same reason as the trip.
+const SWELL=clamp(parseFloat(Q.get('swell'))||0.8,0,2.5)
+function swell(){return shake>0.001?1+shake*(REDUCED?SWELL*0.2:SWELL):1}
 const RD={
   finger:()=>true,                       // always; a screen is the one certainty
   lamp:()=>camOn&&camFacing==='user',
@@ -1487,7 +1545,15 @@ function said(line){
   end.querySelector('.note').textContent=''
   show(end)
   clearTimeout(said._t)
-  said._t=setTimeout(()=>{if(!done)show(null)},7000)
+  // …and never over a question. The layers are exclusive, so this timer used to
+  // clear whatever was on screen seven seconds after the greeting — including
+  // the SECOND question, which opens two or three seconds after the name is
+  // answered whenever the reading is already past its threshold. The word
+  // question faded to nothing with `asking` still set: nothing to tap, nothing
+  // to type into, advance() blocked forever, and the crossing could not be
+  // finished. Reproduced on a phone viewport before this line was written; the
+  // act card's own timer has always carried this guard, three hundred lines up.
+  said._t=setTimeout(()=>{if(!asking&&!done)show(null)},7000)
 }
 
 // ── the core ──────────────────────────────────────────────────────────────
@@ -1990,6 +2056,11 @@ function begin(){
   // hands and pose are decoration and cost a second wasm build each — no camera,
   // no reason to fetch them at all
   openLamp().then(()=>{if(camOn){openHands();openPose()}})
+  // Where motion costs nothing to ask for, the page can already be shaken from
+  // the first second. iOS wants its own prompt and the door is already spending
+  // one on the camera, so there it waits for the TILT reader to be tapped.
+  const M=window.DeviceMotionEvent
+  if(M&&typeof M.requestPermission!=='function')startShake()
   showCard(ACTS[0])
 }
 door.addEventListener('click',begin)
@@ -2027,6 +2098,8 @@ function frame(now){
   else{readHand(now);readPose(now)}
   readSeg(now)
   const dt=Math.min(0.1,t-lastT); lastT=t
+  // the page stops ringing on its own, in about a second and a half
+  if(shake>0)shake=shake<0.002?0:shake*Math.exp(-dt/0.55)
   // one mask, two sources: the circle is the ground state, a found body pulls
   // the boundary toward itself (~1.5s in), a lost one lets it return (~2.5s)
   // A mask that swallows the whole frame has no edge, and an outline with no
@@ -2245,6 +2318,8 @@ function frame(now){
   const bAge=t-breathAt
   const breathing=!REDUCED&&bAge>0&&bAge<4
   const bx=(-0.2+(bAge/3.4)*1.4)*W, bw=Math.max(1,W*0.2)
+  // one number for the whole page: what a shake did to the size of a letter
+  const sw2=swell()
 
   for(const [,m] of marks){
     let [x,y]=markScreen(m)
@@ -2286,7 +2361,7 @@ function frame(now){
       const age=Math.min(1,(t-m.t)/1.1)
       ctx.globalAlpha=Math.min(1,(0.34+0.66*age)*(inscribed?1:0.95)*quiet*rvLet*(shared?1-shared.t:1)*lift)
       ctx.fillStyle=INK
-      ctx.font='300 '+((FS+age*FS*0.22)*(1+bl*0.1+br*0.05)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+      ctx.font='300 '+((FS+age*FS*0.22)*(1+bl*0.1+br*0.05)*sw2).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
       ctx.fillText(m.g,x,y)
       // the taking, seen: a brief ring where a letter was just read
@@ -2318,12 +2393,12 @@ function frame(now){
       ctx.fillStyle=wake>0.05?INK:GRAPHITE
       if(wake>0.05){
         ctx.globalAlpha=Math.min(1,(0.14+0.66*wake)*quiet*rvLet*(shared?1-shared.t:1)*lift)
-        ctx.font='300 '+(FS*(0.7+0.3*wake)).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
+        ctx.font='300 '+(FS*(0.7+0.3*wake)*sw2).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
         ctx.textAlign='center';ctx.textBaseline='middle'
         ctx.fillText(m.g,x,y)
       }else{
         ctx.globalAlpha=Math.min(1,0.5*quiet*rvLet*(shared?1-shared.t:1)*lift)
-        const s=0.8+bl*0.6
+        const s=(0.8+bl*0.6)*sw2
         ctx.fillRect(x-s,y-s,s*2,s*2)
       }
     }
