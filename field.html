@@ -121,13 +121,14 @@ body.inframe #cta{bottom:2.4rem}
   body.inframe #kPanel{bottom:6.6rem}
 }
 
-/* Transparent on purpose: the field floats over the ending's own paper. On
-   the live site it arrives wrapped in a second di.iiii viewer whose dark
-   shell used to show through as a black box — the rite now reaches into that
-   same-origin wrapper and quiets its shell and chrome itself (index.html,
-   fieldWindow). If that reach ever breaks, the symptom is a dark box here —
-   fix the wrapper, don't repaint the field. */
-html.embed,html.embed body{background:transparent}
+/* Paper, not transparent — measured on the live site, not assumed. The
+   embedded field arrives wrapped in a second di.iiii viewer whose iframe is
+   sandboxed WITHOUT allow-same-origin, so the rite cannot reach in and quiet
+   the wrapper's dark shell; "transparent" therefore renders as a black box.
+   The field stands on its own paper — the rite's ground is the same paper,
+   so the seam disappears. The day the viewer grows a real ?embed=1 mode
+   (transparent shell, no badge/chip) this can return to transparent. */
+html.embed,html.embed body{background:var(--paper)}
 html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
 html.embed canvas{cursor:default}
 </style>

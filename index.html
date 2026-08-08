@@ -191,6 +191,12 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
    transparent, so the letters and the drawn mark stay under the cores — you see
    what you joined while still standing in what you made. It never covers the
    closing words: its floor is the same line the body's feet stop at. */
+/* While the field window is up, the type layer lays out BELOW it — measured
+   once into --fieldh, never assumed. Before this the box height chased the
+   end block's own position (endFloor clamps at 0.40H) while the block sat
+   wherever the grid centred it, and on a phone the two met in the middle:
+   "you are part of it now." printed inside the box. */
+#fieldWin.on~#type{padding-top:calc(var(--fieldh,55vh) + .75rem)}
 #fieldWin{position:fixed;left:0;top:0;width:100%;height:60%;z-index:1;opacity:0;
   transition:opacity 2.4s ease}
 #fieldWin.on{opacity:1}
@@ -1999,7 +2005,9 @@ function fieldWindow(){
   if(unmakeLink.querySelector('.yn'))return     // a question is on the screen
   fieldOn=true
   const w=$('#fieldWin')
-  w.style.height=Math.round(endFloor())+'px'
+  const fh=Math.round(endFloor())
+  w.style.height=fh+'px'
+  document.documentElement.style.setProperty('--fieldh',fh+'px')
   const ff=$('#fieldFrame')
   ff.src=link.href+'&embed=1'
   // On the live site that URL is the published page: a second di.iiii viewer
@@ -2021,7 +2029,10 @@ function fieldWindow(){
   $('#passage').classList.add('on')
   $('#fieldLink').textContent='go in →'
 }
-addEventListener('resize',()=>{if(fieldOn)$('#fieldWin').style.height=Math.round(endFloor())+'px'})
+addEventListener('resize',()=>{if(!fieldOn)return
+  const fh=Math.round(endFloor())
+  $('#fieldWin').style.height=fh+'px'
+  document.documentElement.style.setProperty('--fieldh',fh+'px')})
 // a tap is a door; a drag is still ink. The ending never stopped being a page
 // you can write on, and the window sits on top of most of it.
 let tapX=0,tapY=0,tapT=0
