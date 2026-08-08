@@ -98,7 +98,9 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 .ask input{margin-top:2.6rem;background:none;border:0;border-bottom:1px solid var(--hairline);
   color:var(--ink);font-family:var(--arm);font-weight:300;font-size:clamp(1.6rem,6vw,2.6rem);
   text-align:center;width:min(90vw,26ch);padding:.2rem 0 .5rem;outline:none;caret-color:var(--live)}
-.ask input::placeholder{color:var(--hairline)}
+/* graphite, not hairline: at 1.22:1 against the paper the prompt to write was
+   nearly invisible — the one line the rite asks you to fill read as empty air */
+.ask input::placeholder{color:var(--graphite)}
 .ask input:focus{border-bottom-color:var(--live)}
 .ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
   color:var(--graphite);margin-top:1.3rem;
