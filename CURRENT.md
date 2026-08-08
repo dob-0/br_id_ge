@@ -34,6 +34,14 @@ crossings at 390x844 DPR3 plus the user's own phone screenshots (`3df3fb1`…`5d
 Branch `fix/ask-legibility` (worktree `.claude/worktrees/ask-legibility`), merged
 ff into `main`, both tiers synced and verified in the real published iframe.
 
+**Tier position confirmed independently** (second session, same day): `main` =
+`origin/main` = prod = staging = `2fd8a19`, `--audit` clean. Worth recording *how*
+that was established, because the obvious check is wrong twice over —
+`di-studio.xyz/<anything>` returns 200 (SPA catch-all), so an HTTP probe cannot tell
+you a page exists; and `git log origin/main..main` reads a **local cache** that goes
+stale silently, which is how a "7 commits behind" and a "0 commits behind" were both
+true readings of the same repo an hour apart. `--audit` compares served bytes. Use it.
+
 ## This pass (2026-08-07) — the rite reads by whatever the device has, and they add · LIVE on both tiers
 
 **The bug, reproduced at last.** Driven at 390×844 DPR3 with real touch events
@@ -82,10 +90,13 @@ one sentence that tells a stuck visitor what to do; bottom HUD lifted under
 denied, 0 → 113 letters, act iii, keeper's question at 44s. Readers row renders,
 badge no longer overlaps. Both tiers carry the code.
 
-**⚠ NOT verified — needs a real device:** a real camera reading a real body
-(still never seen work by anyone), tilt, the rear lens. The camera path was
-confirmed only as *not starving the finger* (0 → 69 with a blind camera where it
-was 0 forever).
+**⚠ Partly verified — updated 2026-08-08.** A real camera reading a real body is
+**no longer unseen**: the user's own staging screenshot shows the body-shaped letter
+column mid-crossing with the lamp awake. What is still owed is a *full* camera-driven
+crossing watched end to end — a screenshot is one moment, not the five acts. Tilt and
+the rear lens remain unseen entirely. Note no AUTOMATED rig can close any of this: a
+fake camera's test pattern reads as >90% person to MediaPipe and dies at "too close
+for the lamp", so the rig cannot tell a real failure from itself. Human eyes only.
 
 **⚠ Shipped straight to `main` at the user's instruction**, without the staging
 look the flow normally takes. Revert is `git revert 4ce7ada` + push.
@@ -456,11 +467,12 @@ viewport, DPR 2.6, and 1440x800 DPR 2:
 
 ## Open
 
-- **⚠ `main` is one commit ahead of `origin/main` — prod and staging do not have it.**
-  `02846c0` ("the field opens inside the ending, and every crossing looks like itself")
-  is committed locally and unpushed, so the dev box is now the *newest* tier, not an
-  equal one. One version everywhere needs that push (CI syncs staging then prod) — held
-  back deliberately: it is another agent's work, mid-festival.
+- ~~`main` is one commit ahead of `origin/main`~~ — **closed 2026-08-08.** `main`,
+  `origin/main` and both tiers are all `2fd8a19`; `--audit` reads `✓ every governed
+  tier matches the repo`. **The rite is testable on prod right now**:
+  <https://di-studio.xyz/br_id_ge/rite>. (Earlier in the same day prod *was* 7 commits
+  behind while another session worked — measured, then resolved by their push. If you
+  need to know where a tier stands, run `--audit`; commit counts lie, served bytes don't.)
 - **`scripts/sync-space.mjs` is dirty in a repo whose AGENTS.md forbids editing it.**
   An engine **v6** (space-only declarations — a manifest with an empty `projects` list
   reconciles the space and touches no content) is being written here rather than in
@@ -492,8 +504,9 @@ viewport, DPR 2.6, and 1440x800 DPR 2:
   (`ProjectSwitcher.jsx:155`, `position:absolute; top:1rem; left:1rem; zIndex:30`) lands on
   the rite's header, and `◈ Made with di.iiii` on its bottom status line. Affects every
   published project — owner's call, not a repo fix.
-- **Staging has `openInscriptions: false`**, so a test crossing there ends "the far field
-  did not answer". Correct, not a regression. Prod is `true`.
+- ~~Staging has `openInscriptions: false`~~ — **stale.** Both tiers declare and serve
+  `openInscriptions: true` (`di-space.space.json`, confirmed by `--audit`), so a test
+  crossing completes on staging as well as prod.
 - **Three calls owed on the field as it now reads:** tone the awake wire back to
   a hairline? keep or drop the keeper window's auto-open? the black screen
   before paint is di.iiii's viewer, not this repo — a bigger fix.
