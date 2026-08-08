@@ -2000,7 +2000,22 @@ function fieldWindow(){
   fieldOn=true
   const w=$('#fieldWin')
   w.style.height=Math.round(endFloor())+'px'
-  $('#fieldFrame').src=link.href+'&embed=1'
+  const ff=$('#fieldFrame')
+  ff.src=link.href+'&embed=1'
+  // On the live site that URL is the published page: a second di.iiii viewer
+  // wrapping the field, with its own dark shell, badge and space chip — which
+  // arrived here as an opaque box with chrome inside it. Same origin, so the
+  // rite may quiet that inner viewer itself: shell transparent, chrome hidden.
+  // If the reach ever fails (a mirror on another origin) the field still
+  // stands on its own paper — dimmer illusion, never a black box.
+  ff.addEventListener('load',()=>{try{
+    const d=ff.contentDocument;if(!d)return
+    const s=d.createElement('style')
+    s.textContent='html,body,#root{background:transparent!important}'
+      +'.made-with-di{display:none!important}'
+      +'body>div:has(>button[aria-expanded]){display:none!important}'
+    ;(d.head||d.documentElement).appendChild(s)
+  }catch(e){}})
   w.hidden=false
   requestAnimationFrame(()=>{w.classList.add('on');fieldAt=performance.now()})
   $('#passage').classList.add('on')
@@ -2328,7 +2343,11 @@ function frame(now){
   // being unreadable through the letters, and it is also the right dramaturgy:
   // the reading stops while you are being addressed.
   const askOpen=asking!==null
-  quiet+=((askOpen?0.07:1)-quiet)*(REDUCED?1:0.08)
+  // …and when the keeper merely SPEAKS, the world listens the same way. The
+  // greeting was printing through the body's own ink-dark letters on a phone
+  // with the lamp open — a question dimmed the reading, a spoken line did not.
+  const spokenOpen=end.classList.contains('on')&&!inscribed
+  quiet+=(((askOpen||spokenOpen)?0.07:1)-quiet)*(REDUCED?1:0.08)
   SND.tick(quiet,frac())
 
   // per-frame constants for the field's three responses: the fingertip's
