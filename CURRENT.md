@@ -9,6 +9,31 @@ active_branch: main · the door: https://di-studio.xyz/br_id_ge · the rite: /br
 **The rite:** `v.oooooo 3` — THE READING (2D canvas, no Three.js): your silhouette reads
 Armenian letters along its own edge. Repo is master; the space syncs from it on push.
 
+## This pass (2026-08-08) — the questions stand on paper · LIVE on both tiers
+
+User-reported phone overlaps, four rounds, each SEEN via full headless touch
+crossings at 390x844 DPR3 plus the user's own phone screenshots (`3df3fb1`…`5d02d75`):
+
+- **the reading no longer prints through an open question** — input/placeholder/HUD
+  joined the paper-halo rule, ask-dim deepened 0.14→0.07, finger bloom no longer
+  lifts letters mid-question, reading ring hidden while asking
+- **a spoken line quiets the world like a question does** — the keeper's greeting was
+  printing through ink-dark body letters with the lamp open
+- **the ink cursor pinned itself to every phone's last touch** — `#cur.on` out-specified
+  the coarse-pointer hide (now `!important`) and pointer events fire for touch
+  (cursor now mouse-only)
+- **gate/type layers keep clear of each other** — `body.gated` shifts the type layer
+  above the gate; the type layer always reserves the HUD band
+- **the embedded field: paper, laid out above the ending block** — the viewer's code
+  iframes are sandboxed WITHOUT `allow-same-origin`, so the rite cannot quiet the
+  inner wrapper's dark shell: transparency = black box on the live site, permanently,
+  until di.iiii's viewer grows a real `?embed=1` mode (transparent shell, no
+  badge/chip — the owed follow-up). Field stands on its own paper; box height is
+  written once into `--fieldh` and the type layer lays out below it by construction.
+
+Branch `fix/ask-legibility` (worktree `.claude/worktrees/ask-legibility`), merged
+ff into `main`, both tiers synced and verified in the real published iframe.
+
 ## This pass (2026-08-07) — the rite reads by whatever the device has, and they add · LIVE on both tiers
 
 **The bug, reproduced at last.** Driven at 390×844 DPR3 with real touch events
