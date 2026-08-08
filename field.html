@@ -121,7 +121,12 @@ body.inframe #cta{bottom:2.4rem}
   body.inframe #kPanel{bottom:6.6rem}
 }
 
-html.embed,html.embed body{background:transparent}
+/* Paper, not transparent: on the live site the embedded field arrives wrapped
+   in the viewer's own page, so "transparent" showed the viewer's dark shell —
+   a black box over the ending. The rite's ground is this same paper, so an
+   opaque paper field reads as the same page. (The real fix is an embed mode
+   in the di.iiii viewer itself; until then the field carries its own ground.) */
+html.embed,html.embed body{background:var(--paper)}
 html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
 html.embed canvas{cursor:default}
 </style>
