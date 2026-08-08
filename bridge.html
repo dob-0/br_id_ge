@@ -36,7 +36,12 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
 #tr{top:0;right:0;text-align:right}
 #bl{bottom:0;left:0}
 #br{bottom:0;right:0;text-align:right}
-@media (max-width:560px){.hud{padding:1.1rem}#br{display:none}}
+/* The two top corners are ~470px of text between them; below about 470px wide
+   they simply run into each other (measured: 91px of overlap at 360). Give each
+   half the width and let the longer one wrap rather than collide. */
+@media (max-width:560px){.hud{padding:1.1rem;font-size:.46rem;letter-spacing:.12em}
+  #br{display:none}
+  #tl,#tr{max-width:calc(50% - .6rem)}}
 
 main{text-align:center;max-width:34rem;padding:0 1.5rem}
 h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);

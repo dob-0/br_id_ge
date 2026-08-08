@@ -23,6 +23,14 @@
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+/* The `hidden` attribute loses to any id or class rule that sets display —
+   #kPanel{display:flex} and #readers{display:flex} both silently outrank the
+   browser's own [hidden]{display:none}. That is why the keeper's panel stood
+   open on load with its own close button unable to shut it: nothing was ever
+   opening it, it had simply never been hidden. Make the attribute mean what it
+   says, everywhere. */
+[hidden]{display:none!important}
+
 html,body{height:100%;overflow:hidden;background:var(--paper)}
 body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
 canvas{display:block;cursor:grab}
@@ -79,7 +87,9 @@ canvas.grabbing{cursor:grabbing}
   /* the hint was simply switched OFF on phones — and it is the only place the
      piece says that a tap reveals the crossings, so the field's one mechanic was
      a desktop feature by accident. It stays; the mouse half of it goes. */
-  #hint{bottom:4.6rem;font-size:.44rem}
+  /* …and above the mode switch, which sits at 2.6rem and is centred: at 360px
+     the two ran into each other by ~20px */
+  #hint{bottom:6.2rem;font-size:.44rem}
   #hint .mouse{display:none}
   .hud{font-size:.46rem;letter-spacing:.12em}
   #hd .arm{font-size:.52rem;letter-spacing:.34em}
