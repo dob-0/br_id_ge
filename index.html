@@ -1105,7 +1105,9 @@ const ACTS=[
   {arm:'ՆԵՐԿԱ',       lat:'the witness · act iii', at:0.45},
   {arm:'ՆՈԹԱԳՐՈՒԹՅՈՒՆ',lat:'notation · act iv',    at:0.80},
 ]
-const KEEPER_AT=0.45, INSCRIBE_AT=0.80
+// The reading still drives the room — the drone opens with it, the mesh carries
+// it — but it no longer decides when the keeper may speak. That is the gate's
+// job now, and the two thresholds it used to hold the questions behind are gone.
 let act=-1, started=false, readN=0, target=1, name='', word='', done=false
 // How long a rite may read nothing before the pointer is handed the reading back.
 const STALL_S=8
@@ -1248,19 +1250,23 @@ let breathAt=-9   // when an act turned: a breath sweeps the letter field once
 
 const card=$('#card'), ask=$('#ask'), end=$('#end'), input=$('#in')
 function show(el){for(const n of $('#type').children)n.classList.toggle('on',n===el)}
-// The act titles and the questions share one exclusive layer, and two acts land on
-// the exact thresholds that open the questions (iii/0.45 with the name, iv/0.80 with
-// the word). Without this the title closed the question the moment it opened and the
-// rite could never be finished. The title plays first; the question follows it.
+// The act titles and the questions share one exclusive layer. The title plays
+// first; the question follows it — and now follows it IMMEDIATELY, because
+// crossing is what opens the question. So the gap has to clear the fade as well
+// as the card: `show()` only toggles a class and the opacity takes .9s, so a
+// question released the instant the title started leaving printed ԱՆՑՈՒՄ
+// straight through "Ո՞վ ես դու։". The title holds for CARD_HOLD, fades for
+// CARD_FADE, and only then is the screen the question's.
+const CARD_HOLD=2000, CARD_FADE=1000
 let cardUntil=0
 function showCard(a){
   card.querySelector('.arm').textContent=a.arm
   card.querySelector('.lat').textContent=a.lat
   $('#hudAct').textContent=a.lat
-  cardUntil=performance.now()+2800
+  cardUntil=performance.now()+CARD_HOLD+CARD_FADE
   show(card)
   clearTimeout(showCard._t)
-  showCard._t=setTimeout(()=>{if(!asking&&!done)show(null)},2600)
+  showCard._t=setTimeout(()=>{if(!asking&&!done)show(null)},CARD_HOLD)
 }
 function frac(){return fracHigh}
 
@@ -1421,7 +1427,6 @@ function advance(){
   // armed from the threshold sat over the ending's own links — "keep a copy" and
   // "unmake my crossing" with a stale "cross the bridge →" printed across them.
   if(done||inscribed){if(gateNext>=0)disarmGate();return}
-  const f=frac()
   // One act at a time, and never over a card still on screen. Scanning from the
   // top meant a fast reading jumped straight from the threshold to the notation:
   // the crossing and the witness — two of the five — were never seen at all, and
@@ -1441,13 +1446,22 @@ function advance(){
   // the tab on. Nothing is lost by showing it early: the threshold is a room you
   // may linger in, not a wait you must serve, and the drawing is worth doing
   // because it goes with you, not because you are held here until it is done.
+  // THE RITE IS WALKED, NOT EARNED. Every act used to wait on a fraction of the
+  // reading — 0.45 for the keeper's first question, 0.80 for her second — which
+  // on a phone is one to three minutes of sweeping a finger before anybody is
+  // even asked their name. People left in the middle, and the piece they left
+  // was a progress bar. The acts now turn on the gate and nothing else: you
+  // cross when you press cross, and the question is what is on the other side.
+  // The reading did not stop — the letters still wake under your edge and the
+  // count still runs — it simply stopped being a toll.
   const ready=next>=ACTS.length?false
     :next===1?started
-    :f>=ACTS[next].at
+    :next===2?!!name
+    :false                       // act iv is not crossed to; it is what inscribing IS
   // When a question is due it IS the gate for that act — the keeper asking and a
   // "the keeper is waiting →" sitting under the question are the same instruction
   // twice, and they arm on the same frame. The question takes the screen.
-  const askDue=(!name&&f>=KEEPER_AT)||(name&&!word&&f>=INSCRIBE_AT)
+  const askDue=(act>=1&&!name)||(act>=2&&name&&!word)
   // The act no longer turns by itself. It becomes AVAILABLE, and the gate says
   // so; the visitor crosses when they choose. Nothing is lost by waiting.
   if(ready&&performance.now()>=cardUntil&&!asking&&!done&&!askDue)armGate(next,false)
@@ -1457,12 +1471,13 @@ function advance(){
   // …never for the crossing itself (next===1): the threshold is a room you are
   // let out of on a timer, nothing is read there, and a standstill is what it is
   // FOR. Offering an escape from it reads as the rite giving up on you.
-  else if(!ready&&!asking&&!done&&next>1&&next<ACTS.length&&started
+  else if(!ready&&!asking&&!askDue&&!done&&next>1&&next<ACTS.length&&started
           &&performance.now()>=cardUntil
           &&(performance.now()-t0)/1000-lastProgressS>STUCK_S)armGate(next,true)
   if(asking||done||performance.now()<cardUntil)return
-  if(!name&&f>=KEEPER_AT)openAsk('name')
-  else if(name&&!word&&f>=INSCRIBE_AT)openAsk('word')
+  // the act's title plays first, then the act's question. Crossing IS being asked.
+  if(act>=1&&!name)openAsk('name')
+  else if(act>=2&&name&&!word)openAsk('word')
 }
 // ── the gate ─────────────────────────────────────────────────────────────
 const GATE_LABEL=['','carry this across →','the keeper is waiting →','set it down →']
@@ -1559,6 +1574,10 @@ function said(line){
 // ── the core ──────────────────────────────────────────────────────────────
 function inscribe(){
   inscribed=true;done=true
+  // Act iv is not a place you are let into — it is this. The notation is the
+  // word being set down, so the act is named here rather than gated to, and it
+  // holds the corner until the echo takes it.
+  act=3;$('#hudAct').textContent=ACTS[3].lat
   // there is nothing left to cross to, and advance() — which would normally
   // retire the gate — stops being called the moment `inscribed` is true, so a
   // gate armed at the threshold would sit over the ending's own links forever
