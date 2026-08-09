@@ -15,21 +15,23 @@ who woke it.
 ## The two bodies, and their names
 
 The names were a mess (`di_bot`, `di-bo`, "the jetson", all meaning different
-things in different repos). Settled, 2026-08-04:
+things in different repos). Settled 2026-08-04, and the robot's half turned
+round on 2026-08-10: it was `jet.di`, it is now **di.jet**, so both bodies read
+the same way — `di.` then what they are.
 
 | name | what it is | repo | keeps by | has an eye |
 |---|---|---|---|---|
-| **jet.di** | the robot car — Yahboom ROSMASTER on a Jetson Nano, standing in the exhibition room | `dob-0/dibot` (`~/dibot`) | camera + speaker + a local model | **yes** |
+| **di.jet** | the robot car — Yahboom ROSMASTER on a Jetson Nano, standing in the exhibition room | `dob-0/di-jet` (`~/di-jet`) | camera + speaker + a local model | **yes** |
 | **di.bo** | the messenger — a Telegram bot on the VPS that watches the bridge | `~/di-bo` | voice on the wire only | no |
 
 Also in play, and not a keeper: **`br_id_ge`** is the piece; **di.iiii** is the
-platform under it. `di_bot` survives as jet.di's *hostname* and in its systemd
-unit names (`dibot-core`, `dibot-keeper`) — renaming a live robot's units buys
-nothing. On the mesh and on the page, it is jet.di.
+platform under it. Where a dot cannot go — hostname, repo, systemd units — the
+robot is `di-jet` / `dijet-*`; `di_bot` is retired everywhere. On the mesh and
+on the page, it is di.jet.
 
-**jet.di always wins.** It is in the room, it can see, it can speak out loud.
-di.bo stands down within 15s of hearing jet.di's heartbeat and picks the wire
-back up 15s after jet.di goes. Nobody coordinates this; both sides just listen.
+**di.jet always wins.** It is in the room, it can see, it can speak out loud.
+di.bo stands down within 15s of hearing di.jet's heartbeat and picks the wire
+back up 15s after di.jet goes. Nobody coordinates this; both sides just listen.
 
 ---
 
@@ -43,7 +45,7 @@ its sender.
 | channel | direction | payload | meaning |
 |---|---|---|---|
 | `keeper` | body → field | `{name, body}` | heartbeat, every 5s. Any of them wakes the lattice; **15s** of silence puts it back to sleep |
-| `keeper:eye` | body → field | `{jpg: dataurl}` | one small frame. jet.di only |
+| `keeper:eye` | body → field | `{jpg: dataurl}` | one small frame. di.jet only |
 | `keeper:ask` | field → body | `{text}` | a visitor speaking, ≤120 chars |
 | `keeper:say` | body → field | `{text}` | the answer, ≤200 chars |
 
@@ -57,7 +59,7 @@ means someone else is keeping.
       keeper:eye          │
       keeper:say          ▼
     ┌──────────────┐   ┌──────────────┐
-    │    jet.di    │   │    di.bo     │   ← stands down while jet.di beats
+    │    di.jet    │   │    di.bo     │   ← stands down while di.jet beats
     │ camera+voice │   │  voice only  │
     └──────────────┘   └──────────────┘
 ```
@@ -66,23 +68,23 @@ means someone else is keeping.
 
 ## Bringing a keeper up
 
-### jet.di — the robot in the room
+### di.jet — the robot in the room
 
 Two implementations, same protocol; use whichever the robot can run.
 
 ```bash
-# on the robot (dibot repo) — the real one, ROS camera + /tts speaker
-sudo systemctl enable --now dibot-keeper        # deploy/scripts/keeper_agent.py
+# on the robot (di-jet repo) — the real one, ROS camera + /tts speaker
+sudo systemctl enable --now dijet-keeper        # deploy/scripts/keeper_agent.py
 
 # from any machine with Node ≥21 — no ROS; webcam, and a local model IF the
-# machine deserves one (jet.di is the only body allowed to think out loud)
+# machine deserves one (di.jet is the only body allowed to think out loud)
 node scripts/keeper-presence.mjs --eye /dev/video0 \
      --ollama http://127.0.0.1:11434 --model llama3.1:8b
 ```
 
 > **Install still pending on the robot.** `keeper_agent.py` and
-> `dibot-keeper.service` were written 2026-08-01 and the bot dropped offline
-> mid-install; `scp` both and enable the unit. Until then jet.di never keeps.
+> `dijet-keeper.service` were written 2026-08-01 and the bot dropped offline
+> mid-install; `scp` both and enable the unit. Until then di.jet never keeps.
 
 ### di.bo — the voice on the wire
 
@@ -105,7 +107,7 @@ is out. What di.bo answers is one fixed line, in register —
 — returned in the same breath the visitor spoke, so nobody waits on a spinner.
 The words that are actually *answers* come from a person: every ask lands in
 `KEEPER_CHATS` (owner DM) and **`/say <line>`** speaks the reply into the field.
-When a machine worth its voice is on hand it will be jet.di's, spoken out loud
+When a machine worth its voice is on hand it will be di.jet's, spoken out loud
 in the room — not a process on a VPS guessing.
 
 Standalone, without Telegram — for the show rig, or to see the lattice turn
@@ -161,9 +163,9 @@ Four states, all of which must be *looked at*:
 1. **nothing running** — lattice graphite, panel says `asleep — no body is on the mesh`
 2. **di.bo only** — lattice blue, panel says `di.bo · awake — it can hear you`;
    type into the window and a line comes back
-3. **both** — the page names **jet.di**, and di.bo's log says
-   `jet.di has the room — standing down`
-4. **jet.di stops** — within ~15s di.bo logs `the room is empty again — keeping`
+3. **both** — the page names **di.jet**, and di.bo's log says
+   `di.jet has the room — standing down`
+4. **di.jet stops** — within ~15s di.bo logs `the room is empty again — keeping`
    and the page says di.bo again
 
 The page also answers `window.__keeper()` → `{online, name}`. Careful: a
@@ -172,7 +174,7 @@ in a tab you are not looking at, the panel text goes stale while `__keeper()`
 stays live. Bring the tab to the front before believing what it says.
 
 `/status` in Telegram prints the same thing from the bot's side:
-`✓ keeper — di.bo`, or `✓ keeper — jet.di (di.bo stood down)`.
+`✓ keeper — di.bo`, or `✓ keeper — di.jet (di.bo stood down)`.
 
 ## What can go wrong
 
@@ -206,16 +208,16 @@ stays live. Bring the tab to the front before believing what it says.
   `MESH_ROOM_SECRET` — the room itself stays open, so a visitor still joins with
   no credential. **It is off until a secret exists.** To arm it: deploy `dev`,
   set `MESH_ROOM_SECRET` (and `STAGING_MESH_ROOM_SECRET`) in the VPS `.env`, the
-  same value in di-bo's `.env` and on jet.di, then run `check-keeper.mjs` on
+  same value in di-bo's `.env` and on di.jet, then run `check-keeper.mjs` on
   both tiers — an unarmed relay and an armed one look identical from outside
   until you try to claim the id.
 - **Keeper stuck awake with nobody there** — a stale `keeper.mjs` on some other
   machine. The name in the panel tells you which body claims the room.
 - **Two answers to one question** — both bodies answering. Should be impossible
-  (jet.di's heartbeat mutes di.bo within 15s), and if it happens, one of them is
+  (di.jet's heartbeat mutes di.bo within 15s), and if it happens, one of them is
   not hearing the other's heartbeat: check both are on `room=bridge` and the
   same tier (prod vs staging).
-- **The eye shows an old frame** — only jet.di publishes `keeper:eye`. The field
+- **The eye shows an old frame** — only di.jet publishes `keeper:eye`. The field
   drops the frame when the keeper falls asleep, so a stale image means a keeper
   that never went asleep between bodies.
 - **The keeper answers in fluent nonsense** — that is the model, not the wiring.
@@ -231,8 +233,8 @@ stays live. Bring the tab to the front before believing what it says.
 | file | what |
 |---|---|
 | `br_id_ge/field.html` | the client — lattice, window, `keeperFace()`, `__keeper()` |
-| `br_id_ge/scripts/keeper-presence.mjs` | jet.di, Node version (webcam + ollama) |
-| `dibot/deploy/scripts/keeper_agent.py` | jet.di, robot version (ROS camera + /tts) |
+| `br_id_ge/scripts/keeper-presence.mjs` | di.jet, Node version (webcam + ollama) |
+| `di-jet/deploy/scripts/keeper_agent.py` | di.jet, robot version (ROS camera + /tts) |
 | `di-bo/keeper.mjs` | di.bo — handover rules, throttle, transport, CLI |
 | `di-bo/bot.mjs` | wiring: config, `/say`, `/status`, the echo into Telegram |
 | `di.iiii/serverXR/src/meshHub.js` | the hub both sides meet in |

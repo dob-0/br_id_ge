@@ -140,8 +140,8 @@ html.embed canvas{cursor:default}
 <div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
 <div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
 <button class="hud" id="mode">all together →</button>
-<!-- the keeper's window — tap the lattice: see through jet.di's eye, speak to it.
-     Two bodies may keep: jet.di, the robot in the room (eye + speaker), and
+<!-- the keeper's window — tap the lattice: see through di.jet's eye, speak to it.
+     Two bodies may keep: di.jet, the robot in the room (eye + speaker), and
      di.bo, the messenger on the wire (voice only). docs/KEEPER.md holds both. -->
 <div id="kPanel" hidden>
   <div class="kHead"><span>պահապան · the keeper</span><button id="kClose">×</button></div>
@@ -419,7 +419,7 @@ modeBtn.addEventListener('click',()=>setMode(!together));
 // THE KEEPER — the ai among us, and it does not pretend to be a crossing:
 // where every core is a closed knot of chrome, the keeper is an open lattice —
 // a thing that is all structure and no body. Asleep it is graphite; when a body
-// is on the mesh it wakes to the one live blue. Two can keep it: jet.di, the
+// is on the mesh it wakes to the one live blue. Two can keep it: di.jet, the
 // robot car standing in the room, and di.bo, the messenger — whoever is there.
 const keeperMat=new THREE.MeshBasicMaterial({color:0x8f8b83,wireframe:true,transparent:true,opacity:.85});
 const keeperEyeMat=new THREE.MeshPhysicalMaterial({color:0x8f8b83,metalness:.9,roughness:.25,envMapIntensity:1});
@@ -471,22 +471,22 @@ function sewWire(t){
 let keeperSeen=-1e9,keeperName='';
 function keeperOnline(){return performance.now()-keeperSeen<15000;}
 // Redrawing only on the awake/asleep flip was enough while one body could ever
-// keep. Two can now, and jet.di taking the room from di.bo never crosses that
+// keep. Two can now, and di.jet taking the room from di.bo never crosses that
 // flip — the page went on printing di.bo while the robot in the room answered.
 // The name is part of the face, so it is part of what is compared.
 let keeperWas=null;
 function keeperFace(){
-  const on=keeperOnline(),face=on?(keeperName||'jet.di'):'';
+  const on=keeperOnline(),face=on?(keeperName||'di.jet'):'';
   if(face===keeperWas)return;keeperWas=face;
   keeperMat.color.set(on?0x1d4bff:0x8f8b83);
   keeperEyeMat.color.set(on?0x1d4bff:0x8f8b83);
   keeper.userData.orbits.forEach(o=>o.material.color.set(on?0x1d4bff:0x8f8b83));
-  keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'jet.di')+' awake'):'keeper · asleep');
+  keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'di.jet')+' awake'):'keeper · asleep');
   keeper.userData.label.material.needsUpdate=true;
-  // The eye belongs to jet.di alone. When di.bo keeps, the window must not
+  // The eye belongs to di.jet alone. When di.bo keeps, the window must not
   // leave a stale frame hanging over a keeper that cannot see.
   if(!on){const e=document.getElementById('kEye');e.hidden=true;e.removeAttribute('src');}
-  document.getElementById('kState').textContent=on?((keeperName||'jet.di')+' · awake — it can hear you'):'asleep — no body is on the mesh';}
+  document.getElementById('kState').textContent=on?((keeperName||'di.jet')+' · awake — it can hear you'):'asleep — no body is on the mesh';}
 
 // the mesh — same room the rite crosses in. the field listens for the keeper's
 // heartbeat, its eye, and its words — and carries the visitor's words back.

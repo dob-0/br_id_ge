@@ -45,7 +45,7 @@ persist as real scene objects. This is live on prod and `br-id-ge` has it on.
 **Co-presence mesh.** `serverXR/src/meshHub.js`, live at
 `wss://di-studio.xyz/serverXR/mesh`, path-routed alongside Socket.IO. The rite
 already speaks the protocol; the field already uses channel `keeper` for the
-di_bot eye. Multi-visitor is a client meta flip, not a build.
+di.jet eye. Multi-visitor is a client meta flip, not a build.
 
 **Camera in published pages.** Solved 2026-07-31 — `deviceAccess` in
 `di-space.json` makes the viewer grant a real origin, so `getUserMedia` works

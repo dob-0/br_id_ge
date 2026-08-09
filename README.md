@@ -16,7 +16,7 @@ source and its GitHub Pages mirror.
 - **What it is, in full** — the seven parts, the five acts, deployments, team: [docs/PROJECT.md](docs/PROJECT.md)
 - **Canonical concept & recap:** [docs/MASTER_CONTEXT.md](docs/MASTER_CONTEXT.md) §0
 - **The keeper (ՊԱՀԱՊԱՆ)** — the ai present in the field, its two bodies
-  (**jet.di**, the robot standing in the room · **di.bo**, the messenger on the
+  (**di.jet**, the robot standing in the room · **di.bo**, the messenger on the
   wire) and how to bring either up: [docs/KEEPER.md](docs/KEEPER.md)
 - Now heading to **Notations #2** (Jul 20 – Aug 2, 2026, State Philharmonia of
   Armenia), hosted by [**hosq**](https://hosq.co/) under the theme "Rituals".
