@@ -1848,7 +1848,14 @@ function openEnd(){
 function fieldHref(){
   const fl=$('#fieldLink')
   if(!word||unmade){fl.hidden=true;return}
-  let u='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word)
+  // The host, not a hostname. A published page is a srcdoc iframe with no URL
+  // of its own, so this had to be written down — which meant the rite running
+  // on STAGING opened production's field inside itself, and the one surface
+  // that is supposed to rehearse the ending could never rehearse it. di.iiii
+  // now hands the page its own origin; the literal stays as the fallback for
+  // an older viewer and for opening this file straight off disk.
+  const host=(typeof window!=='undefined'&&window.diiPageOrigin)||'https://di-studio.xyz'
+  let u=host+'/br_id_ge/field?just='+encodeURIComponent(word)
   if(crossing)u+='&me='+encodeURIComponent(crossing.id)
   if(mark)u+='&mark=1'
   fl.href=u

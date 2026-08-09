@@ -121,14 +121,18 @@ body.inframe #cta{bottom:2.4rem}
   body.inframe #kPanel{bottom:6.6rem}
 }
 
-/* Paper, not transparent — measured on the live site, not assumed. The
-   embedded field arrives wrapped in a second di.iiii viewer whose iframe is
-   sandboxed WITHOUT allow-same-origin, so the rite cannot reach in and quiet
-   the wrapper's dark shell; "transparent" therefore renders as a black box.
-   The field stands on its own paper — the rite's ground is the same paper,
-   so the seam disappears. The day the viewer grows a real ?embed=1 mode
-   (transparent shell, no badge/chip) this can return to transparent. */
-html.embed,html.embed body{background:var(--paper)}
+/* Transparent again, and this time it is real. It stood on its own paper for
+   as long as the wrapper was opaque: a published page is sandboxed WITHOUT
+   allow-same-origin, so the rite could never reach in and quiet the viewer's
+   dark shell, and "transparent" rendered as a black box. Paper hid the black
+   but made a rectangle — its bottom edge cut a line across the ending and it
+   covered the shared body and the mark the visitor had just drawn.
+   di.iiii's viewer now answers ?embed=1 itself (transparent shell, no badge,
+   no Walk/Fly), which is the mode this comment used to be waiting for. The
+   ground under the cores is the rite's own page again.
+   REQUIRES that viewer: against an older one this is a black box, so it must
+   never ship ahead of di.iiii. */
+html.embed,html.embed body{background:transparent}
 html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
 html.embed canvas{cursor:default}
 </style>
@@ -171,9 +175,16 @@ const QRY=new URLSearchParams(window.diiPageQuery||location.search);
 const EMBED=QRY.get('embed')==='1';
 if(EMBED)document.documentElement.classList.add('embed');
 
+// Inside the viewer this page is a srcdoc iframe with no URL, so
+// location.hostname is empty and the check below always fell through to the
+// literal — staging's field read PRODUCTION's crossings. diiPageOrigin is the
+// host di.iiii is actually serving from; the rest is unchanged for a page
+// opened straight off disk or served from anywhere else.
+const HOST=(typeof window!=='undefined'&&window.diiPageOrigin)||'';
 const API=QRY.get('api')||
-  (location.hostname.endsWith('di-studio.xyz')
-    ?'/serverXR/api/spaces/br_id_ge':'https://di-studio.xyz/serverXR/api/spaces/br_id_ge');
+  (HOST?HOST+'/serverXR/api/spaces/br_id_ge'
+    :location.hostname.endsWith('di-studio.xyz')
+      ?'/serverXR/api/spaces/br_id_ge':'https://di-studio.xyz/serverXR/api/spaces/br_id_ge');
 
 const PAPER=0xf3f1ec
 const canvas=document.getElementById('c');
