@@ -58,11 +58,24 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 .field{display:block;margin-top:1.4rem;color:var(--graphite);text-decoration:none;
   font-size:.6rem;letter-spacing:.2em;text-transform:lowercase}
 .field:hover,.field:focus-visible{color:var(--ink)}
+/* THE PULSE — the field's real number, spoken only when the field answers.
+   Height reserved so the door never shifts; the line arrives or it doesn't.
+   The dot is the keeper: live blue and breathing when a body is on the mesh,
+   graphite and still when the room is empty. */
+.pulse{height:1rem;margin-top:1.3rem;font-size:.6rem;letter-spacing:.2em;
+  text-transform:lowercase;color:var(--graphite);opacity:0;transition:opacity 1.2s ease}
+.pulse.up{opacity:1}
+.pulse b{font-weight:400;color:var(--ink)}
+.pulse .dot{margin-right:.55em}
+.pulse.on .dot{color:var(--live);animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.pulse.on .dot{animation:none}}
 
 @media (prefers-reduced-motion: no-preference){
   main>*,#frame,.hud{opacity:0;animation:fade 1.2s ease forwards}
   h1{animation-delay:.1s}.lat{animation-delay:.2s}.lede{animation-delay:.35s}
   .cross{animation-delay:.55s}.field{animation-delay:.7s}
+  .pulse{animation:none}   /* its own fade waits for the fetch, not the clock */
   @keyframes fade{to{opacity:1}}
 }
 </style>
@@ -84,7 +97,50 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
     and what you carry keeps walking with everyone who crossed before you.</p>
   <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
   <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
+  <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> crossings so far</p>
 </main>
+
+<script>
+// The door learns the field's pulse — and says nothing it does not know.
+// Same space, same mesh as field.html; published pages are srcdoc iframes with
+// no hostname, so the viewer's injected origin decides the tier. The literal
+// fallbacks below are what serve.mjs rewrites locally.
+(function(){
+  var O=window.diiPageOrigin||null;
+  var API=(O?O+'/serverXR':'https://di-studio.xyz/serverXR')+'/api/spaces/br_id_ge';
+  var MESH=O?O.replace(/^http/,'ws')+'/serverXR/mesh':'wss://di-studio.xyz/serverXR/mesh';
+  var pulse=document.getElementById('pulse');
+
+  // the count: how many crossings the field is actually holding
+  function count(){
+    fetch(API+'/scene').then(function(r){return r.ok?r.json():null}).then(function(j){
+      if(!j)return;
+      var objects=(j.scene||{}).objects||[];
+      var n=objects.filter(function(o){return String(o.id||'').indexOf('insc-')===0}).length;
+      if(!n)return;
+      document.getElementById('pn').textContent=n;
+      pulse.classList.add('up');
+    }).catch(function(){});
+  }
+  count();setInterval(count,60000);
+
+  // the keeper: a heartbeat on the mesh keeps the dot alive for 15s
+  var seen=-1e9,tried=0;
+  function face(){pulse.classList.toggle('on',Date.now()-seen<15000)}
+  setInterval(face,3000);
+  (function mesh(){
+    var u;try{u=new URL(MESH)}catch(e){return}
+    u.searchParams.set('room','bridge');
+    u.searchParams.set('node','d'+Math.random().toString(36).slice(2,8));
+    var ws;try{ws=new WebSocket(u.toString())}catch(e){return}
+    ws.onmessage=function(ev){var m;try{m=JSON.parse(ev.data)}catch(e){return}
+      if(m.type==='mesh:event'&&m.channel==='keeper'){seen=Date.now();face();}};
+    ws.onerror=function(){};
+    ws.onclose=function(){if(tried++<1)setTimeout(mesh,8000)};   // one retry, then quiet
+    addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}});
+  })();
+})();
+</script>
 
 </body>
 </html>
