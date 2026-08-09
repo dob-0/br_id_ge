@@ -261,8 +261,24 @@ body.inframe{--hudfloor:2.6rem}
      straight through FINGER LAMP WORLD TILT. Stack them instead of trusting
      them to share a line: readers on the floor, status on the shelf above. */
   #readers{padding:1.1rem;gap:.75rem}
-  #state{padding:1.1rem;bottom:calc(var(--hudfloor) + 3.1rem);max-width:100vw}
+  /* …but the shelf is only needed while there IS a floor to clear. The readers
+     are hidden for the whole ending, so the status line was hovering 3.1rem
+     above nothing and landing directly under "the field is above you" — two
+     instruction lines in a row, which is what read as clutter on his phone. */
+  #state{padding:1.1rem;bottom:var(--hudfloor);max-width:100vw}
+  body:has(#readers:not([hidden])) #state{bottom:calc(var(--hudfloor) + 3.1rem)}
 }
+
+/* While the ending is open the body's letters travel across the whole sheet,
+   and the two top corners sit inside the ring: on a phone a word passes
+   straight through "BR_ID_GE · VI.RITUAL". The corners are reference, not the
+   work — they recede while the thing you crossed for is on the screen. */
+body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s ease}
+/* On a phone the ring is tight enough that a word lands ON the title rather
+   than near it — dimming turns a collision into a smudge, which is not the same
+   as fixing it. The piece's own name is the one thing a visitor at the ending
+   no longer needs; the act label stays, quietly. */
+@media (max-width:560px){body.ending #hudTitle{opacity:0}}
 </style>
 </head>
 <body>
@@ -1399,7 +1415,14 @@ if(FIELD_URL){
   fetch(FIELD_URL+'/scene').then(r=>r.json()).then(j=>{
     const objs=j.objects||(j.scene&&j.scene.objects)||[]
     const remote=objs.filter(o=>String(o.id||'').startsWith('insc-')).map(o=>String(o.data||''))
-    for(const tag of remote)if(tag&&!field.includes(tag))field.push(tag)
+    // The answer REPLACES the cache; it used to be merged into it, and a merge
+    // can only grow. Nothing here could ever notice a crossing being unmade —
+    // so after the field was cleared of its test stones a returning browser
+    // still counted them, and the ending said a different number from the field
+    // page and the door while all three read the same endpoint. A cache is what
+    // you show before the answer arrives, not something you add to it.
+    field=remote.filter(Boolean)
+    try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
     $('#sField').textContent=field.length
   }).catch(()=>{})
 }
@@ -1829,6 +1852,7 @@ function buildSharedBody_(){
 // measured against it. Idempotent — buildSharedBody is the only caller.
 function openEnd(){
   if(endOpen)return
+  document.body.classList.add('ending')
   const n=field.length
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
@@ -1848,7 +1872,14 @@ function openEnd(){
 function fieldHref(){
   const fl=$('#fieldLink')
   if(!word||unmade){fl.hidden=true;return}
-  let u='https://di-studio.xyz/br_id_ge/field?just='+encodeURIComponent(word)
+  // The host, not a hostname. A published page is a srcdoc iframe with no URL
+  // of its own, so this had to be written down — which meant the rite running
+  // on STAGING opened production's field inside itself, and the one surface
+  // that is supposed to rehearse the ending could never rehearse it. di.iiii
+  // now hands the page its own origin; the literal stays as the fallback for
+  // an older viewer and for opening this file straight off disk.
+  const host=(typeof window!=='undefined'&&window.diiPageOrigin)||'https://di-studio.xyz'
+  let u=host+'/br_id_ge/field?just='+encodeURIComponent(word)
   if(crossing)u+='&me='+encodeURIComponent(crossing.id)
   if(mark)u+='&mark=1'
   fl.href=u
@@ -2546,12 +2577,27 @@ function frame(now){
       const e=markIn<0.5?2*markIn*markIn:1-Math.pow(-2*markIn+2,2)/2
       let total=0;for(const s of ms)total+=s.length-1
       let budget=Math.max(1,total*e)
-      const R=Math.min(W,H)*0.22   // the core's own footprint, near enough
+      // The mark stood exactly where the core stood — but the core sits at
+      // 0.40H while endFloor(), the ceiling the closing block hangs from, can
+      // land at 0.42H. On an ordinary laptop window the drawing was therefore
+      // centred ~16px above the floor and wrote its whole lower half straight
+      // through "you are part of it now." Measured on staging by reading the
+      // canvas back: 1440x900 crossed the heading by 55px, 1280x800 by 76px,
+      // and 1920x1080 cleared it by 20 — a coincidence of the viewport, not a
+      // rule. The opaque field box used to hide most of this; making the window
+      // glass is what put it on show.
+      // It now stands in the middle of the band the body's letters occupy,
+      // which is where the ring's own centre is, and never grows past what that
+      // band can hold. min() only ever lifts it — a tall window keeps the core's
+      // place exactly as before.
+      const ceil=H*0.05, floor=endFloor(), band=Math.max(60,floor-ceil)
+      const R=Math.min(Math.min(W,H)*0.22, band*0.42)
+      const cy=Math.min(coreCY,(ceil+floor)/2)
       // a hand still on the page is still writing: the finished mark steps aside
       // for the wet ink rather than sitting under it
       const wet=finishing()&&pennedN&&performance.now()-pennedAt<1400
       ctx.save()
-      ctx.translate(coreCX,coreCY);ctx.scale(R,R)
+      ctx.translate(coreCX,cy);ctx.scale(R,R)
       ctx.strokeStyle=LIVE;ctx.lineWidth=1.7/R;ctx.lineCap='round';ctx.lineJoin='round'
       ctx.globalAlpha=(0.42+0.5*shared.t)*(wet?0.3:1)
       for(const s of ms){
