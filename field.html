@@ -92,9 +92,11 @@ canvas.grabbing{cursor:grabbing}
 #kWho{font-size:.55rem;letter-spacing:.14em;color:var(--graphite);line-height:1.8}
 #kWho .you{color:var(--ink)}
 #kWhy,#kNote{font-size:.55rem;letter-spacing:.12em;color:var(--graphite);line-height:1.6}
-/* an empty room is a state, not a fault — and the one honest thing to print in
-   it is that nothing said here outlives it */
-#kLog:empty::before{content:'quiet — words here live only while the room is open';
+/* an empty room is a state, not a fault. The old line here promised that
+   nothing said outlives the room — that promise is REVOKED in this same
+   commit that starts keeping: words stay now, so quiet only means no one
+   has spoken yet */
+#kLog:empty::before{content:'quiet — nothing said yet. what is spoken here stays with the field.';
   color:var(--graphite);font-size:.6rem}
 /* TWO VOICES, never blurred. A person: their name in graphite, their words in
    ink. The keeper HIMSELF: the blue name the panel has always given him. The
@@ -624,6 +626,24 @@ function keeperFace(){
 const MESH=QRY.get('mesh')||
   (HOST?HOST.replace(/^http/,'ws')+'/serverXR/mesh':'wss://di-studio.xyz/serverXR/mesh');
 let meshWs=null,myNode='';
+// THE ROOM KEEPS ITS CHAT. Replay arrives once per page as mesh:history
+// envelopes (never mesh:event — a listener that doesn't ask can't confuse
+// history with a live voice). Ids dedupe replay against live across
+// reconnects; the once-flag stops a reconnect's replay re-printing a DOM
+// that never emptied.
+const seenLines=new Set();
+let historyRendered=false;
+function renderHistory(m){
+  if(historyRendered)return;
+  for(const line of (m.lines||[])){
+    if(line&&line.id){if(seenLines.has(line.id))continue;seenLines.add(line.id);}
+    const p=line&&line.payload;
+    if(!p)continue;
+    if(line.channel==='talk'&&p.text)tkLine(String(p.who||'—'),String(p.text));
+    else if(line.channel==='keeper:say'&&p.text)
+      kSay(String(p.text).slice(0,300),p.voice==='ai'?'ai':'keeper');
+  }
+  if(m.done)historyRendered=true;}
 (function meshConnect(){
   // embedded in the ending, the rite is already in that room — a second socket
   // from inside its own page would double the field's count of who is present
@@ -635,19 +655,26 @@ let meshWs=null,myNode='';
   u.searchParams.set('room','bridge');u.searchParams.set('node',myNode);
   let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
   meshWs=ws;
-  ws.onopen=()=>{announce();};
+  ws.onopen=()=>{announce();
+    // the room keeps its chat — ask the hub for the kept lines (opt-in replay;
+    // a hub without history answers empty+done, so asking is always safe)
+    ws.send(JSON.stringify({type:'control',cmd:'history'}));};
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}
+    if(m.type==='mesh:history'){renderHistory(m);return}
     if(m.type!=='mesh:event')return;
+    // persistent lines carry a hub-minted id, identical live and in replay —
+    // dedupe on identity so a reconnect's replay never doubles a line
+    if(m.id){if(seenLines.has(m.id))return;seenLines.add(m.id);}
     if(m.channel==='keeper'){keeperSeen=performance.now();
       keeperName=String((m.payload&&m.payload.name)||'').slice(0,14);}
     else if(m.channel==='keeper:eye'&&m.payload&&typeof m.payload.jpg==='string'
       &&m.payload.jpg.startsWith('data:image/jpeg;base64,')){
       const img=document.getElementById('kEye');img.src=m.payload.jpg;img.hidden=false;}
     else if(m.channel==='keeper:say'&&m.payload&&m.payload.text){
-      // `to` marks the answer to someone's keeper:ask. The hub broadcasts it to
-      // the whole room, so this is a RENDERING rule, not privacy — an aside
-      // someone else made is unseen here, never secret anywhere.
-      if(m.payload.to&&String(m.payload.to)!==myNode)return;
+      // The old render-if-yours rule (`to` hides an answer from everyone but
+      // its asker) is DEAD, deliberately: in a room that keeps its chat, asks
+      // and answers are public lines of the one conversation. It was only ever
+      // a rendering rule — the hub always broadcast to the whole room.
       // voice is the ONLY thing separating the machine that is always here from
       // the owner himself — absent means 'keeper', so older senders stay him
       kSay(String(m.payload.text).slice(0,300),m.payload.voice==='ai'?'ai':'keeper');}
@@ -670,7 +697,10 @@ let meshWs=null,myNode='';
 // other, with պահապան as a participant. Protocol: di-bo/docs/the-room.md.
 // Channels are additive on this same socket; every fence (junk, 5/30s, the AI's
 // budget) is enforced in di-bo — the page only keeps a visitor honest about them.
-// Nothing here is stored: lines exist in this DOM while the room lives, and nowhere.
+// The room KEEPS its chat now: the hub stores talk and keeper:say lines and
+// replays them to every arriving device (see renderHistory above). History
+// begins at the hub's switch-on — nothing said under the old only-while-open
+// promise was kept, by design.
 const kPanel=document.getElementById('kPanel'),kLog=document.getElementById('kLog');
 const kIn=document.getElementById('kIn'),kWho=document.getElementById('kWho'),
       kWhy=document.getElementById('kWhy'),kNote=document.getElementById('kNote'),
