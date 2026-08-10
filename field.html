@@ -69,10 +69,34 @@ canvas.grabbing{cursor:grabbing}
 #kLog .me{color:var(--graphite)}
 #kLog .it{color:var(--ink)}
 #kLog .it b{color:var(--live);font-weight:400}
-#kIn{width:100%;background:none;border:none;border-bottom:1px solid var(--hairline);
+#kIn{flex:1;min-width:0;width:100%;background:none;border:none;border-bottom:1px solid var(--hairline);
   font-family:var(--mono);font-size:.7rem;color:var(--ink);padding:.35rem 0;outline:none}
 #kIn:focus{border-color:var(--live)}
 #kIn::placeholder{color:var(--graphite)}
+/* a still input is dashed, not greyed-out chrome: the line is there, unbroken
+   speech is not — one quiet sentence below it says why */
+#kIn:disabled{border-bottom-style:dashed}
+#kForm{display:flex;align-items:center;gap:.55rem}
+#kAt{background:none;border:1px solid var(--hairline);cursor:pointer;color:var(--graphite);
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;padding:.22rem .45rem;white-space:nowrap}
+#kAt.on,#kAt:hover{color:var(--ink);border-color:var(--ink)}
+#kCap{font-size:.5rem;color:var(--graphite)}
+#kWho{font-size:.55rem;letter-spacing:.14em;color:var(--graphite);line-height:1.8}
+#kWho .you{color:var(--ink)}
+#kWhy,#kNote{font-size:.55rem;letter-spacing:.12em;color:var(--graphite);line-height:1.6}
+/* an empty room is a state, not a fault — and the one honest thing to print in
+   it is that nothing said here outlives it */
+#kLog:empty::before{content:'quiet — words here live only while the room is open';
+  color:var(--graphite);font-size:.6rem}
+/* TWO VOICES, never blurred. A person: their name in graphite, their words in
+   ink. The keeper HIMSELF: the blue name the panel has always given him. The
+   machine that is always here: all graphite, wearing a small boxed "ai" — so
+   which one answered is readable before a single word is. */
+#kLog .tk{color:var(--ink)}
+#kLog .tk .w{color:var(--graphite)}
+#kLog .ai{color:var(--graphite)}
+#kLog .aim{font-style:normal;font-size:.5rem;border:1px solid var(--hairline);
+  padding:0 .3em;margin-right:.4em;letter-spacing:.08em}
 @media (prefers-reduced-motion: no-preference){
   .hud,#frame{opacity:0;animation:fade 1.2s .3s ease forwards}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
@@ -144,17 +168,26 @@ html.embed canvas{cursor:default}
 <div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
 <div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
 <button class="hud" id="mode">all together →</button>
-<!-- the keeper's window — tap the lattice: see through jet.di's eye, speak to it.
-     Two bodies may keep: jet.di, the robot in the room (eye + speaker), and
-     di.bo, the messenger on the wire (voice only). docs/KEEPER.md holds both. -->
+<!-- the keeper's window IS the room — one surface, opened only by a tap on the
+     lattice. Anyone may watch; the crossed speak; պահապան answers in one of two
+     voices the page never lets blur (docs in di-bo/docs/the-room.md). Two bodies
+     may keep: jet.di, the robot in the room (eye + speaker), and di.bo, the
+     messenger on the wire (voice only). docs/KEEPER.md holds both. -->
 <div id="kPanel" hidden>
-  <div class="kHead"><span>պահապան · the keeper</span><button id="kClose">×</button></div>
+  <div class="kHead"><span>պահապան · the room</span><button id="kClose">×</button></div>
   <div id="kState">asleep — no body is on the mesh</div>
   <img id="kEye" alt="" hidden>
+  <div id="kWho">the room is quiet</div>
   <div id="kLog"></div>
-  <form id="kForm"><input id="kIn" placeholder="speak to it" autocomplete="off" maxlength="120"></form>
+  <div id="kWhy">watching — speaking is what a crossing earns</div>
+  <div id="kNote" hidden></div>
+  <form id="kForm">
+    <button type="button" id="kAt" hidden>պահապան →</button>
+    <input id="kIn" placeholder="" autocomplete="off" maxlength="200" enterkeyhint="send" disabled>
+    <span id="kCap" hidden></span>
+  </form>
 </div>
-<div class="hud" id="hint">tap — ink finds the crossings<span class="mouse"><br>drag orbit · scroll zoom</span></div>
+<div class="hud" id="hint">tap — ink finds the crossings<br>tap պահապան — the room<span class="mouse"><br>drag orbit · scroll zoom</span></div>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
 "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/"}}
@@ -368,6 +401,7 @@ function placeCore(tag,i,id,carriedMark){
   label.scale.set(PORT?3.2:4.2,PORT?1.2:1.575,1);label.visible=!EMBED;grp.add(label);
   const ring=letterRing(word,rnd);if(ring)grp.add(ring);
   grp.userData={phase:i*1.31,home:pos.clone(),gather:new THREE.Vector3(),m:0,word,id,flat:!!drawn,
+    tag:String(tag).trim(),
     rev:0,revT:0,speed:0.022+rnd()*0.022,scale:s,knot,label,shadow:sh,ring,
     spin:0.0012+rnd()*0.0016,born:performance.now()};
   grp.visible=false;
@@ -501,7 +535,10 @@ function keeperFace(){
 
 // the mesh — same room the rite crosses in. the field listens for the keeper's
 // heartbeat, its eye, and its words — and carries the visitor's words back.
-const MESH=QRY.get('mesh')||'wss://di-studio.xyz/serverXR/mesh';
+// Same tier-honesty the API already has: inside the viewer this page has no URL,
+// so without diiPageOrigin the STAGING field was joining PRODUCTION's room.
+const MESH=QRY.get('mesh')||
+  (HOST?HOST.replace(/^http/,'ws')+'/serverXR/mesh':'wss://di-studio.xyz/serverXR/mesh');
 let meshWs=null;
 (function meshConnect(){
   // embedded in the ending, the rite is already in that room — a second socket
@@ -511,6 +548,7 @@ let meshWs=null;
   u.searchParams.set('room','bridge');u.searchParams.set('node','f'+Math.random().toString(36).slice(2,8));
   let ws;try{ws=new WebSocket(u.toString())}catch(e){return}
   meshWs=ws;
+  ws.onopen=()=>{announce();};
   ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data)}catch(e){return}
     if(m.type!=='mesh:event')return;
     if(m.channel==='keeper'){keeperSeen=performance.now();
@@ -519,34 +557,153 @@ let meshWs=null;
       &&m.payload.jpg.startsWith('data:image/jpeg;base64,')){
       const img=document.getElementById('kEye');img.src=m.payload.jpg;img.hidden=false;}
     else if(m.channel==='keeper:say'&&m.payload&&m.payload.text){
-      kSay(String(m.payload.text).slice(0,300));}};
+      // voice is the ONLY thing separating the machine that is always here from
+      // the owner himself — absent means 'keeper', so older senders stay him
+      kSay(String(m.payload.text).slice(0,300),m.payload.voice==='ai'?'ai':'keeper');}
+    else if(m.channel==='talk'&&m.payload&&m.payload.text){
+      // own lines were printed at send; an echo of them is not a second person
+      if(!(seat&&String(m.payload.id)===seat.id))
+        tkLine(String(m.payload.who||'—'),String(m.payload.text));}
+    else if(m.channel==='talk:here'&&m.payload&&m.payload.id){
+      roomWho.set(String(m.payload.id),
+        {who:String(m.payload.who||'—').slice(0,40),seen:performance.now()});
+      hereLine();}
+    else if(m.channel==='talk:gone'&&m.payload&&m.payload.id){
+      if(roomWho.delete(String(m.payload.id)))hereLine();}
+    else if(m.channel==='talk:who'){
+      if(seat)pub('talk:here',{id:seat.id,who:seat.who,at:Date.now()});}};
   ws.onclose=()=>{meshWs=null;setTimeout(meshConnect,5000);};
   ws.onerror=()=>{};})();
 
-// the keeper's window
+// THE ROOM — the keeper's window grown into the place the crossed talk to each
+// other, with պահապան as a participant. Protocol: di-bo/docs/the-room.md.
+// Channels are additive on this same socket; every fence (junk, 5/30s, the AI's
+// budget) is enforced in di-bo — the page only keeps a visitor honest about them.
+// Nothing here is stored: lines exist in this DOM while the room lives, and nowhere.
 const kPanel=document.getElementById('kPanel'),kLog=document.getElementById('kLog');
+const kIn=document.getElementById('kIn'),kWho=document.getElementById('kWho'),
+      kWhy=document.getElementById('kWhy'),kNote=document.getElementById('kNote'),
+      kAt=document.getElementById('kAt'),kCap=document.getElementById('kCap');
+function pub(channel,payload){
+  if(!(meshWs&&meshWs.readyState===1))return false;
+  meshWs.send(JSON.stringify({type:'publish',channel,pingTs:Date.now(),payload}));
+  return true;}
+
+// SPEAKING BELONGS TO A CROSSING. The seat is the inscription this browser
+// holds — the rite leaves {id,proof} behind, and ?me= is its own hand-off —
+// and the id must EXIST among the loaded cores, which stops an invented name
+// and nothing more. v1 does not prove the core is YOURS, so the room never
+// says "verified": the input simply wakes, in that core's name · word.
+let seat=null;
+function claimSeat(){
+  if(seat)return;
+  let held=null;
+  try{held=JSON.parse(localStorage.getItem('br_id_ge_last_crossing')||'null')}catch(e){}
+  const id=String(ME||(held&&held.id)||'');
+  const g=id&&cores.get(id);
+  if(!g){seatFace();return;}
+  seat={id,who:g.userData.tag||'—'};
+  roomWho.set(id,{who:seat.who,seen:performance.now()});
+  seatFace();hereLine();announce();}
+function seatFace(){
+  kIn.disabled=!seat;
+  kAt.hidden=!seat;
+  kIn.placeholder=seat?('speak as '+seat.who):'';
+  kWhy.hidden=!!seat;}
+
+// WHO IS HERE — only those who can speak announce themselves; watchers watch,
+// unlisted. Sized for the honest state: prod holds three cores, so this is a
+// list of one to three names, and empty is a state, not an error.
+const roomWho=new Map();
+function hereLine(){
+  kWho.replaceChildren();
+  if(!roomWho.size){kWho.textContent='the room is quiet';return;}
+  const h=document.createElement('div');h.textContent='here —';kWho.appendChild(h);
+  roomWho.forEach((p,id)=>{
+    const d=document.createElement('div');
+    const you=seat&&id===seat.id;
+    d.textContent=p.who+(you?' — you':'');
+    if(you)d.className='you';
+    kWho.appendChild(d);});}
+function rollCall(){pub('talk:who',{});}
+function announce(){
+  if(seat&&pub('talk:here',{id:seat.id,who:seat.who,at:Date.now()}))rollCall();}
+addEventListener('pagehide',()=>{if(seat)pub('talk:gone',{id:seat.id});});
+// a page that never said talk:gone would stand in the list forever — re-ask
+// while the room is open, and let the silent fall out
+setInterval(()=>{
+  const now=performance.now();let dropped=false;
+  roomWho.forEach((p,id)=>{
+    if(seat&&id===seat.id)return;
+    if(now-p.seen>120000){roomWho.delete(id);dropped=true;}});
+  if(dropped)hereLine();
+  if(!kPanel.hidden)rollCall();
+},45000);
+
 document.getElementById('kClose').addEventListener('click',()=>{kPanel.hidden=true;});
-function kLine(cls,html){const d=document.createElement('div');d.className=cls;
-  d.textContent=html;kLog.appendChild(d);kLog.scrollTop=kLog.scrollHeight;
-  while(kLog.children.length>24)kLog.removeChild(kLog.firstChild);}
-function kSay(text){const d=document.createElement('div');d.className='it';
-  const b=document.createElement('b');b.textContent='պահապան ';
-  d.appendChild(b);d.appendChild(document.createTextNode(text));
-  kLog.appendChild(d);kLog.scrollTop=kLog.scrollHeight;}
+function kTrim(){kLog.scrollTop=kLog.scrollHeight;
+  while(kLog.children.length>40)kLog.removeChild(kLog.firstChild);}
+function tkLine(who,text){const d=document.createElement('div');d.className='tk';
+  const w=document.createElement('span');w.className='w';
+  w.textContent=String(who).slice(0,40)+'  ';
+  d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
+  kLog.appendChild(d);kTrim();}
+function kSay(text,voice){const d=document.createElement('div');
+  if(voice==='ai'){
+    d.className='ai';
+    const m=document.createElement('i');m.className='aim';m.textContent='ai';
+    d.appendChild(m);
+    const b=document.createElement('span');b.textContent='պահապան ';d.appendChild(b);}
+  else{
+    d.className='it';
+    const b=document.createElement('b');b.textContent='պահապան ';d.appendChild(b);}
+  d.appendChild(document.createTextNode(String(text).slice(0,220)));
+  kLog.appendChild(d);kTrim();}
+function note(text){kNote.textContent=text;kNote.hidden=false;
+  clearTimeout(note.t);note.t=setTimeout(()=>{kNote.hidden=true;},6000);}
+
+// ADDRESSING THE AI — it answers only a line that opens with its name; the
+// button prepends that name so the way to be answered is one tap, not lore.
+const ADDR=['պահապան','@keeper','di.bo','keeper'];
+function addressed(t){const s=String(t).trim().toLowerCase();
+  return ADDR.some(a=>s===a||s.startsWith(a+' '));}
+kAt.addEventListener('click',()=>{
+  if(addressed(kIn.value))kIn.value=kIn.value.trim().replace(/^\S+\s*/,'');
+  else kIn.value='պահապան '+kIn.value.replace(/^\s+/,'');
+  inFace();kIn.focus();});
+function inFace(){
+  kAt.classList.toggle('on',addressed(kIn.value));
+  const left=200-kIn.value.length;
+  kCap.hidden=left>40;kCap.textContent=left;}
+kIn.addEventListener('input',inFace);
+
+const sentAt=[];
 document.getElementById('kForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const inp=document.getElementById('kIn'),text=inp.value.trim();
-  if(!text)return;inp.value='';
-  kLine('me',text);
-  if(meshWs&&meshWs.readyState===1)
-    meshWs.send(JSON.stringify({type:'publish',channel:'keeper:ask',pingTs:Date.now(),
-      payload:{text:text.slice(0,120)}}));
-  else kSay('…the mesh is not here — nothing carried your words.');});
+  if(!seat)return;
+  const text=kIn.value.trim().slice(0,200);
+  if(!text)return;
+  const now=Date.now();
+  while(sentAt.length&&now-sentAt[0]>30000)sentAt.shift();
+  if(sentAt.length>=5){
+    note('the room takes five lines in half a minute — a breath first.');return;}
+  if(!pub('talk',{id:seat.id,who:seat.who,text,at:now})){
+    note('the mesh is not here — nothing carried your words.');return;}
+  sentAt.push(now);
+  kIn.value='';inFace();
+  tkLine(seat.who,text);
+  if(addressed(text)&&text.length>120)note('պահապան reads the first 120.');});
 function openKeeper(){kPanel.hidden=false;
-  if(!keeperOnline())document.getElementById('kEye').hidden=true;}
+  if(!keeperOnline())document.getElementById('kEye').hidden=true;
+  rollCall();}
 
-// show-rig probe: lets the rig (and tests) ask whether the ai is with us
-window.__keeper=()=>({online:keeperOnline(),name:keeperName});
+// show-rig probes: whether the ai is with us (+ where the lattice sits on
+// screen, so a rig can tap it the way a finger does), and who the room holds
+window.__keeper=()=>{
+  const v=keeper.getWorldPosition(new THREE.Vector3()).project(camera);
+  return {online:keeperOnline(),name:keeperName,
+    x:(v.x*.5+.5)*innerWidth,y:(-v.y*.5+.5)*innerHeight};};
+window.__room=()=>({seat,here:[...roomWho.keys()],open:!kPanel.hidden});
 
 async function loadField(){
   try{
@@ -554,7 +711,7 @@ async function loadField(){
     const objects=((await r.json()).scene||{}).objects||[];
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id,o.mark));});
-    gatherSeats();receive();
+    gatherSeats();receive();claimSeat();
     // The field IS the crossings. Cores are built hidden (placeCore) and only
     // revealAll() shows them — which ran solely from the ALL TOGETHER gather
     // and the rite's ?just= hand-off. So arriving straight at /field gave an
