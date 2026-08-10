@@ -19,6 +19,10 @@
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
   --live:#1d4bff;
+  /* black means NOW — ink still moving. The only true black in the estate,
+     it exists only in motion and always dries into --ink, the record.
+     No static element is ever #000. (The Unfinished Swan grammar.) */
+  --wet:#000000;
   /* the room's own sheet: the same paper lifted one shade toward white, so a
      surface wearing it reads as a place laid ON the field, not more field */
   --paper-room:#f9f7f2;
@@ -104,6 +108,34 @@ canvas.grabbing{cursor:grabbing}
    which one answered is readable before a single word is. */
 #kLog .tk{color:var(--ink)}
 #kLog .tk .w{color:var(--graphite)}
+/* THE SOAK — a line lands as wet ink and dries into the record. Live lines
+   are born without .old (true black), gain it one frame later, and the color
+   transition dries them; history is born .old — it soaks in but is never wet,
+   because black is only NOW. The ai voice (graphite) and the keeper's blue
+   name are untouched: wet applies to ink-colored lines alone. */
+#kLog .tk,#kLog .it{transition:color 2.2s ease .5s}
+@media (prefers-reduced-motion: no-preference){
+  #kLog>div{animation:soak .9s ease-out both;animation-delay:var(--d,0s)}
+  @keyframes soak{
+    0%{opacity:0;filter:blur(.45px)}
+    35%{opacity:1;filter:blur(.25px)}
+    100%{opacity:1;filter:none}}
+  #kLog .tk:not(.old),#kLog .it:not(.old){color:var(--wet)}
+}
+/* the kept record's structure: a day-mark rules off each day; a stain row is
+   a folded day — one ink blot and a count, tap to let it become its lines */
+.kDay{border-top:1px solid var(--hairline);margin:.65rem 0 .35rem;position:relative}
+.kDay b{position:absolute;top:-.6em;left:0;background:var(--paper-room);
+  padding-right:.5em;font-size:.5rem;letter-spacing:.16em;
+  color:var(--graphite);font-weight:400;text-transform:lowercase}
+.kStain{cursor:pointer;color:var(--graphite);font-size:.55rem;letter-spacing:.14em;
+  min-height:28px;display:flex;align-items:center}
+.kStain::before{content:'';display:inline-block;width:.55em;height:.55em;
+  border-radius:50% 46% 52% 44%;background:var(--ink);margin-right:.5em;
+  flex:none;transition:transform .5s ease,opacity .5s ease}
+.kStain.open::before{transform:scale(1.7);opacity:0}
+#kPanel.kept #kLog{max-height:min(44svh,20rem)}
+#kLog .it,#kLog .ai{margin-top:.18rem}
 #kLog .ai{color:var(--graphite)}
 #kLog .aim{font-style:normal;font-size:.5rem;border:1px solid var(--hairline);
   padding:0 .3em;margin-right:.4em;letter-spacing:.08em}
@@ -506,6 +538,15 @@ const stainTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.heigh
   g.globalAlpha=.32;g.beginPath();g.arc(128,128,52,0,Math.PI*2);g.fill();
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;})();
 const stains=[];
+// what ink has revealed stays revealed — for this device, across visits
+// (the Swan's fourth rule; the field's own storage is real now)
+const revealedStore=(()=>{try{
+  return new Set(JSON.parse(localStorage.getItem('br_id_ge_field_revealed')||'[]'))
+}catch(e){return new Set()}})();
+function rememberRevealed(id){
+  if(!id||revealedStore.has(id))return;revealedStore.add(id);
+  try{localStorage.setItem('br_id_ge_field_revealed',
+    JSON.stringify([...revealedStore].slice(-500)))}catch(e){}}
 function throwInk(local){
   const st=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
     new THREE.MeshBasicMaterial({map:stainTex,transparent:true,opacity:.34,depthWrite:false}));
@@ -515,10 +556,11 @@ function throwInk(local){
   world.add(st);stains.push(st);
   if(stains.length>40){const old=stains.shift();world.remove(old);}
   const R=6.5;
-  cores.forEach(g=>{const h=g.userData.home;
-    if((h.x-local.x)**2+(h.z-local.z)**2<R*R&&!g.userData.revT){
-      g.userData.revT=1;g.userData.born=performance.now();}});}
-function revealAll(){cores.forEach(g=>{if(!g.userData.revT){g.userData.revT=1;g.userData.born=performance.now();}});}
+  cores.forEach((g,id)=>{const h=g.userData.home;
+    if((h.x-local.x)**2+(h.z-local.z)**2<R*R&&g.userData.revT!==1){
+      g.userData.revT=1;g.userData.born=performance.now();rememberRevealed(id);}});}
+function revealAll(){cores.forEach((g,id)=>{if(g.userData.revT!==1){
+  g.userData.revT=1;g.userData.born=performance.now();rememberRevealed(id);}});}
 const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
 const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),hit=new THREE.Vector3();
 function tapAt(x,y){
@@ -633,17 +675,65 @@ let meshWs=null,myNode='';
 // that never emptied.
 const seenLines=new Set();
 let historyRendered=false;
+const histBuf=[];
+// Revelation pacing (the Swan's third rule): the kept record never dumps.
+// The last stretch pours in, one measured stagger; every older day folds
+// into a stain — one blot, a count — that becomes its lines only when
+// tapped. A day once opened stays open on this device.
+const HIST_RECENT=12;
+const dayKey=ts=>{const d=new Date(Number(ts)||0);return isNaN(d)?'—':d.toISOString().slice(0,10)};
+const dayLabel=k=>{const d=new Date(k+'T12:00:00Z');
+  return isNaN(d)?k:d.toLocaleDateString('en',{month:'short',day:'numeric'}).toLowerCase()};
+const openDays=(()=>{try{return new Set(JSON.parse(localStorage.getItem('br_id_ge_room_days')||'[]'))}catch(e){return new Set()}})();
+function rememberDay(k){openDays.add(k);
+  try{localStorage.setItem('br_id_ge_room_days',JSON.stringify([...openDays].slice(-60)))}catch(e){}}
+function histLine(l,i){
+  if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text));
+  else kSay(String(l.payload.text).slice(0,300),l.payload.voice==='ai'?'ai':'keeper');
+  const el=kLog.lastChild;if(!el)return;
+  el.classList.add('old','hist');
+  if(i!==undefined)el.style.setProperty('--d',(i*90)+'ms');}
+function dayMark(k){const d=document.createElement('div');d.className='kDay';
+  const b=document.createElement('b');b.textContent=dayLabel(k);d.appendChild(b);return d;}
+function stainRow(k,lines){const d=document.createElement('div');d.className='kStain';
+  d.appendChild(document.createTextNode(dayLabel(k)+' · '+lines.length+
+    (lines.length===1?' line':' lines')));
+  d.addEventListener('click',()=>{
+    if(d.classList.contains('open'))return;
+    d.classList.add('open');rememberDay(k);
+    setTimeout(()=>{
+      lines.forEach((l,i)=>{
+        if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text));
+        else kSay(String(l.payload.text).slice(0,300),l.payload.voice==='ai'?'ai':'keeper');
+        const el=kLog.lastChild;if(!el)return;
+        el.classList.add('old','hist');el.style.setProperty('--d',(i*90)+'ms');
+        d.parentNode.insertBefore(el,d);
+      });
+      d.remove();},500);},{once:false});
+  return d;}
 function renderHistory(m){
   if(historyRendered)return;
-  for(const line of (m.lines||[])){
-    if(line&&line.id){if(seenLines.has(line.id))continue;seenLines.add(line.id);}
-    const p=line&&line.payload;
-    if(!p)continue;
-    if(line.channel==='talk'&&p.text)tkLine(String(p.who||'—'),String(p.text));
-    else if(line.channel==='keeper:say'&&p.text)
-      kSay(String(p.text).slice(0,300),p.voice==='ai'?'ai':'keeper');
-  }
-  if(m.done)historyRendered=true;}
+  histBuf.push(...(m.lines||[]));
+  if(!m.done)return;
+  historyRendered=true;
+  const lines=histBuf.filter(l=>l&&l.payload&&l.payload.text&&
+    (l.channel==='talk'||l.channel==='keeper:say'));
+  lines.forEach(l=>{if(l.id)seenLines.add(l.id)});
+  if(!lines.length)return;
+  kPanel.classList.add('kept');
+  const recent=lines.slice(-HIST_RECENT),older=lines.slice(0,-HIST_RECENT);
+  const days=new Map();
+  older.forEach(l=>{const k=dayKey(l.ts);if(!days.has(k))days.set(k,[]);days.get(k).push(l)});
+  let lastDay=null;
+  days.forEach((ls,k)=>{
+    kLog.appendChild(dayMark(k));lastDay=k;
+    if(openDays.has(k))ls.forEach(l=>histLine(l));
+    else kLog.appendChild(stainRow(k,ls));});
+  if(recent.length){
+    const rk=dayKey(recent[0].ts);
+    if(days.size&&rk!==lastDay)kLog.appendChild(dayMark(rk));
+    recent.forEach((l,i)=>histLine(l,i));}
+  kTrim();}
 (function meshConnect(){
   // embedded in the ending, the rite is already in that room — a second socket
   // from inside its own page would double the field's count of who is present
@@ -809,12 +899,18 @@ setInterval(()=>{
 document.getElementById('kClose').addEventListener('click',()=>{kPanel.hidden=true;kTab.hidden=false;});
 kTab.addEventListener('click',openKeeper);
 function kTrim(){kLog.scrollTop=kLog.scrollHeight;
-  while(kLog.children.length>40)kLog.removeChild(kLog.firstChild);}
+  // a kept room holds more view than an ephemeral one did — still a view
+  // trim, never the memory: the record lives in the hub
+  const cap=historyRendered?200:40;
+  while(kLog.children.length>cap)kLog.removeChild(kLog.firstChild);}
+// a live line is born wet (no .old — true black) and dries one frame later;
+// see the soak CSS
+function dryLater(d){requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('old')));}
 function tkLine(who,text){const d=document.createElement('div');d.className='tk';
   const w=document.createElement('span');w.className='w';
   w.textContent=String(who).slice(0,40)+'  ';
   d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
-  kLog.appendChild(d);kTrim();}
+  kLog.appendChild(d);dryLater(d);kTrim();}
 function kSay(text,voice){const d=document.createElement('div');
   if(voice==='ai'){
     d.className='ai';
@@ -831,7 +927,7 @@ function kSay(text,voice){const d=document.createElement('div');
   if(cut)t=t.replace(/…\s*$/,'');
   d.appendChild(document.createTextNode(t));
   if(cut){const c=document.createElement('i');c.className='kcut';c.textContent='…';d.appendChild(c);}
-  kLog.appendChild(d);kTrim();}
+  kLog.appendChild(d);dryLater(d);kTrim();}
 // the uncrossed asker's own line: theirs alone on this panel, graphite, unnamed —
 // it never entered the room, so it wears no name · word
 function meLine(text){const d=document.createElement('div');d.className='me';
@@ -900,12 +996,16 @@ async function loadField(){
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id,o.mark));});
     gatherSeats();receive();claimSeat();offerTunnel();
-    // The field IS the crossings. Cores are built hidden (placeCore) and only
-    // revealAll() shows them — which ran solely from the ALL TOGETHER gather
-    // and the rite's ?just= hand-off. So arriving straight at /field gave an
-    // empty page that still counted "N cores" and invited a tap no visible
-    // core could receive.
-    revealAll();
+    // GHOSTS, not blankness and not a giveaway. revealAll()-on-load repaired
+    // the empty-page bug but killed the reveal: ink had nothing left to find.
+    // Now a fresh arrival sees every core as a faint silhouette on the paper
+    // (rule one: nothing is absent, only unrevealed) and the tap's ink brings
+    // each to full — while anything this device ever revealed stays revealed,
+    // and the ceremony (the gather, the rite's hand-off) still prints all.
+    cores.forEach((g,id)=>{const u=g.userData;
+      if(u.revT===1)return;
+      if(revealedStore.has(id)){u.revT=1;u.born=u.born||performance.now();}
+      else if(!u.ghost){u.ghost=true;u.revT=0.14;u.born=performance.now();}});
     {const el=document.getElementById('n'),to=cores.size,from=parseInt(el.textContent)||0;
      if(matchMedia('(prefers-reduced-motion: reduce)').matches||to<=from){el.textContent=to;}
      else{let v=from;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t);},60);}}
