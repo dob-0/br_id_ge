@@ -81,8 +81,8 @@ node scripts/sync-space.mjs --all --tier staging --dry-run
 
 `--audit` is the one to reach for first. It reads all three tiers and prints a
 table; it never writes, so it is safe against prod. Anything a tier is allowed
-to differ on is declared in the manifest (staging keeps
-`openInscriptions:false`) — anything else that differs is reported as a fault
+to differ on is declared in the manifest (today both tiers declare
+`openInscriptions:true`) — anything else that differs is reported as a fault
 and fails the run. The dev box is `governed:false`: shown in the table, never
 enforced, never a failure.
 

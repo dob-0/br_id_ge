@@ -4,9 +4,10 @@
 //     node scripts/serve.mjs        →  http://localhost:8899/br_id_ge
 //
 // It mirrors the di.iiii URL shape (/br_id_ge, /br_id_ge/p/<project>) so the local
-// links are the real links, and it serves the rite as a TOP-LEVEL page — which is
-// the only way the camera can open. Inside di.iiii the rite runs in a sandboxed
-// srcDoc iframe with an opaque origin, and browsers refuse camera to those.
+// links are the real links, and it serves the rite as a TOP-LEVEL page, where the
+// camera opens with no ceremony. (On di.iiii the published rite gets the camera
+// too, via deviceAccess in di-space.json — since 2026-07-31; a top-level page is
+// simply the least surprising place to debug it.)
 //
 // The field and mesh are pointed at STAGING by default, so a test crossing never
 // lands a permanent stone in the live field. `--to prod` when you mean it.
@@ -49,7 +50,6 @@ const PROJECTS = {
   'newww': 'index.html',                   // …its project id, the old link
   'field': 'field.html',                   // the field viewer
   'br-id-ge-field': 'field.html',          // …its project id, the old link
-  'v-oooooo': 'v.oooooo.html',             // legacy
 }
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -87,8 +87,9 @@ async function sendFile(res, file, { rewrite = false } = {}) {
 }
 
 // The document API addresses projects by id, not by public slug, so a canonical
-// link has to be translated back before it can be fetched.
-const REMOTE_IDS = { jam: 'br-id-ge-jam', hosq: 'br-id-ge-hosq', rite: 'newww', field: 'br-id-ge-field' }
+// link has to be translated back before it can be fetched. (jam/hosq left this
+// map when their projects left the space, 2026-07-31.)
+const REMOTE_IDS = { rite: 'newww', field: 'br-id-ge-field' }
 
 // Studio-authored projects live only in the space; fetch and serve them here so the
 // links on the door all work locally.
@@ -126,8 +127,8 @@ const server = http.createServer(async (req, res) => {
   if (segment && !segment.includes('/')) {
     const file = PROJECTS[segment]
     if (file) return sendFile(res, file, { rewrite: true })
-    // Projects with no repo file — hosq, the jam — are authored in Studio. Pull the
-    // document from the space so the whole space really is reachable from one link.
+    // A project with no repo file is authored in Studio. Pull the document from
+    // the space so the whole space really is reachable from one link.
     return sendRemote(res, segment)
   }
 
