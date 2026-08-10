@@ -98,6 +98,21 @@ canvas.grabbing{cursor:grabbing}
    so it reads as "the keeper stopped", not as its own trailing words */
 #kLog .kcut{font-style:normal;font-size:.5rem;border:1px solid var(--hairline);
   padding:0 .3em;margin-left:.4em;color:var(--graphite)}
+/* THE TUNNEL DOOR — the keeper offering its other body, in the panel's own
+   print. A door, not a CTA: hairline box, paper ground, one line above it and
+   one below. The box is the tap target and stays a finger tall. */
+#tDoor{border-top:1px solid var(--hairline);padding-top:.7rem;display:flex;
+  flex-direction:column;gap:.45rem;font-size:.55rem;letter-spacing:.12em;
+  color:var(--graphite);line-height:1.6}
+#tDoor .tw{color:var(--ink)}
+#tGo,#tThrough{display:flex;align-items:center;min-height:44px;width:100%;
+  background:none;border:1px solid var(--hairline);cursor:pointer;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-align:left;
+  color:var(--ink);padding:.6rem .8rem;text-decoration:none}
+#tGo:hover,#tThrough:hover{border-color:var(--ink)}
+#tThrough{color:var(--live)}
+@media (prefers-reduced-motion: no-preference){
+  #tDoor{opacity:0;animation:fade .9s ease forwards}}
 @media (prefers-reduced-motion: no-preference){
   .hud,#frame{opacity:0;animation:fade 1.2s .3s ease forwards}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
@@ -183,6 +198,18 @@ html.embed canvas{cursor:default}
   <div id="kLog"></div>
   <div id="kWhy">speaking in the room is what crossing earns — asking պահապան is open to anyone</div>
   <div id="kNote" hidden></div>
+  <!-- THE TUNNEL — a crossing can continue into a private telegram thread with
+       di.bo, the keeper's other body (di-bo/docs/the-tunnel.md). Offered ONLY
+       to the browser that still holds its crossing's {id,proof}: field ids are
+       world-readable, so a proofless door would let anyone claim any crossing.
+       No proof — no door, and nothing says so. -->
+  <div id="tDoor" hidden>
+    <div>you carried <span class="tw" id="tW"></span> — it can continue.</div>
+    <button type="button" id="tGo">the tunnel → telegram, my other side. only you and me.</button>
+    <a id="tThrough" href="" target="_blank" rel="noopener" hidden>step through — t.me →</a>
+    <div id="tQuiet" hidden>the tunnel is not open yet.</div>
+    <div>or leave it — the core stands either way.</div>
+  </div>
   <form id="kForm">
     <button type="button" id="kAt" hidden>պահապան →</button>
     <input id="kIn" placeholder="ask պահապան" autocomplete="off" maxlength="120" enterkeyhint="send">
@@ -623,6 +650,42 @@ function seatFace(){
   kIn.placeholder=seat?('speak as '+seat.who):'ask պահապան';
   kWhy.hidden=!!seat;}
 
+// THE TUNNEL DOOR — the same held crossing, one step further than the seat.
+// The seat asks only that the id exists; the door asks for the PROOF, because
+// tapping it mints a private telegram link and a proofless mint would let
+// anyone walk off with any crossing (the field's ids are public). No proof —
+// no door, silently: an explanation would advertise the hole it closes.
+// The raw proof goes to the mint and nowhere else — never into the link.
+// The route is deliberately inert until the owner switches the tunnel on, so
+// any refusal — 403, 404, 429, no network — is the same quiet answer.
+const tDoor=document.getElementById('tDoor'),tGo=document.getElementById('tGo'),
+      tThrough=document.getElementById('tThrough'),tQuiet=document.getElementById('tQuiet');
+let tunnelHeld=null;
+function offerTunnel(){
+  if(tunnelHeld)return;
+  let held=null;
+  try{held=JSON.parse(localStorage.getItem('br_id_ge_last_crossing')||'null')}catch(e){}
+  if(!held||!held.proof)return;
+  const g=cores.get(String(held.id||''));
+  if(!g)return; // the crossing must stand among the loaded cores
+  tunnelHeld={id:String(held.id),proof:String(held.proof)};
+  document.getElementById('tW').textContent=g.userData.word||g.userData.tag||'—';
+  tDoor.hidden=false;}
+let tMinting=false;
+tGo.addEventListener('click',async()=>{
+  if(tMinting||!tunnelHeld)return;tMinting=true;
+  let j=null;
+  try{
+    const r=await fetch(API+'/inscriptions/'+encodeURIComponent(tunnelHeld.id)+'/tunnel',
+      {method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({proof:tunnelHeld.proof})});
+    if(r.ok)j=await r.json();
+  }catch(e){}
+  tMinting=false;
+  if(j&&j.ok&&j.url){tQuiet.hidden=true;tGo.hidden=true;
+    tThrough.href=String(j.url);tThrough.hidden=false;}
+  else{tGo.hidden=true;tThrough.hidden=true;tQuiet.hidden=false;}});
+
 // WHO IS HERE — only those who can speak announce themselves; watchers watch,
 // unlisted. Sized for the honest state: prod holds three cores, so this is a
 // list of one to three names, and empty is a state, not an error.
@@ -744,7 +807,7 @@ async function loadField(){
     const objects=((await r.json()).scene||{}).objects||[];
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id,o.mark));});
-    gatherSeats();receive();claimSeat();
+    gatherSeats();receive();claimSeat();offerTunnel();
     // The field IS the crossings. Cores are built hidden (placeCore) and only
     // revealAll() shows them — which ran solely from the ALL TOGETHER gather
     // and the rite's ?just= hand-off. So arriving straight at /field gave an
