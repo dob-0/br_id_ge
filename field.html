@@ -684,7 +684,9 @@ tGo.addEventListener('click',async()=>{
   tMinting=false;
   if(j&&j.ok&&j.url){tQuiet.hidden=true;tGo.hidden=true;
     tThrough.href=String(j.url);tThrough.hidden=false;}
-  else{tGo.hidden=true;tThrough.hidden=true;tQuiet.hidden=false;}});
+  // a refusal is not permanent — the quiet line answers, the door stays,
+  // so the minute after the tunnel opens a second tap goes through
+  else{tThrough.hidden=true;tQuiet.hidden=false;}});
 
 // WHO IS HERE — only those who can speak announce themselves; watchers watch,
 // unlisted. Sized for the honest state: prod holds three cores, so this is a
