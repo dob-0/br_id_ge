@@ -23,12 +23,16 @@
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;background:var(--paper)}
-body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;
-  display:flex;align-items:center;justify-content:center}
-#frame{position:fixed;inset:10px;border:1px solid var(--hairline);pointer-events:none}
+html,body{min-height:100%;background:var(--paper)}
+body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+#frame{position:fixed;inset:10px;border:1px solid var(--hairline);pointer-events:none;z-index:2}
 @media (max-width:560px){#frame{inset:8px}}
-.hud{position:fixed;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+/* the corners belong to the door: they wear the paper (so nothing ever shows
+   through them) and yield once the page scrolls past; the frame stays above
+   so its line is never erased at a corner */
+.hud{position:fixed;z-index:1;background:var(--paper);
+  transition:opacity .5s ease,visibility .5s;
+  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
   color:var(--graphite);line-height:1.9;padding:1.35rem}
 .hud a{color:inherit;text-decoration:none}
 .hud a:hover{color:var(--ink)}
@@ -43,7 +47,10 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
   #br{display:none}
   #tl,#tr{max-width:calc(50% - .6rem)}}
 
-main{text-align:center;max-width:34rem;padding:0 1.5rem}
+/* the door keeps the whole first viewport to itself; everything else waits below */
+main{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;max-width:34rem;margin:0 auto;padding:0 1.5rem}
 h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   letter-spacing:.06em;line-height:1.1}
 .lat{font-size:.6rem;letter-spacing:.44em;text-transform:lowercase;
@@ -69,12 +76,50 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 .pulse .dot{margin-right:.55em}
 .pulse.on .dot{color:var(--live);animation:breathe 2.6s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.35}50%{opacity:1}}
-@media (prefers-reduced-motion: reduce){.pulse.on .dot{animation:none}}
+@media (prefers-reduced-motion: reduce){.pulse.on .dot{animation:none}.qq{transition:none}
+  .hud{transition:none}}
+
+/* BELOW THE FOLD — the same paper, the same type scale, one column.
+   Nothing here competes with the door moment. */
+.down{display:inline-block;margin-top:2.4rem;color:var(--graphite);text-decoration:none;
+  font-size:.7rem;padding:.4rem .8rem}
+.down:hover,.down:focus-visible{color:var(--ink)}
+#more{max-width:34rem;margin:0 auto;padding:3.5rem 1.5rem 8rem}
+#more section{margin-top:4rem}
+#more h2{font-size:.55rem;font-weight:400;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--graphite);margin-bottom:1.6rem}
+.part{margin-top:2rem}
+.part:first-of-type{margin-top:0}
+.pname{display:inline-block;color:var(--ink);text-decoration:none;
+  font-size:.7rem;letter-spacing:.24em;text-transform:lowercase;
+  border-bottom:1px solid var(--hairline);padding:.2rem 0 .3rem;transition:border-color .25s}
+.pname:hover,.pname:focus-visible{border-color:var(--live)}
+.pline{margin-top:.8rem;font-size:.66rem;line-height:1.75;letter-spacing:.04em;
+  color:var(--graphite);text-transform:lowercase}
+.pline b{font-weight:400;color:var(--ink)}
+.pline a{color:var(--live);text-decoration:none;border-bottom:1px solid var(--hairline)}
+.pline a:hover,.pline a:focus-visible{border-color:var(--live)}
+/* the two questions wait folded inside the rite's line — a tap opens them */
+.qbtn{display:inline-block;margin-top:.7rem;background:none;border:none;cursor:pointer;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;text-transform:lowercase;
+  color:var(--graphite);border-bottom:1px dotted var(--graphite);padding:.4rem 0 .3rem}
+.qbtn:hover,.qbtn:focus-visible{color:var(--ink);border-color:var(--ink)}
+.qq{overflow:hidden;max-height:0;opacity:0;transition:max-height .7s ease,opacity .7s ease}
+.qq.open{max-height:6rem;opacity:1}
+.qq span{display:inline-block;margin-top:.7rem;font-family:var(--arm);font-weight:400;
+  font-size:1.05rem;line-height:1.6;color:var(--ink)}
+.honest{margin-top:5rem;font-size:.5rem;letter-spacing:.2em;text-transform:lowercase;
+  color:var(--graphite)}
+/* sections breathe in as the scroll reaches them — the .breathe class is only
+   ever added when motion is welcome, so still readers get still paper */
+.breathe{opacity:0;transform:translateY(14px);transition:opacity 1.2s ease,transform 1.2s ease}
+.breathe.in{opacity:1;transform:none}
 
 @media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
   main>*,#frame,.hud{opacity:0;animation:fade 1.2s ease forwards}
   h1{animation-delay:.1s}.lat{animation-delay:.2s}.lede{animation-delay:.35s}
-  .cross{animation-delay:.55s}.field{animation-delay:.7s}
+  .cross{animation-delay:.55s}.field{animation-delay:.7s}.down{animation-delay:.9s}
   .pulse{animation:none}   /* its own fade waits for the fetch, not the clock */
   @keyframes fade{to{opacity:1}}
 }
@@ -98,7 +143,50 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
   <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
   <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> <span id="pw">crossings</span> so far</p>
+  <a class="down" href="#parts" aria-label="the parts, below">↓</a>
 </main>
+
+<div id="more">
+  <section id="parts">
+    <h2>the parts</h2>
+    <div class="part">
+      <a class="pname" href="https://di-studio.xyz/br_id_ge/rite" target="_top">the rite · vi.ritual →</a>
+      <p class="pline">a short rite over a bridge of glowing armenian letters —
+        cross, answer, and leave a <b>core</b> in the field.</p>
+      <button class="qbtn" id="qt" aria-expanded="false" aria-controls="qq">the two questions</button>
+      <p class="qq" id="qq"><span>who are you, and what do you carry?</span></p>
+    </div>
+    <div class="part">
+      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field →</a>
+      <p class="pline">every crossing stands here, permanent — the count on the
+        door is this field's, live.</p>
+    </div>
+    <div class="part">
+      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the room →</a>
+      <p class="pline">inside the field the crossed speak, and anyone may ask
+        <b>պահապան</b> — the keeper, an ai archivist that holds the record of
+        every crossing, and says so itself. tap պահապան in the field to enter.</p>
+    </div>
+  </section>
+
+  <section id="standing">
+    <h2>already standing</h2>
+    <div class="part">
+      <a class="pname" href="https://di-studio.xyz/algovrithm" target="_top">algovrithm →</a>
+      <p class="pline">emilya nikoghosyan's work, already part of notations 2 xr.</p>
+    </div>
+  </section>
+
+  <section id="becoming">
+    <h2>what this is becoming</h2>
+    <p class="pline">every work of notations #2 will have its own space here,
+      built together with its author, until the whole festival is walkable.</p>
+    <p class="pline">building together:
+      <a href="https://t.me/diiii111bot" target="_top">@diiii111bot</a></p>
+  </section>
+
+  <p class="honest">built openly with ai tools</p>
+</div>
 
 <script>
 // The door learns the field's pulse — and says nothing it does not know.
@@ -140,6 +228,38 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
     ws.onclose=function(){if(tried++<1)setTimeout(mesh,8000)};   // one retry, then quiet
     addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}});
   })();
+})();
+</script>
+
+<script>
+// Below the fold: the two questions open on tap, and sections breathe in as the
+// scroll reaches them. The breathe class is added only when motion is welcome —
+// reduced-motion readers (and no-JS) get the sections plainly visible.
+(function(){
+  // the corners belong to the door — once the scroll leaves it they yield,
+  // so no line of text is ever swallowed behind them. (inline animation:none
+  // first: the entrance fade fills forwards and would otherwise win.)
+  var huds=Array.prototype.slice.call(document.querySelectorAll('.hud')),past=null;
+  function corners(){
+    var p=window.scrollY>80;
+    if(p===past)return;past=p;
+    huds.forEach(function(h){h.style.animation='none';
+      h.style.opacity=p?'0':'1';h.style.visibility=p?'hidden':'visible'});
+  }
+  addEventListener('scroll',corners,{passive:true});
+
+  var qt=document.getElementById('qt'),qq=document.getElementById('qq');
+  qt.addEventListener('click',function(){
+    var open=qq.classList.toggle('open');
+    qt.setAttribute('aria-expanded',open?'true':'false');
+  });
+  if(matchMedia('(prefers-reduced-motion: no-preference)').matches&&'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}
+    })},{threshold:.15});
+    Array.prototype.forEach.call(document.querySelectorAll('#more section, #more .honest'),
+      function(s){s.classList.add('breathe');io.observe(s)});
+  }
 })();
 </script>
 
