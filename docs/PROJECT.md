@@ -7,23 +7,32 @@
 Three doors: **places** enter as 3D scans; **people** enter through a short rite —
 cross a bridge built of glowing Armenian letters and answer two questions, *who
 are you, and what do you carry?*; **artists** enter through an open jam, curated
-in. Every entry leaves a permanent mark — an inscribed stone — a *core*
+in (the jam's page was retired 2026-07-31; the door stands as concept — see
+MASTER_CONTEXT §0, "honest state"). Every entry leaves a permanent mark — an inscribed stone — a *core*
 (*kar* is Armenian for stone) — in a shared field that is never erased. And the
 bridge runs both ways: what is built inside di.iiii can be carried back out.
 
-## The system — five connected parts
+## The system
 
-One artwork grew into a small organism. All parts speak one visual language —
+One artwork grew into a small organism. The space `br_id_ge` holds **three
+projects — the live surfaces**: the door, the rite, the field. Two more layers
+carry them: live co-presence (a di.iiii platform capability, not a project) and
+the scanner array (physical kit, not a project). All speak one visual language —
 the canonical tokens live in [MASTER_CONTEXT.md](MASTER_CONTEXT.md) §6
 (colors are concept actors, not decoration):
 
-| part | in one sentence | where |
+| | in one sentence | where |
 |---|---|---|
-| **the landing** | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
-| **vi.ritual** — the rite | Five acts: cross the letter bridge, answer the Keeper, inscribe your stone. | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
-| **the field** | Everything that crossed: stones first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field) · the `br_id_ge` space |
-| **live co-presence** | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
-| **the scanner array** | Depth cameras and LiDAR — how places will enter. | physical kit, staged per show |
+| **the door** (project `landing`) | The public door — blurb + "cross the bridge →"; the one link to share. | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge) |
+| **the rite** — vi.ritual (project `newww`, slug `rite`) | Five acts: cross the letter bridge, answer the Keeper, inscribe your core. | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
+| **the field** (project `br-id-ge-field`, slug `field`) | Everything that crossed: cores first, then scans and artists’ works — all objects in the one space’s scene. | [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field) · the `br_id_ge` space |
+| **live co-presence** (platform capability) | Visitors crossing at the same moment see each other. | WebSocket mesh in di.iiii serverXR |
+| **the scanner array** (physical kit) | Depth cameras and LiDAR — how places will enter. | staged per show |
+
+(When other texts count differently, they are counting something else: the five
+**acts** are the rite's movements, the three **doors** are ways in — places /
+people / artists — and the exhibition's **parts** in the estate glossary are
+vi.ritual + algovrithm. The space's projects are these three.)
 
 ## 1. The Rite — five acts
 
@@ -39,7 +48,7 @@ the canonical tokens live in [MASTER_CONTEXT.md](MASTER_CONTEXT.md) §6
 
 ## 2. Notations #2 · hosted by hosq
 
-The rite is being prepared for **Notations #2** (July 20 – August 2, 2026, State
+The rite opened publicly at **Notations #2** (July 20 – August 2, 2026, State
 Philharmonia of Armenia and other Yerevan venues), a laboratory-festival by
 **hosq** ([hosq.co](https://hosq.co/)) under the theme **"Rituals"** — non-goal-oriented
 repetition as a path to *Communitas*. Within the laboratory's notation practice —

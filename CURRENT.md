@@ -3,11 +3,34 @@
 Read first. Updated at end of each session. Replace, don't append.
 
 active_branch: main · the door: https://di-studio.xyz/br_id_ge · the rite: /br_id_ge/rite · the field: /br_id_ge/field
-**Notations #2 — Jul 20–Aug 2 2026** (State Philharmonia, hosted by **hosq**) · festival days Aug 1–2
+**Notations #2 — Jul 20–Aug 2 2026 (ended)** (State Philharmonia, hosted by **hosq**) · festival days Aug 1–2
 
 **Title:** `br_id_ge XR_ Notations:vi.ritual` (vi = virtual).
 **The rite:** `v.oooooo 3` — THE READING (2D canvas, no Three.js): your silhouette reads
 Armenian letters along its own edge. Repo is master; the space syncs from it on push.
+
+## This pass (2026-08-10) — docs to truth (branch `fix/docs-truth`, docs only)
+
+- **The ghost project, measured:** prod carries FOUR projects — the repo's three
+  plus `br-id-ge-needs` (slug `needs`, title "needs dash", from the deleted
+  `dash.html`); staging carries exactly the repo's three, so `bcee345`'s staging
+  deletion held. Deleting it on prod is deliberately user-only; the prepared
+  command and the backup proof (di-spaces snapshot matches prod's last save,
+  2026-08-07) are in `docs/ops/needs-project-removal.md`.
+- **Docs reconciled to the live shape** — three projects (door + rite + field):
+  README's "seven parts" and PROJECT.md's "five connected parts" no longer count
+  projects; the jam is marked parked wherever it read as live; festival tense is
+  past; README's version table reads v.oooooo 3.
+- **Stale claims corrected with proof:** the `?embed=1` black-box note (closed
+  2026-08-09, di.iiii `340dec0`); the mesh keeper gate (armed both tiers since
+  2026-08-08 — probed: `keeper-*` without secret refused on prod AND staging,
+  anonymous visitor still joins; robot client still secretless); DEVELOPMENT.md's
+  "staging keeps openInscriptions:false" (both tiers declare and serve `true`);
+  MASTER_CONTEXT's keeper-LLM line (rejected 2026-08-05, see KEEPER.md).
+- **serve.mjs stopped advertising dead surfaces** — `v-oooooo` (file left the
+  repo), `jam`/`hosq` remote ids (projects left the space 2026-07-31), and its
+  header's claim that the camera can never work inside the viewer (deviceAccess
+  has granted it since 2026-07-31).
 
 ## This pass (2026-08-08) — the questions stand on paper · LIVE on both tiers
 
@@ -26,9 +49,10 @@ crossings at 390x844 DPR3 plus the user's own phone screenshots (`3df3fb1`…`5d
   above the gate; the type layer always reserves the HUD band
 - **the embedded field: paper, laid out above the ending block** — the viewer's code
   iframes are sandboxed WITHOUT `allow-same-origin`, so the rite cannot quiet the
-  inner wrapper's dark shell: transparency = black box on the live site, permanently,
-  until di.iiii's viewer grows a real `?embed=1` mode (transparent shell, no
-  badge/chip — the owed follow-up). Field stands on its own paper; box height is
+  inner wrapper's dark shell: transparency = black box on the live site — **closed
+  2026-08-09**: di.iiii's viewer now answers `?embed=1` with a transparent shell
+  and hands the page `window.diiPageOrigin` (di.iiii `340dec0`, used here by
+  `dd47a61` + `aeead6b`). Field stands on its own paper; box height is
   written once into `--fieldh` and the type layer lays out below it by construction.
 
 Branch `fix/ask-legibility` (worktree `.claude/worktrees/ask-legibility`), merged
@@ -110,8 +134,10 @@ look the flow normally takes. Revert is `git revert 4ce7ada` + push.
   `deviceAccess` in `di-space.json` → the viewer grants a real origin. The old
   "camera needs a top-level route" limitation is gone.
 - Repo carries only what runs: `bridge.html` (door) · `index.html` (rite) ·
-  `field.html` · `dash.html` (show-rig planning, internal) · `scripts/`
-  (serve.mjs local mirror, sync-space.mjs engine, auto-push watchers) · `docs/`.
+  `field.html` · `scripts/` (serve.mjs local mirror, sync-space.mjs engine,
+  auto-push watchers) · `docs/`. (`dash.html`, the internal needs/show-rig
+  worksheet, left the repo and the space in `bcee345`, 2026-08-08 — its ghost
+  project `br-id-ge-needs` still stands on prod, see the 2026-08-10 pass.)
 
 ## This pass (2026-08-06, sixth) — the field is in the ending, and it is LIVE
 
@@ -136,10 +162,10 @@ at di-studio.xyz.
 
 ### Open
 
-- **The mesh keeper gate is unarmed.** di.iiii `dev` has it (`f74b7184`:
-  `MESH_ROOM_SECRET` + `MESH_PROTECTED_NODE_PREFIXES`), but with no secret set anyone
-  can still publish as ՊԱՀԱՊԱՆ — proved live. Arming it: deploy dev, set the secret on
-  both tiers and in di-bo's `.env`, then `check-keeper.mjs`.
+- ~~The mesh keeper gate is unarmed.~~ **Armed on both tiers since 2026-08-08** —
+  probed 2026-08-10: a bare `keeper-*` join is refused on prod and staging while
+  an anonymous visitor still joins. Left: the robot's client does not carry the
+  secret yet.
 - **The mark is client-only in production.** di.iiii `feat/inscription-mark` (pushed,
   unmerged) carries `POST/PUT …/mark`; until it lands, a drawing lives in localStorage
   and only its own browser sees it. Verified the rite is safe against a server without

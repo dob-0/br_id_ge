@@ -204,11 +204,12 @@ stays live. Bring the tab to the front before believing what it says.
   week): the upgrade is refused with 401 for any id matching
   `MESH_PROTECTED_NODE_PREFIXES` (default `keeper`) unless it proves
   `MESH_ROOM_SECRET` — the room itself stays open, so a visitor still joins with
-  no credential. **It is off until a secret exists.** To arm it: deploy `dev`,
-  set `MESH_ROOM_SECRET` (and `STAGING_MESH_ROOM_SECRET`) in the VPS `.env`, the
-  same value in di-bo's `.env` and on jet.di, then run `check-keeper.mjs` on
-  both tiers — an unarmed relay and an armed one look identical from outside
-  until you try to claim the id.
+  no credential. **Armed on both tiers since 2026-08-08** (probed 2026-08-10: a
+  bare `keeper-*` join is refused on prod AND staging while an anonymous visitor
+  still joins). The robot's own client does not carry the secret yet — until it
+  does, jet.di cannot claim the id on an armed relay. To re-check: an unarmed
+  relay and an armed one look identical from outside until you try to claim the
+  id, so probe by joining as `keeper-probe` with no secret and expect refusal.
 - **Keeper stuck awake with nobody there** — a stale `keeper.mjs` on some other
   machine. The name in the panel tells you which body claims the room.
 - **Two answers to one question** — both bodies answering. Should be impossible

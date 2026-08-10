@@ -24,7 +24,7 @@ curated in by Gevorg. Every entry leaves a permanent mark — a core: not a
 monument, not a stone laid down and finished, but a core taken from something
 still forming. The sun baked this rock once; the same mineral sat in water a few
 billion years and stood up as us, and now we make light again. The field of cores is never erased. And the bridge runs both ways:
-what is built inside di.iiii can be carried back out across it. br_id_ge opens
+what is built inside di.iiii can be carried back out across it. br_id_ge opened
 publicly at Notations #2 (July 20 – August 2, 2026, State Philharmonia, Yerevan,
 hosted by hosq) and keeps growing after it.
 
@@ -62,8 +62,11 @@ THE RECAP — the organs, where each one stands (2026-07-31).
 | the scanner array | Depth cameras + LiDAR — how places will enter. | hardware ready — the old sandboxed-iframe camera block is GONE (deviceAccess); staging untested |
 
 HONEST STATE OF THE THREE DOORS (say this plainly, don't overclaim). People is the
-door that is open. Places is built in hardware and blocked in software. Artists is
-written and waiting on dates. The system is real; its breadth is not there yet.
+door that is open. Places is built in hardware and not yet wired in (the old
+software block — camera refused inside the viewer — is gone since deviceAccess,
+2026-07-31; the scan pipeline itself is unbuilt). Artists is written and parked —
+the jam surface left the space 2026-07-31; the concept stands. The system is
+real; its breadth is not there yet.
 
 WORKFLOW. EVERYTHING lives in ONE public di.iiii space, `br_id_ge` — the landing
 is its face, the rite and the field are its projects, the cores live in its
@@ -103,8 +106,8 @@ changes. Nothing in this section is done by remembering.
   shared meals, lectures/workshops.
 - Theme: "Rituals" — non-goal-oriented repetition as a path to Communitas
   (a profoundly shared state of connection).
-- br_id_ge at the festival: shown as an interactive rite; exact staging format
-  (projection / spatial tracking / personal devices) is decided during the lab.
+- br_id_ge at the festival: shown as an interactive rite. (The festival ended
+  2026-08-02; the record of all 57 works and 186 people is docs/notations/.)
 
 3. The Notation Concept — and the bridge as a score (DECIDED)
 
@@ -129,8 +132,10 @@ changes. Nothing in this section is done by remembering.
 - "br_ID_ge" — a bridge with identity at its structural center.
 - The Keeper — "keeper of cultural memory / witness": strictly an archivist that
   asks "Who are you, and what do you carry across the bridge?" — not a spiritual
-  entity. Since 2026-07-13 it can be a real local LLM running on site (layer 1 of
-  the rig); when it is silent the scripted lines stand.
+  entity. Its live presence is a machine body on the mesh — the robot in the room
+  or the messenger on the wire (canonical doc: KEEPER.md). A local-LLM voice was
+  tried for one evening (2026-08-05) and rejected — the keeper does not think; a
+  person answers through it. When no body is on the mesh the scripted lines stand.
 - **"core"** — the canonical name of what a crossing leaves behind: the visitor's
   name in rigid Erkatagir, their chosen word in decorative Trchnagir.
 
@@ -218,9 +223,14 @@ changes. Nothing in this section is done by remembering.
 
 8. Open questions
 
-- Festival staging format for the rite (projection vs devices) — decide in the lab,
-  which is now more than half over.
-- Which machine runs the keeper on site.
+(The festival's own questions closed with it on 2026-08-02, and the keeper
+question is answered in KEEPER.md — two bodies, the robot in the room and di.bo
+on the wire.)
+
+- Sound — real duduk vs synthesised drone remains the highest felt-impact polish
+  not yet done (see §7).
+- Seeding the festival record into the field (docs/notations/README.md) — decided
+  as direction, not yet built.
 
 Notes
 

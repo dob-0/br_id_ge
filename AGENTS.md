@@ -4,9 +4,9 @@ Short routing guide for AI agents working in `br_id_ge`.
 
 ## What This Project Is
 
-`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the jam; every entry leaves a permanent stone (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Notation → Echo), a single-file 2D-canvas `index.html` (v.oooooo 3 — THE READING) — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
+`br_id_ge` (կամուրջ, "bridge") is **how the real world enters the di.iiii Spatial Platform** — places as scans, people through the rite's two questions, artists through the open jam (surface retired 2026-07-31, concept stands); every entry leaves a permanent core (canonical recap: `docs/MASTER_CONTEXT.md` §0). Its playable piece is an XR rite in five acts (Threshold → Crossing → Witness → Notation → Echo), a single-file 2D-canvas `index.html` (v.oooooo 3 — THE READING) — lives as an integrated space on di-studio.xyz (canonical); GitHub is backend only, never linked publicly.
 
-Current focus: **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq) — theme "Rituals"/Communitas. Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
+The public opening was **Notations #2** (Jul 20–Aug 2 2026, State Philharmonia, hosted by hosq — theme "Rituals"/Communitas; ended). Current focus: the live space — door + rite + field — and building from the festival record (`docs/notations/`). Curatorial ground truth: `docs/MASTER_CONTEXT.md`. Older N-Node/Ghost-Hand/ROS framing is parked (git history).
 
 ## Ecosystem Position
 
@@ -31,9 +31,14 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 
 | File | Role |
 |------|------|
-| `index.html` | The rite (`v.oooooo 3` — THE READING) — five acts, 2D canvas, optional MediaPipe silhouette, co-presence via the di.iiii mesh |
+| `bridge.html` | The door (project `landing`) — the space's published face, the one link to share |
+| `index.html` | The rite (`v.oooooo 3` — THE READING, project `newww`, slug `rite`) — five acts, 2D canvas, optional MediaPipe silhouette, co-presence via the di.iiii mesh |
+| `field.html` | The field (project `br-id-ge-field`, slug `field`) — every crossing, together; the keeper lattice |
+| `di-space.space.json` + `di-space.*.json` | The space and its three project manifests — the repo declares the space |
 | `docs/PROJECT.md` | Canonical project docs |
 | `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
+| `docs/KEEPER.md` | The keeper — both bodies, channels, bring-up, failure modes |
+| `scripts/serve.mjs` | Local mirror of the whole space (staging tier by default) |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
 | `scripts/auto-push-space.sh` | Multi-file repo sync watcher |
 
