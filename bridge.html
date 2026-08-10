@@ -97,7 +97,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
     and what you carry keeps walking with everyone who crossed before you.</p>
   <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
   <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
-  <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> crossings so far</p>
+  <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> <span id="pw">crossings</span> so far</p>
 </main>
 
 <script>
@@ -119,6 +119,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
       var n=objects.filter(function(o){return String(o.id||'').indexOf('insc-')===0}).length;
       if(!n)return;
       document.getElementById('pn').textContent=n;
+      document.getElementById('pw').textContent=n===1?'crossing':'crossings';
       pulse.classList.add('up');
     }).catch(function(){});
   }
