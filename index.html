@@ -64,6 +64,10 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 /* !important, because #cur.on out-specifies a bare #cur — without it every
    touch pinned an ink dot to the page at the last fingertip, all acts long */
 @media (pointer:coarse){#cur{display:none!important}}
+/* the pen is for reading, and the reading ends at the crossing — the dot used
+   to stay wherever the hand last was, which at the acceptance is a black point
+   sitting inside the sentence */
+body.crossed #cur{display:none!important}
 
 /* LAYER 1 — the reading (2D ink) and the core (WebGL, mounted late) */
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
@@ -83,6 +87,12 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 #type>*{grid-area:1/1;opacity:0;transition:opacity .9s ease}
 #type>.on{opacity:1}
+/* …except the closing block, which is shown the instant the word is answered
+   while the reading's letters take seconds to gather off the lower half of the
+   page. For that window the links and the count sat UNDER a field of loose
+   glyphs. Let the gathering clear the ground first: the words arrive as the
+   letters leave, instead of both being on the page at once. */
+#type>.end.on{transition:opacity 1.6s ease 1.1s}
 
 .card .arm{font-family:var(--arm);font-weight:300;font-size:clamp(2.1rem,9vw,4.6rem);
   line-height:1;letter-spacing:.02em;color:var(--ink)}
@@ -1625,6 +1635,7 @@ function said(line){
 // ── the core ──────────────────────────────────────────────────────────────
 function inscribe(){
   inscribed=true;done=true
+  document.body.classList.add('crossed')
   // Act iv is not a place you are let into — it is this. The notation is the
   // word being set down, so the act is named here rather than gated to, and it
   // holds the corner until the echo takes it.
@@ -1648,7 +1659,24 @@ function inscribe(){
   // and NOTHING in it waits on I/O. It was pure pacing, and measured on a phone
   // it produced eight seconds in which the screen did not change at all. Halved:
   // the choreography is the same, it simply stops making the visitor earn it.
-  setTimeout(()=>CORE3.mount(),REDUCED?0:900)
+  // The core waits for its name. It used to mount on a fixed 900ms clock with a
+  // hardcoded shape; now the shape IS the crossing's, so it cannot be built
+  // before the far field grants an id. Wait for it, but never let the network
+  // hold the moment open: past the cap the core arrives seeded by what the
+  // visitor actually said, which is honest — no id means no core in the field
+  // to match, and the ending already says so in as many words. If the grant
+  // lands afterwards the form re-derives in place.
+  const seedFallback='local:'+(name||'—')+' · '+word
+  const CORE_WAIT=REDUCED?0:900, CORE_CAP=2600
+  const t0core=performance.now()
+  const armCore=()=>{
+    if(CORE3.ok)return
+    const waited=performance.now()-t0core
+    if(crossing&&crossing.id)return CORE3.mount(crossing.id)
+    if(waited>=CORE_CAP)return CORE3.mount(seedFallback)
+    setTimeout(armCore,120)
+  }
+  setTimeout(armCore,CORE_WAIT)
   const tag=(name||'—')+' · '+word
   field.push(tag)
   try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
@@ -1679,6 +1707,7 @@ function inscribe(){
         // newer servers grant a proof — the one key that can unmake this crossing
         if(d&&d.id&&d.proof){
           crossing={id:String(d.id),proof:String(d.proof)}
+          CORE3.reseed(crossing.id)
           try{localStorage.setItem('br_id_ge_last_crossing',JSON.stringify(crossing))}catch(e){}
           markStore();fieldHref();markSend()
           endLinks()
@@ -2088,9 +2117,41 @@ $('#fieldVeil').addEventListener('pointerup',e=>{
 // crossing leaves behind is the only thing with depth: a slowly turning
 // iridescent form, floating where the letters gather. If WebGL or the CDN is
 // missing, the flat ink disc below stands in and the rite loses nothing.
-const CORE3={ok:false,dying:false,
-  async mount(){
+// THE SAME FORM, SHOWN AND KEPT. The field builds every core with coreGeoFor():
+// it hashes the inscription id, picks one of five FAMILIES — a knot, the same
+// knot pulled to wire, a ring, a line drawn through space, a cut stone — then
+// varies that family. The rite meanwhile mounted a hardcoded TorusKnotGeometry,
+// identical for every visitor, so the form a person watched being accepted was
+// never the form that stood in the field afterwards. He noticed, and he was
+// right: "this model and the final model is not same".
+// This is field.html's function, character for character, including the hash and
+// the rng. Two files, no build step, so it lives in both — if either changes the
+// other MUST change with it, or the promise breaks again silently.
+const PQ=[[2,3],[2,5],[3,4],[3,5],[4,5],[5,2],[3,2],[5,3],[4,3],[5,4]]
+function coreHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function coreRng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a)
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function coreGeoFor(THREE,id){
+  const r=coreRng(coreHash(String(id)))
+  const fam=Math.floor(r()*5)
+  if(fam===0){const [p,q]=PQ[Math.floor(r()*PQ.length)]
+    return new THREE.TorusKnotGeometry(0.62+r()*0.30,0.20+r()*0.20,220,26,p,q)}
+  if(fam===1){const [p,q]=PQ[Math.floor(r()*PQ.length)]
+    return new THREE.TorusKnotGeometry(0.70+r()*0.24,0.045+r()*0.05,320,14,p,q)}
+  if(fam===2)return new THREE.TorusGeometry(0.70+r()*0.24,0.09+r()*0.26,26,120)
+  if(fam===3){
+    const a=1+Math.floor(r()*4),b=1+Math.floor(r()*4),c=1+Math.floor(r()*3)
+    const pa=r()*Math.PI*2,pb=r()*Math.PI*2,pts=[]
+    for(let i=0;i<180;i++){const t=i/180*Math.PI*2
+      pts.push(new THREE.Vector3(Math.sin(a*t+pa)*0.86,Math.sin(b*t+pb)*0.60,Math.cos(c*t)*0.86))}
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),260,0.07+r()*0.09,10,true)}
+  const G=[THREE.IcosahedronGeometry,THREE.OctahedronGeometry,THREE.DodecahedronGeometry,THREE.TetrahedronGeometry]
+  return new G[Math.floor(r()*4)](0.82+r()*0.26,Math.floor(r()*2))}
+
+const CORE3={ok:false,dying:false,seed:'',
+  async mount(seed){
     if(this.ok||REDUCED)return
+    this.seed=String(seed||'')
     try{
       const THREE=await import('three')
       const {RoomEnvironment}=await import('three/addons/environments/RoomEnvironment.js')
@@ -2103,7 +2164,7 @@ const CORE3={ok:false,dying:false,
       scene.environment=new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(),0.04).texture
       const cam=new THREE.PerspectiveCamera(35,innerWidth/innerHeight,0.1,50)
       cam.position.set(0,0,7)
-      const geo=new THREE.TorusKnotGeometry(0.85,0.34,260,40)
+      const geo=coreGeoFor(THREE,this.seed)
       const mat=new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:1,roughness:0.16,
         iridescence:1,iridescenceIOR:1.55,envMapIntensity:1.15,transparent:true})
       const core=new THREE.Mesh(geo,mat)
@@ -2128,10 +2189,26 @@ const CORE3={ok:false,dying:false,
         r.render(scene,cam)
         requestAnimationFrame(tick)
       }
+      this._swap=(id)=>{try{
+        const old=core.geometry
+        core.geometry=coreGeoFor(THREE,id)
+        old.dispose()
+      }catch(e){}}
       this.ok=true
       cnv.classList.add('on')
       tick()
     }catch(e){this.ok=false}
+  },
+  // The id only exists once the far field has accepted the crossing, and the
+  // core is mounted on the choreography's clock, not the network's. When the
+  // answer arrives late the form re-derives in place — the same object, the same
+  // material, a different geometry — rather than leaving the visitor looking at
+  // a shape that is about to be replaced behind their back.
+  reseed(id){
+    const next=String(id||'')
+    if(!next||next===this.seed)return
+    this.seed=next
+    if(this._swap)this._swap(next)
   },
   recede(){this.dying=true}
 }
@@ -2353,7 +2430,12 @@ function frame(now){
     Mesh.send(clamp(P.x/W,0,1),clamp(P.y/H,0,1),frac())
     if(((now/1000)|0)%3===0)Mesh.sweep()
   }
-  if(inscribed)condense=Math.min(1,condense+(REDUCED?0.02:0.006))
+  // Per-FRAME, exactly the defect the echo's own `shared.t` was fixed for and
+  // three lines of comment already explain: 0.006 a frame is 2.8s at 60fps and
+  // over five seconds on a phone holding 30 — and the whole time the loose
+  // letters sit on top of the closing block. The slower the device, the longer
+  // the mess. Time, not frames.
+  if(inscribed)condense=Math.min(1,condense+(REDUCED?1.2:0.36)*dt)
 
   ctx.clearRect(0,0,W,H)
 
@@ -2423,13 +2505,34 @@ function frame(now){
   // one number for the whole page: what a shake did to the size of a letter
   const sw2=swell()
 
+  // how many glyphs the core's rim can carry shoulder to shoulder, and which
+  // letter owns which slot. Recomputed per frame so a resize re-spaces them;
+  // read order, so the gathering keeps the order the body was read in.
+  let rimCap=1
+  if(inscribed){
+    const rim=Math.PI*(coreR*0.92+coreR*0.44)
+    rimCap=Math.max(6,Math.floor(rim/Math.max(6,FS*0.95)))
+    let k=0
+    for(const [,mm] of marks){if(mm.read)mm.slot=k++;else mm.slot=undefined}
+  }
   for(const [,m] of marks){
     let [x,y]=markScreen(m)
     if(inscribed){
       // spiral inward to the rim of the core, flattened
-      const a=(m.i*0.37+m.j*0.61)
-      const tx=coreCX+Math.cos(a)*coreR*0.92*(0.35+0.65*((m.i%7)/7))
-      const ty=coreCY+Math.sin(a)*coreR*0.44*(0.35+0.65*((m.j%5)/5))
+      // The angle used to come from the cell's grid coordinates, and the radius
+      // from i%7 / j%5 — pseudo-random, so nothing stopped two letters landing
+      // on the same spot. A full reading gathers far more glyphs than that
+      // little ellipse can hold and they piled into an unreadable soup over the
+      // core: the moment that should feel like being received read as noise.
+      // The ellipse has a circumference, and a glyph has a width. Give each
+      // letter its own slot around the rim, in reading order, and let the ones
+      // past capacity go into the core instead of on top of it — the same
+      // shoulder-to-shoulder discipline the shared body already uses.
+      const slotN=m.slot===undefined?0:m.slot
+      const a=(slotN/Math.max(1,rimCap))*6.2832
+      const ring=0.62+0.38*((slotN%3)/2)
+      const tx=coreCX+Math.cos(a)*coreR*0.92*ring
+      const ty=coreCY+Math.sin(a)*coreR*0.44*ring
       // near letters reach the core first — the field folds inward, not a jump cut
       const lag=REDUCED?0:0.35*Math.min(1,Math.hypot(x-coreCX,y-coreCY)/(Math.min(W,H)*0.6))
       const e2=clamp((condense-lag)/(1-lag),0,1)
@@ -2463,7 +2566,11 @@ function frame(now){
     if(m.stir)m.stir*=0.95
     if(m.read){
       const age=Math.min(1,(t-m.t)/1.1)
-      ctx.globalAlpha=Math.min(1,(0.34+0.66*age)*(inscribed?1:0.95)*quiet*rvLet*(shared?1-shared.t:1)*lift)
+      // past the rim's capacity a letter has nowhere legible to stand, so it
+      // goes INTO the core as the gathering closes rather than on top of the
+      // ones that found a slot. Nothing is lost that was ever readable.
+      const keep=(inscribed&&m.slot!==undefined&&m.slot>=rimCap)?Math.max(0,1-condense*1.6):1
+      ctx.globalAlpha=Math.min(1,(0.34+0.66*age)*(inscribed?1:0.95)*quiet*rvLet*(shared?1-shared.t:1)*lift*keep)
       ctx.fillStyle=INK
       ctx.font='300 '+((FS+age*FS*0.22)*(1+bl*0.1+br*0.05)*sw2).toFixed(1)+'px "Noto Serif Armenian",Georgia,serif'
       ctx.textAlign='center';ctx.textBaseline='middle'
@@ -2519,10 +2626,17 @@ function frame(now){
     ctx.globalAlpha=0.8*a
     ctx.font='300 '+Math.round(Math.min(W,H)*0.045)+'px "Noto Serif Armenian",Georgia,serif'
     ctx.textAlign='center';ctx.textBaseline='middle'
-    ctx.fillText(word,coreCX,coreCY+(CORE3.ok?coreR*1.55:0))
+    // …but never below the words. This pair is drawn on the canvas at a
+    // core-relative offset while the acceptance sentence is laid out by the
+    // grid, and on a squarish window the two met: a large second copy of the
+    // word printed straight through "Acceptance is the whole rite." Same floor
+    // the body's feet and the drawn mark stop at.
+    const wordSize=Math.round(Math.min(W,H)*0.045)
+    const wy=Math.min(coreCY+(CORE3.ok?coreR*1.55:0),endFloor()-wordSize*0.9)
+    ctx.fillText(word,coreCX,wy)
     ctx.globalAlpha=0.55*a
     ctx.font='300 '+Math.round(Math.min(W,H)*0.026)+'px "Noto Serif Armenian",Georgia,serif'
-    ctx.fillText(name,coreCX,coreCY+(CORE3.ok?coreR*1.55:0)-coreR*0.72)
+    ctx.fillText(name,coreCX,wy-coreR*0.72)
   }
 
   // the shared body — the core opens and its letters travel out to the figure
