@@ -27,7 +27,7 @@ source and its GitHub Pages mirror.
 
 - **The door (share this):** [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge)
 - **The rite:** [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) · **the field:** [di-studio.xyz/br_id_ge/field](https://di-studio.xyz/br_id_ge/field)
-- **Staging:** [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) · **platform:** [di.iiii](https://di-studio.xyz)
+- **Platform:** [di.iiii](https://di-studio.xyz)
 - [DEVELOPMENT.md](DEVELOPMENT.md) — contributor setup, deploy pipeline
 
 ## Versions — same names everywhere
