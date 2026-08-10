@@ -108,6 +108,8 @@ canvas.grabbing{cursor:grabbing}
    which one answered is readable before a single word is. */
 #kLog .tk{color:var(--ink)}
 #kLog .tk .w{color:var(--graphite)}
+/* an ask is all graphite — the voice of someone not yet in the room */
+#kLog .ask{color:var(--graphite)}
 /* THE SOAK — a line lands as wet ink and dries into the record. Live lines
    are born without .old (true black), gain it one frame later, and the color
    transition dries them; history is born .old — it soaks in but is never wet,
@@ -284,7 +286,7 @@ html.embed canvas{cursor:default}
   <img id="kEye" alt="" hidden>
   <div id="kWho">the room is quiet</div>
   <div id="kLog"></div>
-  <div id="kWhy">speaking in the room is what crossing earns — asking պահապան is open to anyone</div>
+  <div id="kWhy">speaking in the room is what crossing earns — asking պահապան is open to anyone, and asks are part of the room</div>
   <div id="kNote" hidden></div>
   <!-- THE TUNNEL — a crossing can continue into a private telegram thread with
        di.bo, the keeper's other body (di-bo/docs/the-tunnel.md). Offered ONLY
@@ -687,10 +689,13 @@ const dayLabel=k=>{const d=new Date(k+'T12:00:00Z');
 const openDays=(()=>{try{return new Set(JSON.parse(localStorage.getItem('br_id_ge_room_days')||'[]'))}catch(e){return new Set()}})();
 function rememberDay(k){openDays.add(k);
   try{localStorage.setItem('br_id_ge_room_days',JSON.stringify([...openDays].slice(-60)))}catch(e){}}
-function histLine(l,i){
+function appendKept(l){
   if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text));
+  else if(l.channel==='keeper:ask')askLine(String(l.payload.text));
   else kSay(String(l.payload.text).slice(0,300),l.payload.voice==='ai'?'ai':'keeper');
-  const el=kLog.lastChild;if(!el)return;
+  return kLog.lastChild;}
+function histLine(l,i){
+  const el=appendKept(l);if(!el)return;
   el.classList.add('old','hist');
   if(i!==undefined)el.style.setProperty('--d',(i*90)+'ms');}
 function dayMark(k){const d=document.createElement('div');d.className='kDay';
@@ -703,9 +708,7 @@ function stainRow(k,lines){const d=document.createElement('div');d.className='kS
     d.classList.add('open');rememberDay(k);
     setTimeout(()=>{
       lines.forEach((l,i)=>{
-        if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text));
-        else kSay(String(l.payload.text).slice(0,300),l.payload.voice==='ai'?'ai':'keeper');
-        const el=kLog.lastChild;if(!el)return;
+        const el=appendKept(l);if(!el)return;
         el.classList.add('old','hist');el.style.setProperty('--d',(i*90)+'ms');
         d.parentNode.insertBefore(el,d);
       });
@@ -717,7 +720,7 @@ function renderHistory(m){
   if(!m.done)return;
   historyRendered=true;
   const lines=histBuf.filter(l=>l&&l.payload&&l.payload.text&&
-    (l.channel==='talk'||l.channel==='keeper:say'));
+    (l.channel==='talk'||l.channel==='keeper:say'||l.channel==='keeper:ask'));
   lines.forEach(l=>{if(l.id)seenLines.add(l.id)});
   if(!lines.length)return;
   kPanel.classList.add('kept');
@@ -772,6 +775,11 @@ function renderHistory(m){
       // own lines were printed at send; an echo of them is not a second person
       if(!(seat&&String(m.payload.id)===seat.id))
         tkLine(String(m.payload.who||'—'),String(m.payload.text));}
+    else if(m.channel==='keeper:ask'&&m.payload&&m.payload.text){
+      // the public half the room used to lack: with answers rendering for
+      // everyone, an unrendered question would fill the record with the keeper
+      // replying to nobody (own asks were printed at send, as 'me')
+      askLine(String(m.payload.text));}
     else if(m.channel==='talk:here'&&m.payload&&m.payload.id){
       roomWho.set(String(m.payload.id),
         {who:String(m.payload.who||'—').slice(0,40),seen:performance.now()});
@@ -911,6 +919,12 @@ function tkLine(who,text){const d=document.createElement('div');d.className='tk'
   w.textContent=String(who).slice(0,40)+'  ';
   d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
   kLog.appendChild(d);dryLater(d);kTrim();}
+// an uncrossed ask, public since decision (a): all graphite — a voice from
+// outside the room, unnamed because no crossing names it
+function askLine(text){const d=document.createElement('div');d.className='ask';
+  const w=document.createElement('span');w.className='w';w.textContent='ask  ';
+  d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
+  kLog.appendChild(d);kTrim();}
 function kSay(text,voice){const d=document.createElement('div');
   if(voice==='ai'){
     d.className='ai';
@@ -928,8 +942,9 @@ function kSay(text,voice){const d=document.createElement('div');
   d.appendChild(document.createTextNode(t));
   if(cut){const c=document.createElement('i');c.className='kcut';c.textContent='…';d.appendChild(c);}
   kLog.appendChild(d);dryLater(d);kTrim();}
-// the uncrossed asker's own line: theirs alone on this panel, graphite, unnamed —
-// it never entered the room, so it wears no name · word
+// the uncrossed asker's own local echo, graphite, unnamed — the ask itself IS
+// in the room now (broadcast, kept, rendered for everyone as an ask line);
+// this is just how it looks on the panel that sent it
 function meLine(text){const d=document.createElement('div');d.className='me';
   d.textContent=String(text).slice(0,220);kLog.appendChild(d);kTrim();}
 function note(text){kNote.textContent=text;kNote.hidden=false;
@@ -965,7 +980,10 @@ document.getElementById('kForm').addEventListener('submit',e=>{
   while(sentAt.length&&now-sentAt[0]>30000)sentAt.shift();
   if(sentAt.length>=5){
     note('the room takes five lines in half a minute — a breath first.');return;}
-  // a seat speaks into the room; without one the line goes to the keeper alone
+  // a seat speaks into the room; without one the line is an ask — and an ask
+  // is a PUBLIC line of the same conversation now (the-room.md, decision (a)):
+  // the answer renders for everyone, so the question must too. The old
+  // "keeper alone" promise died with the impermanence line.
   const carried=seat
     ?pub('talk',{id:seat.id,who:seat.who,text,at:now})
     :pub('keeper:ask',{text});
