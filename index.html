@@ -163,20 +163,50 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
   #gate.on{animation:none;border-color:var(--ink)}
 }
 
-.end{display:flex;flex-direction:column;align-items:center;gap:1.4rem;
-  align-self:end;justify-self:center;padding-bottom:clamp(3rem,11vh,7rem)}
+/* THE CLOSING BLOCK IS THREE GROUPS, NOT SEVEN LINES. What is said (the
+   sentence, then the count that grounds it) and what can be done (three doors,
+   then the line that explains the field above them). A flat 1.4rem between all
+   seven made an ending read as a list of options — which is not what the
+   sentence is, and not what the count is either. Close inside a group, clear
+   between them. */
+.end{display:flex;flex-direction:column;align-items:center;gap:0;
+  align-self:end;justify-self:center;
+  /* Was 11vh — 94px of nothing on a phone, on top of the 66px #type already
+     holds back for the HUD rows (and #type's reserve is the one that tracks
+     --hudfloor, so this was the second helping). endFloor() hangs off the top
+     of this box, so every pixel of that dead air was taken straight out of the
+     shared body on the screen where the body is tightest. What is left is the
+     gap the passage needs from the status line, and nothing else. */
+  padding-bottom:clamp(1rem,3vh,2.5rem)}
 /* two lines are reserved: the keeper's blessing lands here after the body is
-   already laid out, and a block that grows upward would walk back into it */
+   already laid out, and a block that grows upward would walk back into it.
+   The reserve sits ABOVE the sentence (flex-end), not around it — centred, its
+   spare half-line printed as a hole between the sentence and the count, and
+   that hole was the loudest gap in the stack. */
 .end .said{font-family:var(--arm);font-weight:300;font-size:clamp(1.1rem,3.6vw,1.6rem);
   line-height:1.45;min-height:2.9em;max-width:26ch;color:var(--ink);
-  display:flex;align-items:center;justify-content:center}
+  display:flex;align-items:flex-end;justify-content:center}
+/* an empty note is still a flex item, so it was spending a full gap on nothing —
+   the sentence and the count stood two gaps apart while every other pair stood
+   one, which is most of why the stack read as loose */
+.end .note:empty{display:none}
+/* the count belongs to the sentence; the doors do not. The three doors carry
+   44px of reach each, so they need no gap of their own — stacked flush they
+   already stand a finger apart. */
+.end .body-line{margin-top:.55rem}
+.end #fieldLink{margin-top:.8rem}
+.end #passage{margin-top:1.1rem}
 .end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
   color:var(--graphite);max-width:34ch;text-transform:lowercase}
 .end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
   text-transform:uppercase;color:var(--graphite)}
+/* Each door is a fingertip's worth of page, not a 19px line of 9px type — that
+   is what these measured, on the one screen where the visitor is asked to
+   choose between three things. The reach grows upward and invisibly; the rule
+   stays exactly where it was, under the words. */
 .end .field-link{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;
   text-transform:lowercase;color:var(--live);text-decoration:none;
-  border-bottom:1px solid var(--hairline);padding-bottom:.3rem;pointer-events:auto}
+  border-bottom:1px solid var(--hairline);padding:1.6rem .9rem .3rem;pointer-events:auto}
 .end .field-link:hover{border-color:var(--live)}
 .end .field-link .yn{color:var(--ink);border-bottom:1px solid var(--graphite);cursor:pointer}
 /* the passage — one line, and it holds its space from the first frame while
@@ -202,7 +232,14 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 #fieldWin{position:fixed;left:0;top:0;width:100%;height:60%;z-index:1;opacity:0;
   transition:opacity 2.4s ease}
 #fieldWin.on{opacity:1}
-#fieldWin iframe{width:100%;height:100%;border:0;display:block;background:none}
+/* The pane is a window onto a scene laid out for a whole screen, so a core
+   standing near its floor gets guillotined by the edge — in his screenshot a
+   stranger's drawn mark was cut in half above "2 CROSSINGS" and read as a bug.
+   The field does not end at that line, it recedes past it. (Mask on the frame
+   only: the veil beneath it still takes the tap that opens the field.) */
+#fieldWin iframe{width:100%;height:100%;border:0;display:block;background:none;
+  -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent 99%);
+  mask-image:linear-gradient(to bottom,#000 78%,transparent 99%)}
 /* the iframe would otherwise swallow every pointer event over the top of the
    page — and the ending is still a page you can draw on. The veil takes them
    back: they bubble to the window handlers exactly as before, and only a tap
@@ -1770,19 +1807,44 @@ function buildSharedBody_(){
   // Measured, not guessed: whatever the block ends up being (a long keeper
   // blessing, three links or one, a short screen) the letters stop a clear
   // line above it. The clamp keeps a squat viewport from crushing the figure.
-  const top=H*0.05, bot=endFloor(), span=Math.max(1,hi-lo)
-  const cxm=(xlo+xhi)/2, wide=Math.min(1.55, (W*0.62)/Math.max(1,xhi-xlo))
+  // The band the body stands in — the label above it, the closing block below,
+  // and half a glyph inside each, because a letter is drawn centred on its slot
+  // and the slot alone clearing the line is not the letter clearing it.
+  const top=endCeil()+FS*0.55, bot=endFloor()-FS*0.55, span=Math.max(1,hi-lo)
+  // ONE SCALE, BOTH AXES. It was fitted to the band vertically and to 62% of the
+  // width horizontally — two different numbers — so the thing everyone calls the
+  // circle of names arrived as a tall egg: 244 wide by 418 on a phone, and worse
+  // the taller the screen. A tracked human body would have been distorted by
+  // exactly the same arbitrary amount. The figure keeps its shape and is centred
+  // in the band; the band is a bound, not a target.
+  const wspan=Math.max(1,xhi-xlo)
+  const fit=Math.min((bot-top)/span,(W*0.78)/wspan)
+  const cxm=(xlo+xhi)/2, cym=(lo+hi)/2
+  const half=span*fit/2
+  const mid=clamp((top+endSeen()-Math.max(18,H*0.03))/2, top+half, Math.max(top+half,bot-half))
   // How far apart two NEIGHBOURING outline samples end up once the figure has
-  // been stretched to fill the sheet. Anything much wider than this is a real
-  // concavity, not a step. It has to be measured, because the stretch is not
+  // been fitted to the sheet. Anything much wider than this is a real
+  // concavity, not a step. It has to be measured, because the fit is not
   // the same on every screen: the reading grid is 96×54, so on a portrait
   // phone one cell is four times taller than it is wide and the fill scales
   // the outline nearly 3x — every ordinary step read as a jump, every segment
   // was skipped, and the shared body arrived empty on the show's own device.
-  const cellStep=Math.hypot((W/SW)*wide, (H/SH)*((bot-top)/span))
+  const cellStep=Math.hypot((W/SW)*fit, (H/SH)*fit)
+  // ONE AXIS. The figure the letters lie on is `circleField` — a circle that
+  // TRAILS THE READING FINGER, because during the reading it is yours and the
+  // edge has to pass under your hand to give up letters. It was still yours at
+  // the echo: the body came to rest wherever the last touch happened to be,
+  // while everything it is composed with — the mark at its heart, the closing
+  // sentence, the count, the three doors — hangs off the page's centre. On his
+  // phone that put the ring 45px right of everything else, and the mark he drew
+  // stood outside the body it belongs to. Reproduced at 393x852 by holding a
+  // touch at x=300 before the crossing: 85px off, the right arc clipped by the
+  // frame.
+  // So the ending is where the circle stops being yours. The vertical fit was
+  // always absolute (the band, not the finger); the horizontal one now is too.
   for(const p of pts){
-    p[1]=top+((p[1]-lo)/span)*(bot-top)
-    p[0]=cxm+(p[0]-cxm)*wide
+    p[0]=W*0.5+(p[0]-cxm)*fit
+    p[1]=mid+(p[1]-cym)*fit
   }
   // Order the outline by WALKING it — from the topmost point always to the
   // nearest unvisited one. An angular sort around the centroid collapsed head
@@ -1818,42 +1880,88 @@ function buildSharedBody_(){
   // Resample the contour by arc length so letters sit shoulder to shoulder and
   // never on top of each other — the grid cells are far narrower than a glyph.
   // A jump in the angular order is a concavity: break there, never letter across it.
-  const gap=FS*0.85
-  const jump=Math.max(gap*3, cellStep*2.5)
-  const slots=[]
-  let carry=0
+  // A glyph's ADVANCE, not 85% of its size. The spacing was tuned on latin
+  // letters; the piece is answered in Armenian, whose glyphs are wider, and at
+  // 14px the nearest pair on the ring measured 10.8px centre to centre — every
+  // vertical run on the circle read as one crowded column.
+  const gap=FS*1.05
+  // What counts as a jump is a question about the FIGURE — how far apart two
+  // neighbouring outline samples end up — not about the size of a glyph. The
+  // glyph floor was three letter-widths, which on the small end of the fit is
+  // larger than a real jump: the walk lettered straight across the breaks it
+  // was written to respect, and words piled on each other at the bottom of the
+  // circle. The floor stays, small, so an ordinary step is never mistaken for
+  // one.
+  const jump=Math.max(gap*1.2, cellStep*2.5)
+  // RUNS, not one flat list. A break in the outline (head to shoulder, arm to
+  // hip, or just the last few stragglers of a rasterized edge) used to leave two
+  // neighbouring SLOTS on opposite sides of the figure — and a word laid across
+  // that pair had its own letters half a body apart. Measured: a 189px step
+  // between consecutive letters on a 218px-wide body. Each unbroken stretch is
+  // its own run, and no word is ever laid across two of them.
+  const runs=[]
+  let open=[], carry=0
   for(let i=0;i<chain.length-1;i++){
     const a=chain[i], b=chain[i+1]
     const seg=Math.hypot(b[0]-a[0],b[1]-a[1])
-    if(seg>jump){carry=0;continue}
+    if(seg>jump){if(open.length){runs.push(open);open=[]}carry=0;continue}
     let d=carry
-    while(d<seg){const f=d/seg;slots.push([a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]);d+=gap}
+    while(d<seg){const f=d/seg;open.push([a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]);d+=gap}
     carry=d-seg
   }
-  if(!slots.length)return
+  if(open.length)runs.push(open)
+  if(!runs.length)return
   // Lay the words end to end around the resampled contour, a gap between words.
   // Each letter leaves from the core's rim toward its own place and the body
   // blooms outward — near letters first, far letters last — instead of the whole
   // field bursting from one point at once.
   let maxD=1
-  for(const p of slots){const d=Math.hypot(p[0]-coreCX,p[1]-coreCY);if(d>maxD)maxD=d}
+  for(const run of runs)for(const p of run){
+    const d=Math.hypot(p[0]-coreCX,p[1]-coreCY);if(d>maxD)maxD=d
+  }
   const letters=[]
-  let slot=0, wi=0
-  while(slot<slots.length){
-    const src=words[wi%words.length]; wi++
-    for(const ch of src.w){
-      if(slot>=slots.length)break
-      const p=slots[slot++]
-      const ang=Math.atan2(p[1]-coreCY,p[0]-coreCX)
-      const dist=Math.hypot(p[0]-coreCX,p[1]-coreCY)
-      letters.push({x:coreCX+Math.cos(ang)*coreR*0.9,y:coreCY+Math.sin(ang)*coreR*0.45,
-        tx:p[0],ty:p[1],ch,mine:src.mine,d:0.08+0.42*(dist/maxD)+Math.random()*0.06})
+  let wi=0
+  for(const run of runs){
+    let slot=0
+    // A word that will not fit in what is left of this run does not get half of
+    // it — but the run does not end there either. Dropping straight to the next
+    // run left a hole the length of a word in the ring (a ten-letter name at the
+    // tail of a run is 180px of empty arc on a desktop circle), so the shorter
+    // words after it get their turn first.
+    for(;;){
+      let skipped=0
+      while(skipped<words.length&&slot+words[wi%words.length].w.length>run.length){wi++;skipped++}
+      if(skipped>=words.length)break
+      const src=words[wi%words.length]; wi++
+      const n=src.w.length
+      const seg=run.slice(slot,slot+n)
+      // Which way does this run travel across the SCREEN? The outline is walked in
+      // one direction — topmost point, then always to the nearest unvisited — so
+      // exactly half of any closed figure runs against reading order, and every
+      // word on that half arrived backwards: `word` read `drow` down the whole
+      // right arc, in both his screenshots and mine. The glyphs are upright, not
+      // set on the tangent, so nothing has to be rotated or re-walked. Hand the
+      // word its own slots in the other order and it reads left to right (or, on
+      // a near-vertical run, top to bottom) wherever on the body it lands.
+      const dx=seg[n-1][0]-seg[0][0], dy=seg[n-1][1]-seg[0][1]
+      const order=(Math.abs(dx)>Math.abs(dy)?dx<0:dy<0)?seg.slice().reverse():seg
+      for(let i=0;i<n;i++){
+        const p=order[i]
+        const ang=Math.atan2(p[1]-coreCY,p[0]-coreCX)
+        const dist=Math.hypot(p[0]-coreCX,p[1]-coreCY)
+        letters.push({x:coreCX+Math.cos(ang)*coreR*0.9,y:coreCY+Math.sin(ang)*coreR*0.45,
+          tx:p[0],ty:p[1],ch:src.w[i],mine:src.mine,wi,
+          d:0.08+0.42*(dist/maxD)+Math.random()*0.06})
+      }
+      // Two empty slots, not one. A slot is one glyph's spacing, so a single one
+      // put the end of a word exactly as far from the start of the next as its
+      // own letters are from each other, and every collision on the ring was a
+      // word boundary: `probe` sitting on `փորձ` at the top of the circle.
+      slot+=n+2
     }
-    slot++ // one empty slot between words, so they do not run together
   }
   shared={pts,letters,t:0}
   breathAt=(performance.now()-t0)/1000
-  $('#hudAct').textContent='echo \u00b7 act v'
   SND.sharedPad()
   CORE3.recede()
 }
@@ -1863,6 +1971,9 @@ function buildSharedBody_(){
 function openEnd(){
   if(endOpen)return
   document.body.classList.add('ending')
+  // named here, not after the layout: endCeil() measures this label, and an
+  // empty one is 18px shorter than the one the visitor actually reads
+  $('#hudAct').textContent='echo · act v'
   const n=field.length
   end.querySelector('.said').textContent='you are part of it now.'
   end.querySelector('.body-line').textContent=
@@ -1919,6 +2030,24 @@ function endFloor(){
   const gap=Math.max(18,H*0.03)
   if(!r.height)return H*0.66
   return Math.max(H*0.40,Math.min(H*0.66,r.top-gap))
+}
+// …and its ceiling. 5% of the height is under the act label on a phone: the
+// body's apex printed through ECHO · ACT V, and dimming the label to .3 turned
+// the collision into a smudge rather than fixing it. Measured off the live box,
+// the same way the floor is.
+function endCeil(){
+  const r=$('#hudAct').getBoundingClientRect()
+  return Math.max(H*0.05, r.height?r.bottom+Math.max(6,H*0.008):0)
+}
+// The floor is a BOUND; this is what the eye actually sees below the body. The
+// closing block opens with a blank half-line held for a keeper's blessing that
+// usually never comes, so measured against the top of the block the body sat
+// high on the page — 64px of air over it and 108 under it on a phone. The body
+// is bounded by the floor and centred on this.
+function endSeen(){
+  const s=end.querySelector('.said'), r=s.getBoundingClientRect()
+  if(!r.height)return endFloor()
+  return r.bottom-parseFloat(getComputedStyle(s).fontSize)*1.45
 }
 
 // ── the choice at the end — keep a copy, or unmake the crossing ───────────
@@ -2725,7 +2854,7 @@ function frame(now){
       // which is where the ring's own centre is, and never grows past what that
       // band can hold. min() only ever lifts it — a tall window keeps the core's
       // place exactly as before.
-      const ceil=H*0.05, floor=endFloor(), band=Math.max(60,floor-ceil)
+      const ceil=endCeil(), floor=endFloor(), band=Math.max(60,floor-ceil)
       const R=Math.min(Math.min(W,H)*0.22, band*0.42)
       const cy=Math.min(coreCY,(ceil+floor)/2)
       // a hand still on the page is still writing: the finished mark steps aside
@@ -2803,6 +2932,22 @@ function frameLoop(now){
       console.error('br_id_ge frame:',e)
       const s=$('#sLamp');if(s)s.textContent='something faltered — the bridge still carries you'}
   }
+}
+// What the ending is actually composed of, for a rig or a check that must not
+// have to re-derive it. The composition has ONE axis (W/2) and one band
+// (endCeil to endFloor); everything below is measured, so "is the body centred"
+// is a question with an answer rather than an opinion about a screenshot.
+window.__geom=()=>{
+  const b={x0:Infinity,x1:-Infinity,y0:Infinity,y1:-Infinity}
+  if(shared)for(const L of shared.letters){
+    if(L.tx<b.x0)b.x0=L.tx;if(L.tx>b.x1)b.x1=L.tx
+    if(L.ty<b.y0)b.y0=L.ty;if(L.ty>b.y1)b.y1=L.ty
+  }
+  return {W,H,axis:W*0.5,ceil:endCeil(),floor:endFloor(),seen:endSeen(),FS,
+    body:shared?{...b,cx:(b.x0+b.x1)/2,cy:(b.y0+b.y1)/2,n:shared.letters.length,t:shared.t,
+      text:shared.letters.map(L=>L.ch).join(''),
+      xs:shared.letters.map(L=>Math.round(L.tx)),ys:shared.letters.map(L=>Math.round(L.ty)),
+      wid:shared.letters.map(L=>L.wi)}:null}
 }
 // show-rig probe, the twin of field.html's window.__keeper(). The ending is a
 // camera, a crossing and twenty seconds away, which makes the one screen with

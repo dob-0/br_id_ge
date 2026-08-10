@@ -19,6 +19,9 @@
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
   --live:#1d4bff;
+  /* the room's own sheet: the same paper lifted one shade toward white, so a
+     surface wearing it reads as a place laid ON the field, not more field */
+  --paper-room:#f9f7f2;
   --arm:'Noto Serif Armenian',Georgia,serif;
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
@@ -54,11 +57,19 @@ canvas.grabbing{cursor:grabbing}
   background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.55rem;
   letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 #mode:hover{color:var(--live)}
+/* the room is a PLACE, not a caption. It stood on the field's exact paper and
+   hairline and read as more field; now it stands on its own lifted sheet with
+   a whisper of shadow, so the eye knows it stepped off the page and into
+   somewhere — still a panel, never dissolved into the field. */
 #kPanel{position:fixed;z-index:4;top:50%;right:1.6rem;transform:translateY(-50%);
-  width:min(19rem,calc(100vw - 3rem));background:var(--paper);border:1px solid var(--hairline);
+  width:min(19rem,calc(100vw - 3rem));background:var(--paper-room);border:1px solid var(--hairline);
+  box-shadow:0 1px 2px rgba(19,19,19,.05),0 12px 34px rgba(19,19,19,.09);
   padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.7rem;font-family:var(--mono)}
 #kPanel .kHead{display:flex;justify-content:space-between;align-items:center;
   font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+/* one line saying what the room IS, read before any of it is */
+.kSub{font-size:.55rem;letter-spacing:.14em;color:var(--graphite);line-height:1.6;
+  margin-top:-.25rem}
 #kClose{background:none;border:none;cursor:pointer;color:var(--graphite);
   font-size:1rem;line-height:1;padding:0}
 #kClose:hover{color:var(--ink)}
@@ -113,8 +124,21 @@ canvas.grabbing{cursor:grabbing}
 #tThrough{color:var(--live)}
 @media (prefers-reduced-motion: no-preference){
   #tDoor{opacity:0;animation:fade .9s ease forwards}}
+/* THE DOOR. The room existed only behind "tap պահապան" and a hint line — a
+   visitor who never reads the hint had no way to SEE there is a room. A quiet
+   tab on the frame's edge, standing where the panel will stand, wearing the
+   room's own sheet: presence made visible without competing with the field.
+   Desk only — the phone keeps its approved face. */
+#kTab{position:fixed;z-index:3;top:50%;right:10px;transform:translateY(-50%);
+  writing-mode:vertical-rl;width:2.75rem;background:var(--paper-room);
+  border:1px solid var(--hairline);box-shadow:0 1px 2px rgba(19,19,19,.05);
+  cursor:pointer;color:var(--graphite);font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.22em;text-transform:uppercase;padding:1.1rem .5rem}
+#kTab:hover{color:var(--ink)}
+#kTab .n{color:var(--live)}
+@media (max-width:560px){#kTab{display:none}}
 @media (prefers-reduced-motion: no-preference){
-  .hud,#frame{opacity:0;animation:fade 1.2s .3s ease forwards}
+  .hud,#frame,#kTab{opacity:0;animation:fade 1.2s .3s ease forwards}
   canvas{opacity:0;animation:fade 1.6s ease forwards}
   @keyframes fade{to{opacity:1}}
 }
@@ -141,7 +165,36 @@ canvas.grabbing{cursor:grabbing}
      the two things a visitor might want next */
   #kPanel{top:auto;bottom:3.6rem;left:0;right:0;width:100%;transform:none;
     border-width:1px 0;padding:1rem 1.2rem}
+  /* the subtitle earns its line on a desk; on a phone sheet every line costs
+     field, and the approved layout stands */
+  .kSub{display:none}
 }
+/* THE DESK. Every size on this page was chosen close to the glass and then
+   read from an arm's length: .55rem chrome and a .66rem room are squint-sized
+   on a monitor. The desk gets its own scale — the same voice, quieter things
+   still quieter, simply printed larger. The phone keeps the sizes it was
+   approved at. */
+@media (min-width:561px){
+  .hud{font-size:.72rem}
+  #hd .arm{font-size:.8rem}
+  #mode{font-size:.72rem}
+  #kPanel{width:min(23rem,calc(100vw - 3rem));padding:1.15rem 1.25rem}
+  #kPanel .kHead{font-size:.7rem}
+  #kClose{font-size:1.25rem}
+  .kSub{font-size:.62rem}
+  #kState{font-size:.66rem}
+  #kLog{font-size:.85rem;max-height:11rem}
+  #kLog:empty::before{font-size:.76rem}
+  #kIn{font-size:.88rem}
+  #kAt{font-size:.6rem}
+  #kCap{font-size:.6rem}
+  #kWho{font-size:.68rem}
+  #kWhy,#kNote{font-size:.66rem}
+  #kLog .aim,#kLog .kcut{font-size:.6rem}
+}
+/* …and a 2560-wide desk is read from further back still: the whole page steps
+   up through the root, phone widths untouched */
+@media (min-width:1800px){html{font-size:19px}}
 /* EMBEDDED — the field opened inside the rite's own ending, ?embed=1. It keeps
    the cores and nothing else: no chrome, no paper of its own, so the letters and
    the mark the visitor just drew stay visible underneath it. It is a view, not a
@@ -173,7 +226,7 @@ body.inframe #cta{bottom:2.4rem}
    REQUIRES that viewer: against an older one this is a black box, so it must
    never ship ahead of di.iiii. */
 html.embed,html.embed body{background:transparent}
-html.embed .hud,html.embed #frame,html.embed #kPanel{display:none!important}
+html.embed .hud,html.embed #frame,html.embed #kPanel,html.embed #kTab{display:none!important}
 html.embed canvas{cursor:default}
 </style>
 </head>
@@ -192,6 +245,7 @@ html.embed canvas{cursor:default}
      docs/KEEPER.md holds both. -->
 <div id="kPanel" hidden>
   <div class="kHead"><span>պահապան · the room</span><button id="kClose">×</button></div>
+  <div class="kSub">the crossed speak here · anyone may ask պահապան</div>
   <div id="kState">asleep — no body is on the mesh</div>
   <img id="kEye" alt="" hidden>
   <div id="kWho">the room is quiet</div>
@@ -216,6 +270,7 @@ html.embed canvas{cursor:default}
     <span id="kCap" hidden></span>
   </form>
 </div>
+<button id="kTab">the room<span class="n" id="kTabN"></span></button>
 <div class="hud" id="hint">tap — ink finds the crossings<br>tap պահապան — the room<span class="mouse"><br>drag orbit · scroll zoom</span></div>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
@@ -619,7 +674,8 @@ let meshWs=null,myNode='';
 const kPanel=document.getElementById('kPanel'),kLog=document.getElementById('kLog');
 const kIn=document.getElementById('kIn'),kWho=document.getElementById('kWho'),
       kWhy=document.getElementById('kWhy'),kNote=document.getElementById('kNote'),
-      kAt=document.getElementById('kAt'),kCap=document.getElementById('kCap');
+      kAt=document.getElementById('kAt'),kCap=document.getElementById('kCap'),
+      kTab=document.getElementById('kTab'),kTabN=document.getElementById('kTabN');
 function pub(channel,payload){
   if(!(meshWs&&meshWs.readyState===1))return false;
   meshWs.send(JSON.stringify({type:'publish',channel,pingTs:Date.now(),payload}));
@@ -693,6 +749,9 @@ tGo.addEventListener('click',async()=>{
 // list of one to three names, and empty is a state, not an error.
 const roomWho=new Map();
 function hereLine(){
+  // the door carries the count: a visitor sees the room holds people before
+  // ever opening it
+  kTabN.textContent=roomWho.size?' · '+roomWho.size:'';
   kWho.replaceChildren();
   if(!roomWho.size){kWho.textContent='the room is quiet';return;}
   const h=document.createElement('div');h.textContent='here —';kWho.appendChild(h);
@@ -717,7 +776,8 @@ setInterval(()=>{
   if(!kPanel.hidden)rollCall();
 },45000);
 
-document.getElementById('kClose').addEventListener('click',()=>{kPanel.hidden=true;});
+document.getElementById('kClose').addEventListener('click',()=>{kPanel.hidden=true;kTab.hidden=false;});
+kTab.addEventListener('click',openKeeper);
 function kTrim(){kLog.scrollTop=kLog.scrollHeight;
   while(kLog.children.length>40)kLog.removeChild(kLog.firstChild);}
 function tkLine(who,text){const d=document.createElement('div');d.className='tk';
@@ -791,7 +851,7 @@ document.getElementById('kForm').addEventListener('submit',e=>{
     tkLine(seat.who,text);
     if(addressed(text)&&text.length>120)note('պահապան reads the first 120.');}
   else meLine(text);});
-function openKeeper(){kPanel.hidden=false;
+function openKeeper(){kPanel.hidden=false;kTab.hidden=true;
   if(!keeperOnline())document.getElementById('kEye').hidden=true;
   rollCall();}
 
