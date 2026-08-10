@@ -232,7 +232,14 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 #fieldWin{position:fixed;left:0;top:0;width:100%;height:60%;z-index:1;opacity:0;
   transition:opacity 2.4s ease}
 #fieldWin.on{opacity:1}
-#fieldWin iframe{width:100%;height:100%;border:0;display:block;background:none}
+/* The pane is a window onto a scene laid out for a whole screen, so a core
+   standing near its floor gets guillotined by the edge — in his screenshot a
+   stranger's drawn mark was cut in half above "2 CROSSINGS" and read as a bug.
+   The field does not end at that line, it recedes past it. (Mask on the frame
+   only: the veil beneath it still takes the tap that opens the field.) */
+#fieldWin iframe{width:100%;height:100%;border:0;display:block;background:none;
+  -webkit-mask-image:linear-gradient(to bottom,#000 78%,transparent 99%);
+  mask-image:linear-gradient(to bottom,#000 78%,transparent 99%)}
 /* the iframe would otherwise swallow every pointer event over the top of the
    page — and the ending is still a page you can draw on. The veil takes them
    back: they bubble to the window handlers exactly as before, and only a tap
@@ -1916,9 +1923,15 @@ function buildSharedBody_(){
   let wi=0
   for(const run of runs){
     let slot=0
-    // a word that will not fit in what is left of this run does not get half of
-    // it: the run ends and the next one starts clean
-    while(slot+words[wi%words.length].w.length<=run.length){
+    // A word that will not fit in what is left of this run does not get half of
+    // it — but the run does not end there either. Dropping straight to the next
+    // run left a hole the length of a word in the ring (a ten-letter name at the
+    // tail of a run is 180px of empty arc on a desktop circle), so the shorter
+    // words after it get their turn first.
+    for(;;){
+      let skipped=0
+      while(skipped<words.length&&slot+words[wi%words.length].w.length>run.length){wi++;skipped++}
+      if(skipped>=words.length)break
       const src=words[wi%words.length]; wi++
       const n=src.w.length
       const seg=run.slice(slot,slot+n)
