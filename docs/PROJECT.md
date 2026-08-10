@@ -67,6 +67,41 @@ the bridge of letters reads as a score the visitor performs.
   earlier builds live in git history. This repo is the source of truth; the
   di.iiii space syncs from it via CI.
 
+### The Echo's composition — one axis, three bands
+
+Act V is the only screen where the canvas, an embedded page and a block of type
+all have to stand together, so it is composed rather than stacked. Everything
+hangs off **one axis** (`W/2`) and falls into three bands:
+
+| Band | What stands there | Bounded by |
+|---|---|---|
+| the body | the shared body's letters, the field's cores behind them, your mark at its heart | `endCeil()` → `endFloor()` |
+| what is said | "you are part of it now." and the count that grounds it | the closing block |
+| the doors | go in · keep a copy · unmake, then the passage line | the HUD's floor |
+
+`endCeil()` and `endFloor()` are **measured off the live boxes** — the act label
+above, the closing block below — never guessed from a fraction of the height,
+because the block's height depends on the wording, the tier and the screen. The
+body is *bounded* by the floor and *centred* on `endSeen()`, which is where the
+closing sentence's ink actually starts rather than the top of the blank half-line
+held above it for a keeper's blessing.
+
+Two rules that are easy to break again:
+
+- **The circle is not the composition's centre — the page is.** The figure the
+  letters lie on (`circleField`) deliberately trails the reading finger, because
+  its edge has to pass under your hand to give up letters. The ending is where it
+  stops being yours and comes to rest on the axis. Fit it horizontally to
+  anything but `W/2` and the mark, the sentence and the doors are composed with
+  a body that is somewhere else.
+- **One scale, both axes.** Fitting the height to the band and the width to a
+  fraction of the screen makes the circle an egg, and would distort a tracked
+  human body by exactly as much. The band is a bound, not a target.
+
+`window.__geom()` returns the axis, the band and the body's own box, so "is it
+centred" has an answer instead of an opinion about a screenshot. Its twin is
+`window.__end(n, drawn)`, which jumps straight to Act V.
+
 ## 4. Deployments
 
 | Tier | Environment | URL |
