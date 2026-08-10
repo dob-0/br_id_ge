@@ -8,5 +8,6 @@
   "entry": "field.html",
   "include": [],
   "assets": [],
-  "publish": false
+  "publish": false,
+  "deviceAccess": true
 }
