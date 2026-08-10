@@ -73,7 +73,6 @@ the bridge of letters reads as a score the visitor performs.
 |---|---|---|
 | Production | di.iiii — the rite | [di-studio.xyz/br_id_ge/rite](https://di-studio.xyz/br_id_ge/rite) |
 | Production | di.iiii space | [di-studio.xyz/br_id_ge](https://di-studio.xyz/br_id_ge/) |
-| Staging | Preview lane | [staging.di-studio.xyz/br_id_ge](https://staging.di-studio.xyz/br_id_ge/) |
 | Dev | Source repo (backend — never linked publicly) | `dob-0/br_id_ge` |
 
 ## 5. Team & Partners
