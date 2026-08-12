@@ -80,7 +80,13 @@ canvas.grabbing{cursor:grabbing}
 #kState{font-size:.55rem;letter-spacing:.16em;color:var(--graphite);text-transform:lowercase}
 #kEye{width:100%;border:1px solid var(--hairline);filter:grayscale(1) contrast(1.05)}
 #kLog{display:flex;flex-direction:column;gap:.45rem;max-height:9rem;overflow-y:auto;
-  font-size:.66rem;line-height:1.55}
+  font-size:.66rem;line-height:1.55;scrollbar-width:thin;scrollbar-color:var(--hairline) transparent}
+/* the record scrolls behind a hairline, not the browser's grey machinery —
+   the bar only exists at all because the room keeps enough to scroll now */
+#kLog::-webkit-scrollbar{width:5px}
+#kLog::-webkit-scrollbar-thumb{background:var(--hairline)}
+#kLog::-webkit-scrollbar-thumb:hover{background:var(--graphite)}
+#kLog::-webkit-scrollbar-track{background:transparent}
 #kLog .me{color:var(--graphite)}
 #kLog .it{color:var(--ink)}
 #kLog .it b{color:var(--live);font-weight:400}
