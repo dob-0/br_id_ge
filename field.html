@@ -107,7 +107,16 @@ canvas.grabbing{cursor:grabbing}
    machine that is always here: all graphite, wearing a small boxed "ai" — so
    which one answered is readable before a single word is. */
 #kLog .tk{color:var(--ink)}
-#kLog .tk .w{color:var(--graphite)}
+/* THE MANUSCRIPT RULE — the record reads like a playscript. A speech opens
+   with its speaker's name set as a small signature line above the words;
+   lines that continue the same voice hang beneath the one signature. Ink
+   stays one color for every person — the room is equal — so WHO is told by
+   structure, not by paint. The only inked signature is YOUR OWN: the same
+   you-rule #kWho already keeps. */
+#kLog .tk .w{display:block;font-size:.5rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--graphite);margin-bottom:.1rem}
+#kLog .tk .w.you{color:var(--ink)}
+#kLog .tk.cont{margin-top:-.26rem}
 /* an ask is all graphite — the voice of someone not yet in the room */
 #kLog .ask{color:var(--graphite)}
 /* THE SOAK — a line lands as wet ink and dries into the record. Live lines
@@ -227,6 +236,7 @@ canvas.grabbing{cursor:grabbing}
   #kWho{font-size:.68rem}
   #kWhy,#kNote{font-size:.66rem}
   #kLog .aim,#kLog .kcut{font-size:.6rem}
+  #kLog .tk .w{font-size:.58rem}
 }
 /* …and a 2560-wide desk is read from further back still: the whole page steps
    up through the root, phone widths untouched */
@@ -690,7 +700,8 @@ const openDays=(()=>{try{return new Set(JSON.parse(localStorage.getItem('br_id_g
 function rememberDay(k){openDays.add(k);
   try{localStorage.setItem('br_id_ge_room_days',JSON.stringify([...openDays].slice(-60)))}catch(e){}}
 function appendKept(l){
-  if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text));
+  if(l.channel==='talk')tkLine(String(l.payload.who||'—'),String(l.payload.text),
+    l.payload.id,!!(seat&&String(l.payload.id)===seat.id));
   else if(l.channel==='keeper:ask')askLine(String(l.payload.text));
   else kSay(String(l.payload.text).slice(0,300),l.payload.voice==='ai'?'ai':'keeper');
   return kLog.lastChild;}
@@ -699,19 +710,25 @@ function histLine(l,i){
   el.classList.add('old','hist');
   if(i!==undefined)el.style.setProperty('--d',(i*90)+'ms');}
 function dayMark(k){const d=document.createElement('div');d.className='kDay';
+  lastSig=null;
   const b=document.createElement('b');b.textContent=dayLabel(k);d.appendChild(b);return d;}
 function stainRow(k,lines){const d=document.createElement('div');d.className='kStain';
+  lastSig=null;
   d.appendChild(document.createTextNode(dayLabel(k)+' · '+lines.length+
     (lines.length===1?' line':' lines')));
   d.addEventListener('click',()=>{
     if(d.classList.contains('open'))return;
     d.classList.add('open');rememberDay(k);
     setTimeout(()=>{
+      // the expansion writes mid-record: its lines run-group among themselves,
+      // and the signature memory is broken on both sides of the splice
+      lastSig=null;
       lines.forEach((l,i)=>{
         const el=appendKept(l);if(!el)return;
         el.classList.add('old','hist');el.style.setProperty('--d',(i*90)+'ms');
         d.parentNode.insertBefore(el,d);
       });
+      lastSig=null;
       d.remove();},500);},{once:false});
   return d;}
 function renderHistory(m){
@@ -774,7 +791,7 @@ function renderHistory(m){
     else if(m.channel==='talk'&&m.payload&&m.payload.text){
       // own lines were printed at send; an echo of them is not a second person
       if(!(seat&&String(m.payload.id)===seat.id))
-        tkLine(String(m.payload.who||'—'),String(m.payload.text));}
+        tkLine(String(m.payload.who||'—'),String(m.payload.text),m.payload.id);}
     else if(m.channel==='keeper:ask'&&m.payload&&m.payload.text){
       // the public half the room used to lack: with answers rendering for
       // everyone, an unrendered question would fill the record with the keeper
@@ -823,6 +840,10 @@ function claimSeat(){
   const g=id&&cores.get(id);
   if(!g){seatFace();return;}
   seat={id,who:g.userData.tag||'—'};
+  // the kept record may have poured before the seat was claimed (the mesh and
+  // the scene fetch race) — ink the past signatures that turn out to be yours
+  kLog.querySelectorAll('.tk[data-sid="'+CSS.escape(id)+'"] .w')
+    .forEach(w=>w.classList.add('you'));
   roomWho.set(id,{who:seat.who,seen:performance.now()});
   seatFace();hereLine();announce();}
 // Without a seat the input still wakes — the keeper answers everyone — but it
@@ -914,18 +935,28 @@ function kTrim(){kLog.scrollTop=kLog.scrollHeight;
 // a live line is born wet (no .old — true black) and dries one frame later;
 // see the soak CSS
 function dryLater(d){requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('old')));}
-function tkLine(who,text){const d=document.createElement('div');d.className='tk';
-  const w=document.createElement('span');w.className='w';
-  w.textContent=String(who).slice(0,40)+'  ';
-  d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
+// the manuscript rule's memory: which voice signed last. Any non-talk line
+// (a day-mark, a stain, the keeper, an ask) breaks the run, so the next
+// speech signs itself again.
+let lastSig=null;
+function tkLine(who,text,key,mine){const d=document.createElement('div');d.className='tk';
+  const k='t:'+String(key||who);
+  d.dataset.sid=String(key||'');
+  if(k===lastSig)d.classList.add('cont');
+  else{const w=document.createElement('span');w.className='w'+(mine?' you':'');
+    w.textContent=String(who).slice(0,40);d.appendChild(w);}
+  lastSig=k;
+  d.appendChild(document.createTextNode(String(text).slice(0,220)));
   kLog.appendChild(d);dryLater(d);kTrim();}
 // an uncrossed ask, public since decision (a): all graphite — a voice from
 // outside the room, unnamed because no crossing names it
 function askLine(text){const d=document.createElement('div');d.className='ask';
+  lastSig=null;
   const w=document.createElement('span');w.className='w';w.textContent='ask  ';
   d.appendChild(w);d.appendChild(document.createTextNode(String(text).slice(0,220)));
   kLog.appendChild(d);kTrim();}
 function kSay(text,voice){const d=document.createElement('div');
+  lastSig=null;
   if(voice==='ai'){
     d.className='ai';
     const m=document.createElement('i');m.className='aim';m.textContent='ai';
@@ -946,6 +977,7 @@ function kSay(text,voice){const d=document.createElement('div');
 // in the room now (broadcast, kept, rendered for everyone as an ask line);
 // this is just how it looks on the panel that sent it
 function meLine(text){const d=document.createElement('div');d.className='me';
+  lastSig=null;
   d.textContent=String(text).slice(0,220);kLog.appendChild(d);kTrim();}
 function note(text){kNote.textContent=text;kNote.hidden=false;
   clearTimeout(note.t);note.t=setTimeout(()=>{kNote.hidden=true;},6000);}
@@ -992,7 +1024,7 @@ document.getElementById('kForm').addEventListener('submit',e=>{
   sentAt.push(now);
   kIn.value='';inFace();
   if(seat){
-    tkLine(seat.who,text);
+    tkLine(seat.who,text,seat.id,true);
     if(addressed(text)&&text.length>120)note('պահապան reads the first 120.');}
   else meLine(text);});
 function openKeeper(){kPanel.hidden=false;kTab.hidden=true;
