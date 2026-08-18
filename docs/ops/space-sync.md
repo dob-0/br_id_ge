@@ -11,6 +11,11 @@ edit + push main ─┬─► GitHub Pages    (.github/workflows/pages.yml — m
                         staging first, then prod, then a read-only --audit of both
 ```
 
+> **Warning — `deviceAccess` must survive every sync.** The rite's manifest
+> (`di-space.json`, project `newww`) carries `deviceAccess: true`; if it ever
+> drifts to `false` the lamp never gets the camera and the piece cannot be
+> crossed. Any sync or manifest edit must preserve that flag.
+
 ## The binding — two manifest kinds
 
 `di-space.space.json` owns the **space**: label, visibility, `minEngine`, the
