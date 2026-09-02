@@ -132,4 +132,4 @@ br_id_ge/
 
 ## Contributing
 
-For inquiries, collaboration, or to join the network, contact **Gevorg Aram Grigoryan (dob-0)**.
+For inquiries or collaboration, contact **Gevorg Grigoryan (dob-0)**.
