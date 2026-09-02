@@ -1,7 +1,7 @@
 MASTER CONTEXT: br_id_ge · Notations #2 (hosq)
 
 Project: br_id_ge (կամուրջ) — the bridge where the real enters di.iiii
-Artist/Curator: Gevorg Aram Grigoryan (dob-0)
+Artist/Curator: Gevorg Grigoryan (dob-0)
 Current version: v.oooooo 3 — THE READING (2D canvas; your silhouette reads the letters)
 Festival title (canonical): br_id_ge XR_ Notations:vi.ritual — the rite is presented as **vi.ritual**
 
@@ -12,7 +12,7 @@ are parked — see "Parked directions" below and git history for the full record
 0. The Point (CANONICAL — every other text about br_id_ge derives from this, sized down)
 
 ONE LINE.
-br_id_ge (կամուրջ, "bridge") is how the real world enters di.iiii — Gevorg Aram
+br_id_ge (կամուրջ, "bridge") is how the real world enters di.iiii — Gevorg
 Grigoryan's spatial platform — and becomes shared space.
 
 ONE PARAGRAPH.

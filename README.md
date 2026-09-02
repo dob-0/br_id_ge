@@ -44,4 +44,4 @@ published face.
 ---
 
 *Team, partners, and full documentation: [docs/PROJECT.md](docs/PROJECT.md).
-For inquiries contact Gevorg Aram Grigoryan (dob-0).*
+For inquiries contact Gevorg Grigoryan (dob-0).*

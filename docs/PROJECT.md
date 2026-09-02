@@ -1,6 +1,6 @@
 # br_id_ge — the bridge where the real enters di.iiii
 
-**By Gevorg Aram Grigoryan / di.ii studio**
+**By Gevorg Grigoryan / di.i**
 
 `br_id_ge` (կամուրջ, "bridge") is how the real world enters **di.iiii**
 (di-studio.xyz), the artist's own spatial platform — and becomes shared space.
@@ -113,7 +113,7 @@ centred" has an answer instead of an opinion about a screenshot. Its twin is
 ## 5. Team & Partners
 
 **Core:**
-* [**Gevorg Aram Grigoryan**](https://di-studio.xyz) ([@dob______](https://www.instagram.com/dob______/)): Head of di.ii, technical & conceptual development.
+* [**Gevorg Grigoryan**](https://di-studio.xyz) ([@dob______](https://www.instagram.com/dob______/)): Head of di.i, technical & conceptual development.
 * **Emilya Nikoghosyan**: Co-founder & multimedia artist.
 * [**Syuzanna Ginosyan**](https://www.instagram.com/ginosyansuzy/): Curator & German partnership liaison.
 
@@ -125,7 +125,7 @@ centred" has an answer instead of an opinion about a screenshot. Its twin is
 **Host & partner:**
 * [**hosq.co**](https://hosq.co/) — host of Notations #2, artistic & technical partner.
 
-*For inquiries or collaboration, contact Gevorg Aram Grigoryan (dob-0).*
+*For inquiries or collaboration, contact Gevorg Grigoryan (dob-0).*
 
 ---
 
