@@ -38,7 +38,13 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
 .hud a:hover{color:var(--ink)}
 #tl{top:0;left:0;color:var(--ink)}
 #tr{top:0;right:0;text-align:right}
-#bl{bottom:0;left:0}
+/* di.iiii is a wordmark, never a corner label — it keeps its own lowercase
+   against .hud's uppercase transform. This was already true before the
+   inframe offset below: the badge's own "di.iiii" text (a different element,
+   outside this document, painted over ours) was what actually showed here;
+   moving #bl clear of it exposed our own copy, which the uppercase rule had
+   been quietly wrong about all along. */
+#bl{bottom:0;left:0;text-transform:lowercase}
 #br{bottom:0;right:0;text-align:right}
 /* The two top corners are ~470px of text between them; below about 470px wide
    they simply run into each other (measured: 91px of overlap at 360). Give each
