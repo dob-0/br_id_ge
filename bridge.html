@@ -27,6 +27,18 @@ html,body{min-height:100%;background:var(--paper)}
 body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
 #frame{position:fixed;inset:10px;border:1px solid var(--hairline);pointer-events:none;z-index:2}
 @media (max-width:560px){#frame{inset:8px}}
+
+/* THE BLACKOUT — moving door→rite→field is one piece, not three page loads.
+   A full-screen veil, painted dark before any of this page's own content, so
+   the door never flashes paper on the way in; it fades up only once fonts
+   have actually loaded. The SAME dark the di.iiii viewer's own LoadingScreen
+   uses (--di-black, #000 — di.iiii/src/styles/base.css) so the cut to that
+   screen (when a cross-scene link is tapped) lands on black already, not on
+   paper. No JS: the noscript rule below removes it, so a reader with no
+   scripting never sits behind a veil nothing will ever lift. */
+#veil{position:fixed;inset:0;z-index:1000;background:#000;opacity:1;
+  pointer-events:none;transition:opacity .8s ease}
+@media (prefers-reduced-motion:reduce){#veil{transition:none}}
 /* the corners belong to the door: they wear the paper (so nothing ever shows
    through them) and yield once the page scrolls past; the frame stays above
    so its line is never erased at a corner */
@@ -142,6 +154,9 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 </head>
 <body>
 
+<div id="veil" aria-hidden="true"></div>
+<noscript><style>#veil{display:none!important}</style></noscript>
+
 <div id="frame" aria-hidden="true"></div>
 
 <div class="hud" id="tl">br_id_ge · vi.ritual</div>
@@ -155,8 +170,8 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <p class="lede">a bridge between the real world and a shared one.
     cross, answer once — <b>who are you, and what do you carry?</b> —
     and what you carry keeps walking with everyone who crossed before you.</p>
-  <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
-  <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
+  <a class="cross" data-scene href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
+  <a class="field" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
   <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> <span id="pw">crossings</span> so far</p>
   <a class="down" href="#parts" aria-label="the parts, below">↓</a>
 </main>
@@ -165,19 +180,19 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <section id="parts">
     <h2>the parts</h2>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/rite" target="_top">the rite · vi.ritual →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/rite" target="_top">the rite · vi.ritual →</a>
       <p class="pline">a short rite over a bridge of glowing armenian letters —
         cross, answer, and leave a <b>core</b> in the field.</p>
       <button class="qbtn" id="qt" aria-expanded="false" aria-controls="qq">the two questions</button>
       <p class="qq" id="qq"><span>who are you, and what do you carry?</span></p>
     </div>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the field →</a>
       <p class="pline">every crossing stands here, permanent — the count on the
         door is this field's, live.</p>
     </div>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the room →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the room →</a>
       <p class="pline">inside the field the crossed speak, and anyone may ask
         <b>պահապան</b> — the keeper, an ai archivist that holds the record of
         every crossing, and says so itself. tap պահապան in the field to enter.</p>
@@ -208,6 +223,57 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 // chrome over them (pill top-left, "Made with di.iiii" badge bottom-left) —
 // see the body.inframe rules above. Same detection as field.html/index.html.
 try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
+</script>
+<script>
+// THE BLACKOUT — see the #veil comment above. Same-tier links: every
+// data-scene anchor is rewritten to window.diiPageOrigin (the shell's real
+// origin, handed down because a srcdoc page has no URL of its own) instead
+// of the hardcoded di-studio.xyz literal it ships with — a click on dev now
+// stays on dev.diiii.xyz. A click on one of those anchors fades the veil down
+// and THEN navigates the top frame, in the same handler (not a later tick),
+// so the sandbox's transient user-activation window
+// (allow-top-navigation-by-user-activation) is still open when the delayed
+// navigation actually fires. Modifier/middle clicks and keyboard activation
+// are left alone as ordinary links — only a plain click is intercepted.
+(function(){
+  var veil=document.getElementById('veil');
+  if(!veil)return;
+  var ORIGIN=window.diiPageOrigin||'https://diiii.xyz';
+  var REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),function(a){
+    try{
+      var u=new URL(a.getAttribute('href'),location.href);
+      a.href=ORIGIN+u.pathname+u.search+u.hash;
+    }catch(e){}
+  });
+
+  function fadeVeil(opacity,ms){
+    veil.style.transitionDuration=REDUCED?'0s':(ms+'ms');
+    void veil.offsetHeight;                       // commit the duration first
+    veil.style.opacity=opacity;
+  }
+
+  // fade up once fonts are actually in — capped so a slow network never
+  // leaves anyone sitting in the dark
+  var fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  var capped=new Promise(function(r){setTimeout(r,2500)});
+  Promise.race([fonts,capped]).then(function(){
+    requestAnimationFrame(function(){requestAnimationFrame(function(){fadeVeil(0,800)})});
+  });
+
+  document.addEventListener('click',function(e){
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    var a=e.target.closest('a[data-scene]');
+    if(!a||!a.href)return;
+    e.preventDefault();
+    var href=a.href;
+    fadeVeil(1,400);
+    setTimeout(function(){
+      try{top.location=href}catch(err){location.href=href}
+    },REDUCED?0:400);
+  },true);
+})();
 </script>
 <script>
 // The door learns the field's pulse — and says nothing it does not know.

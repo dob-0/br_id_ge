@@ -16,9 +16,14 @@
 /* THE FIELD AT NIGHT. The door is paper; the field you cross into is ink — the same
    two colours, turned over, so arriving reads as arriving somewhere. Decided before
    first paint so the page never flashes paper on its way to dark. The rite's ending
-   embeds the field inside its own paper page, and there it keeps the paper. */
-if(new URLSearchParams(window.diiPageQuery||location.search).get('embed')!=='1')
+   embeds the field inside its own paper page, and there it keeps the paper.
+   Same decision gates THE BLACKOUT veil below (html.veiled, see #veil): the
+   embedded field is a view inside the rite's own ending, never a page of its
+   own, so it is never the one fading a scene up or down. */
+if(new URLSearchParams(window.diiPageQuery||location.search).get('embed')!=='1'){
   document.documentElement.classList.add('ink');
+  document.documentElement.classList.add('veiled');
+}
 </script>
 <style>
 /* PAPER AND INK — the field speaks the rite's face: warm paper ground, one ink,
@@ -57,6 +62,19 @@ canvas{display:block;cursor:grab}
 canvas.grabbing{cursor:grabbing}
 #frame{position:fixed;inset:10px;border:1px solid var(--hairline);z-index:1;pointer-events:none}
 @media (max-width:560px){#frame{inset:8px}}
+
+/* THE BLACKOUT — same veil as bridge.html/index.html, the SAME dark the
+   di.iiii viewer's own LoadingScreen uses (--di-black, #000 —
+   di.iiii/src/styles/base.css), not this page's own --wet (which flips to
+   white in ink mode — it means moving ink, not a scene cut). Painted before
+   first content by the html.veiled class set in the pre-paint script above;
+   fades up only once the scene has actually rendered a first frame with
+   cores placed. Never shown to the embedded field (?embed=1, see above) or
+   to a reader with no scripting (noscript rule near the body). */
+#veil{position:fixed;inset:0;z-index:1000;background:#000;opacity:0;
+  pointer-events:none;transition:opacity .8s ease}
+html.veiled #veil{opacity:1}
+@media (prefers-reduced-motion:reduce){#veil{transition:none}}
 .hud{position:fixed;z-index:2;pointer-events:none;font-size:.55rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--graphite);line-height:1.9}
 #hd{top:0;left:0;padding:1.35rem;color:var(--ink)}
@@ -291,16 +309,18 @@ body.inframe #cta{bottom:2.4rem}
    REQUIRES that viewer: against an older one this is a black box, so it must
    never ship ahead of di.iiii. */
 html.embed,html.embed body{background:transparent}
-html.embed .hud,html.embed #frame,html.embed #kPanel,html.embed #kTab{display:none!important}
+html.embed .hud,html.embed #frame,html.embed #kPanel,html.embed #kTab,html.embed #veil{display:none!important}
 html.embed canvas{cursor:default}
 </style>
 </head>
 <body>
+<div id="veil" aria-hidden="true"></div>
+<noscript><style>#veil{display:none!important}</style></noscript>
 <div id="frame"></div>
 <canvas id="c"></canvas>
 <div class="hud" id="hd"><b>br_id_ge</b> · vi.ritual · the field<div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div></div>
 <div class="hud" id="count"><span class="n" id="n">0</span> cores<br><span id="countLine">each one = a crossing</span><br><span id="others"></span></div>
-<div class="hud" id="cta"><a href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
+<div class="hud" id="cta"><a data-scene href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a></div>
 <button class="hud" id="mode">all together →</button>
 <!-- the keeper's window IS the room — one surface, opened only by a tap on the
      lattice. The crossed speak to each other in it; anyone at all may ask
@@ -356,6 +376,41 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
 const QRY=new URLSearchParams(window.diiPageQuery||location.search);
 const EMBED=QRY.get('embed')==='1';
 if(EMBED)document.documentElement.classList.add('embed');
+
+// THE BLACKOUT — see the #veil comment in <style>. Never for the embedded
+// field: it is a view inside the rite's own ending, not a page that owns a
+// cut of its own. Same-tier links: the #cta anchor is rewritten to
+// window.diiPageOrigin instead of the hardcoded di-studio.xyz it ships
+// with, so a click on dev stays on dev.diiii.xyz. A click fades the veil
+// down and THEN navigates the top frame in the same handler (not a later
+// tick), so the sandbox's transient user-activation window
+// (allow-top-navigation-by-user-activation) is still open when the delayed
+// navigation fires. fadeVeil/REDUCED are used again below once the scene
+// has actually placed its first cores (see loadField()).
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const veil=document.getElementById('veil');
+function fadeVeil(opacity,ms){
+  if(!veil)return;
+  veil.style.transitionDuration=REDUCED?'0s':(ms+'ms');
+  void veil.offsetHeight;
+  veil.style.opacity=opacity;
+}
+if(!EMBED&&veil){
+  const ORIGIN=window.diiPageOrigin||'https://diiii.xyz';
+  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),a=>{
+    try{const u=new URL(a.getAttribute('href'),location.href);a.href=ORIGIN+u.pathname+u.search+u.hash}
+    catch(e){}
+  });
+  document.addEventListener('click',e=>{
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    const a=e.target.closest('a[data-scene]');
+    if(!a||!a.href)return;
+    e.preventDefault();
+    const href=a.href;
+    fadeVeil(1,400);
+    setTimeout(()=>{try{top.location=href}catch(err){location.href=href}},REDUCED?0:400);
+  },true);
+}
 
 // Inside the viewer this page is a srcdoc iframe with no URL, so
 // location.hostname is empty and the check below always fell through to the
@@ -1099,8 +1154,22 @@ async function loadField(){
     const carried=objects.length-insc.length;
     document.getElementById('others').textContent=carried>0?`+ ${carried} other things carried in`:'';
   }catch(e){}}
-loadField();setInterval(loadField,20000);
+const fieldFirstLoad=loadField();setInterval(loadField,20000);
 addEventListener('focus',loadField);
+
+// THE BLACKOUT, continued — fades up only once fonts are in AND the first
+// fetch of the scene has resolved (loadField() never rejects — see its own
+// try/catch — so this is "attempted", not "succeeded") AND two more frames
+// have rendered, so the veil never lifts on an empty field before the cores
+// it just placed have actually drawn. Capped so a slow network never leaves
+// anyone sitting in the dark.
+if(!EMBED&&veil){
+  const fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  const capped=new Promise(r=>setTimeout(r,2500));
+  Promise.race([Promise.all([fonts,fieldFirstLoad]),capped]).then(()=>{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>fadeVeil(0,800)));
+  });
+}
 
 // AFTER A CROSSING — the rite hands over with ?just=<word>. The field receives
 // the newcomer: goes to their core, lets it grow in before their eyes, then

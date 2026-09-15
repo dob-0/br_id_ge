@@ -53,6 +53,15 @@ body{color:var(--ink);font-family:var(--mono);cursor:none;
 #frame{position:fixed;inset:10px;border:1px solid var(--hairline);z-index:1;pointer-events:none}
 @media (max-width:560px){#frame{inset:8px}}
 
+/* THE BLACKOUT — same veil as bridge.html/field.html, the SAME dark the
+   di.iiii viewer's own LoadingScreen uses (--di-black, #000 —
+   di.iiii/src/styles/base.css). Painted before any of this page's own
+   content — including #door, the rite's own printed cover — and fades up
+   only once fonts have actually loaded and the door itself is on screen. */
+#veil{position:fixed;inset:0;z-index:1000;background:#000;opacity:1;
+  pointer-events:none;transition:opacity .8s ease}
+@media (prefers-reduced-motion:reduce){#veil{transition:none}}
+
 /* the pointer, set in ink. The page hides the system cursor so the letters
    are the only marks on the sheet — but a mouse with nothing under it is a
    mouse you've lost. One printed dot, no glow: print, not sparks. Coarse
@@ -320,6 +329,8 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
 </head>
 <body>
 
+<div id="veil" aria-hidden="true"></div>
+<noscript><style>#veil{display:none!important}</style></noscript>
 <div id="cur"></div>
 <div id="frame"></div>
 <canvas id="c"></canvas>
@@ -346,7 +357,7 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
     <div class="said"></div>
     <div class="note"></div>
     <div class="body-line" id="bodyLine"></div>
-    <a class="field-link" id="fieldLink" href="https://di-studio.xyz/br_id_ge/field" target="_top" hidden>see the field · your core is there →</a>
+    <a class="field-link" id="fieldLink" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top" hidden>see the field · your core is there →</a>
     <a class="field-link" id="keepLink" href="#" hidden>keep a copy ↓</a>
     <a class="field-link" id="unmakeLink" href="#" hidden>unmake my crossing</a>
     <div class="passage" id="passage">the field is above you · tap it to go in</div>
@@ -410,6 +421,46 @@ const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches
 const Q=window.diiPageParams
   || new URLSearchParams(window.diiPageQuery || location.search)
 try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
+
+// THE BLACKOUT — see the #veil comment in <style>. Fades up once fonts are
+// in and the door (#door, the rite's own printed cover) is actually on
+// screen — capped so a slow network never leaves anyone in the dark. Same-
+// tier links: data-scene anchors (#fieldLink, built by fieldHref() below)
+// are rewritten to window.diiPageOrigin rather than a hardcoded
+// di-studio.xyz. A click fades the veil down and THEN navigates the top
+// frame in the same handler (not a later tick), so the sandbox's transient
+// user-activation window (allow-top-navigation-by-user-activation) is still
+// open when the delayed navigation fires — this also covers the passage's
+// own `$('#fieldLink').click()` (see fieldWindow() below), which dispatches
+// a real click event through this same listener.
+;(function(){
+  const veil=document.getElementById('veil')
+  if(!veil)return
+  const ORIGIN=window.diiPageOrigin||'https://diiii.xyz'
+  function fadeVeil(opacity,ms){
+    veil.style.transitionDuration=REDUCED?'0s':(ms+'ms')
+    void veil.offsetHeight
+    veil.style.opacity=opacity
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),a=>{
+    try{const u=new URL(a.getAttribute('href'),location.href);a.href=ORIGIN+u.pathname+u.search+u.hash}
+    catch(e){}
+  })
+  const fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve()
+  const capped=new Promise(r=>setTimeout(r,2500))
+  Promise.race([fonts,capped]).then(()=>{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>fadeVeil(0,800)))
+  })
+  document.addEventListener('click',e=>{
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return
+    const a=e.target.closest('a[data-scene]')
+    if(!a||!a.href||a.hidden)return
+    e.preventDefault()
+    const href=a.href
+    fadeVeil(1,400)
+    setTimeout(()=>{try{top.location=href}catch(err){location.href=href}},REDUCED?0:400)
+  },true)
+})()
 
 // ── ink. The canvas speaks the page's own palette. ────────────────────────
 const INK='#131313', GRAPHITE='#8f8b83', LIVE='#1d4bff'
@@ -1999,7 +2050,7 @@ function fieldHref(){
   // that is supposed to rehearse the ending could never rehearse it. di.iiii
   // now hands the page its own origin; the literal stays as the fallback for
   // an older viewer and for opening this file straight off disk.
-  const host=(typeof window!=='undefined'&&window.diiPageOrigin)||'https://di-studio.xyz'
+  const host=(typeof window!=='undefined'&&window.diiPageOrigin)||'https://diiii.xyz'
   let u=host+'/br_id_ge/field?just='+encodeURIComponent(word)
   if(crossing)u+='&me='+encodeURIComponent(crossing.id)
   if(mark)u+='&mark=1'
