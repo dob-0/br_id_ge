@@ -12,6 +12,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<script>
+/* THE FIELD AT NIGHT. The door is paper; the field you cross into is ink — the same
+   two colours, turned over, so arriving reads as arriving somewhere. Decided before
+   first paint so the page never flashes paper on its way to dark. The rite's ending
+   embeds the field inside its own paper page, and there it keeps the paper. */
+if(new URLSearchParams(window.diiPageQuery||location.search).get('embed')!=='1')
+  document.documentElement.classList.add('ink');
+</script>
 <style>
 /* PAPER AND INK — the field speaks the rite's face: warm paper ground, one ink,
    one graphite, one live blue. The only depth on the page is the cores
@@ -29,6 +37,11 @@
   --arm:'Noto Serif Armenian',Georgia,serif;
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
+/* turned over: the ground takes the ink, everything printed on it takes the paper.
+   Wet is still the extreme — on a dark sheet, moving ink is pure white. The live
+   blue lifts a step so it still reads against the ground. */
+:root.ink{--paper:#131313;--ink:#f3f1ec;--hairline:#2b2a27;--paper-room:#1c1b19;
+  --wet:#ffffff;--live:#6f8cff}
 *{margin:0;padding:0;box-sizing:border-box}
 /* The `hidden` attribute loses to any id or class rule that sets display —
    #kPanel{display:flex} and #readers{display:flex} both silently outrank the
@@ -355,7 +368,9 @@ const API=QRY.get('api')||
     :location.hostname.endsWith('di-studio.xyz')
       ?'/serverXR/api/spaces/br_id_ge':'https://di-studio.xyz/serverXR/api/spaces/br_id_ge');
 
-const PAPER=0xf3f1ec
+const ROOT=getComputedStyle(document.documentElement),TOK=k=>ROOT.getPropertyValue(k).trim();
+const NIGHT=document.documentElement.classList.contains('ink');
+const PAPER=new THREE.Color(TOK('--paper')),INK=TOK('--ink'),HAIR=new THREE.Color(TOK('--hairline')),LIVE=new THREE.Color(TOK('--live'));
 const canvas=document.getElementById('c');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -369,7 +384,9 @@ const world=new THREE.Group();scene.add(world);
 // every crossing leaves its OWN form — seeded by the inscription id, so the
 // shape is as permanent as the word: the same knot on every load, unique to
 // that one crossing. One chrome for all of them: many bodies, one matter.
-const coreMat=new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:1,roughness:0.16,
+// On the dark sheet the chrome catches the light and shows. On paper white chrome
+// vanished into the page, so there the forms are dark matter, the colour of ink.
+const coreMat=new THREE.MeshPhysicalMaterial({color:NIGHT?0xffffff:0x1c1b1a,metalness:NIGHT?1:.5,roughness:NIGHT?0.16:.32,
   iridescence:1,iridescenceIOR:1.55,envMapIntensity:1.15});
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
@@ -458,7 +475,7 @@ function markFor(id,carried){
 // shadows only smudge the letters the visitor is standing in. The forms and their
 // words come across; the furniture stays home.
 if(!EMBED){const ring=new THREE.Mesh(new THREE.RingGeometry(3.2,3.24,128),
-  new THREE.MeshBasicMaterial({color:0xdcd8cf,side:THREE.DoubleSide}));
+  new THREE.MeshBasicMaterial({color:HAIR,side:THREE.DoubleSide}));
  ring.rotation.x=-Math.PI/2;ring.position.y=0.01;world.add(ring);}
 
 // graphite dust — printed specks, not embers
@@ -476,7 +493,7 @@ function labelTex(word,name){const cv=document.createElement('canvas');cv.width=
   // loadField below) already carries most of the legibility problem, but a
   // thin light stroke loses even more of what little opacity it gets, worst
   // on a phone's smaller glyphs. Bolder + bigger reads at low opacity too.
-  g.font='400 64px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
+  g.font='400 64px "Noto Serif Armenian", Georgia, serif';g.fillStyle=INK;
   g.fillText(word.slice(0,12),256,84);
   g.font='bold 26px "Space Mono", monospace';g.fillStyle='#8f8b83';
   g.fillText(name.slice(0,20),256,136);
@@ -493,7 +510,7 @@ function glyphTex(ch){
   let t=glyphCache.get(ch);if(t)return t;
   const cv=document.createElement('canvas');cv.width=cv.height=128;
   const g=cv.getContext('2d');g.textAlign='center';g.textBaseline='middle';
-  g.font='300 96px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
+  g.font='300 96px "Noto Serif Armenian", Georgia, serif';g.fillStyle=INK;
   g.fillText(ch,64,68);
   t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;
   glyphCache.set(ch,t);return t;}
@@ -513,7 +530,7 @@ function letterRing(word,rnd){
 // a soft contact shadow, so each core sits on the page instead of floating off it
 const shadowTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=128;
   const g=cv.getContext('2d');const gr=g.createRadialGradient(64,64,4,64,64,60);
-  gr.addColorStop(0,'rgba(19,19,19,0.30)');gr.addColorStop(1,'rgba(19,19,19,0)');
+  gr.addColorStop(0,NIGHT?'rgba(243,241,236,0.14)':'rgba(19,19,19,0.30)');gr.addColorStop(1,NIGHT?'rgba(243,241,236,0)':'rgba(19,19,19,0)');
   g.fillStyle=gr;g.fillRect(0,0,128,128);
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;})();
 function placeCore(tag,i,id,carriedMark){
@@ -553,7 +570,7 @@ function placeCore(tag,i,id,carriedMark){
 // reveals the body — by marking it. The gather and a fresh arrival print
 // everything: the ceremony outranks the game.
 const stainTex=(()=>{const cv=document.createElement('canvas');cv.width=cv.height=256;
-  const g=cv.getContext('2d');const r=rng(7);g.fillStyle='#131313';
+  const g=cv.getContext('2d');const r=rng(7);g.fillStyle=INK;
   for(let i=0;i<26;i++){const a=r()*Math.PI*2,d=Math.pow(r(),2)*92,s=6+r()*30;
     g.globalAlpha=.10+r()*.16;g.beginPath();
     g.arc(128+Math.cos(a)*d,128+Math.sin(a)*d,s,0,Math.PI*2);g.fill();}
@@ -644,9 +661,11 @@ const keeper=(()=>{
   grp.visible=!EMBED;
   world.add(grp);return grp;})();
 
-// THE WIRE — the almost-invisible thread through everything. Every revealed
-// core is sewn to the keeper and to its neighbour: one continuous connection,
-// at the edge of what the paper can show. It breathes a little; when the
+// THE WIRE — the thread through everything. Every revealed core is sewn to the
+// keeper and to its neighbour: one continuous connection. And each crossing is
+// one figure, not three things near each other: a plumb thread runs from its
+// shadow on the ground, through its form, up to its word — so a line that
+// reaches a crossing lands on someone. It breathes a little; when the
 // keeper is awake the thread carries the live blue very faintly.
 const wireMat=new THREE.LineBasicMaterial({color:0x8f8b83,transparent:true,opacity:.10});
 const wireGeo=new THREE.BufferGeometry();
@@ -660,9 +679,11 @@ function sewWire(t){
     if(i>0){const p=vis[i-1];
       pts.push(p.position.x,p.position.y,p.position.z,
         g.position.x,g.position.y,g.position.z);}});
+  if(!EMBED)vis.forEach(g=>{const top=g.position.y+(PORT?1.75:1.55)-0.5;
+    pts.push(g.position.x,0.06,g.position.z,g.position.x,top,g.position.z);});
   wireGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pts),3));
-  wireMat.opacity=(0.06+Math.sin(t*.7)*.03)+(keeperOnline()?.05:0);
-  wireMat.color.set(keeperOnline()?0x1d4bff:0x8f8b83);}
+  wireMat.opacity=((EMBED?0.06:0.30)+Math.sin(t*.7)*.03)+(keeperOnline()?.05:0);
+  wireMat.color.set(keeperOnline()?LIVE:0x8f8b83);}
 let keeperSeen=-1e9,keeperName='';
 function keeperOnline(){return performance.now()-keeperSeen<15000;}
 // Redrawing only on the awake/asleep flip was enough while one body could ever
@@ -673,9 +694,9 @@ let keeperWas=null;
 function keeperFace(){
   const on=keeperOnline(),face=on?(keeperName||'jet.di'):'';
   if(face===keeperWas)return;keeperWas=face;
-  keeperMat.color.set(on?0x1d4bff:0x8f8b83);
-  keeperEyeMat.color.set(on?0x1d4bff:0x8f8b83);
-  keeper.userData.orbits.forEach(o=>o.material.color.set(on?0x1d4bff:0x8f8b83));
+  keeperMat.color.set(on?LIVE:0x8f8b83);
+  keeperEyeMat.color.set(on?LIVE:0x8f8b83);
+  keeper.userData.orbits.forEach(o=>o.material.color.set(on?LIVE:0x8f8b83));
   keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'jet.di')+' awake'):'keeper · asleep');
   keeper.userData.label.material.needsUpdate=true;
   // The eye belongs to jet.di alone. When di.bo keeps, the window must not
