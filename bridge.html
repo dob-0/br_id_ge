@@ -47,6 +47,15 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
   #br{display:none}
   #tl,#tr{max-width:calc(50% - .6rem)}}
 
+/* INSIDE THE di.iiii VIEWER. A published page is a srcdoc iframe with the
+   viewer's own chrome over it: a project-switcher pill top-left and a "Made
+   with di.iiii" badge bottom-left. The door's own "di.iiii" corner sits in
+   that exact spot and printed straight through the badge, on phone and
+   desktop — field.html already steps its own bottom row out of the same
+   corner; the door never did. Same offsets. */
+body.inframe #bl{bottom:2.4rem}
+@media (max-width:560px){body.inframe #bl{bottom:2.9rem}}
+
 /* the door keeps the whole first viewport to itself; everything else waits below */
 main{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -188,6 +197,12 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <p class="honest">built openly with ai tools</p>
 </div>
 
+<script>
+// Published pages render inside a srcdoc iframe with the di.iiii viewer's own
+// chrome over them (pill top-left, "Made with di.iiii" badge bottom-left) —
+// see the body.inframe rules above. Same detection as field.html/index.html.
+try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
+</script>
 <script>
 // The door learns the field's pulse — and says nothing it does not know.
 // Same space, same mesh as field.html; published pages are srcdoc iframes with

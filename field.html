@@ -472,10 +472,14 @@ const cores=new Map(); // objectId -> group
 // camera, so a single texture can never read mirrored as the field rotates
 function labelTex(word,name){const cv=document.createElement('canvas');cv.width=512;cv.height=192;
   const g=cv.getContext('2d');g.textAlign='center';
-  g.font='300 54px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
-  g.fillText(word.slice(0,12),256,80);
-  g.font='22px "Space Mono", monospace';g.fillStyle='#8f8b83';
-  g.fillText(name.slice(0,20),256,134);
+  // heavier + larger than before (300/54, 22 plain) — the ghost state (see
+  // loadField below) already carries most of the legibility problem, but a
+  // thin light stroke loses even more of what little opacity it gets, worst
+  // on a phone's smaller glyphs. Bolder + bigger reads at low opacity too.
+  g.font='400 64px "Noto Serif Armenian", Georgia, serif';g.fillStyle='#131313';
+  g.fillText(word.slice(0,12),256,84);
+  g.font='bold 26px "Space Mono", monospace';g.fillStyle='#8f8b83';
+  g.fillText(name.slice(0,20),256,136);
   const t=new THREE.CanvasTexture(cv);t.minFilter=THREE.LinearFilter;return t;}
 // THE LETTERS. The word a crossing left was only ever a caption under its core —
 // small, flat, and gone the moment the field gathered. But the rite is made of
@@ -1061,7 +1065,12 @@ async function loadField(){
     cores.forEach((g,id)=>{const u=g.userData;
       if(u.revT===1)return;
       if(revealedStore.has(id)){u.revT=1;u.born=u.born||performance.now();}
-      else if(!u.ghost){u.ghost=true;u.revT=0.14;u.born=performance.now();}});
+      // 0.14 read as "the page is empty" (worst on phone, where the label is
+      // already smaller) rather than "there is something here, unrevealed" —
+      // raised so a first-time visitor can actually read a name before ever
+      // tapping. Still well short of a full reveal (1), so the ink still has
+      // something to do.
+      else if(!u.ghost){u.ghost=true;u.revT=0.34;u.born=performance.now();}});
     {const el=document.getElementById('n'),to=cores.size,from=parseInt(el.textContent)||0;
      if(matchMedia('(prefers-reduced-motion: reduce)').matches||to<=from){el.textContent=to;}
      else{let v=from;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t);},60);}}
