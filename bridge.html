@@ -8,7 +8,7 @@
 <meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual">
 <meta property="og:description" content="A bridge between the real world and a shared digital one. Cross, answer once — your word keeps walking with everyone who crossed.">
 <meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-bridge.jpg">
-<meta property="og:url" content="https://di-studio.xyz/br_id_ge">
+<meta property="og:url" content="https://diiii.xyz/br_id_ge">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,7 +184,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   var inCubic=function(k){return k*k*k};
   var outCubic=function(k){return 1-Math.pow(1-k,2.2)};
   var inOut=function(k){return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2};
-  var dot=null;
+  var dot=null,leaving=false,opened=false;
   function point(on){
     if(!on){if(dot){dot.remove();dot=null}return}
     if(dot)return;
@@ -198,6 +198,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
     seed:seed,
     // arriving: the scene opens out of the seed
     open:function(){
+      opened=true;
       if(!veil)return;
       if(REDUCED)return clear();
       var s=seed(),R=far(s[0],s[1]);
@@ -208,6 +209,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
     // a timer started in the caller's own click, so the navigation keeps the
     // click's user activation
     collapse:function(x,y,go){
+      if(leaving)return;leaving=true;               // a second tap is the same crossing
       var ms=REDUCED?0:720;
       setTimeout(go,ms);
       if(!veil||REDUCED){if(veil){veil.style.transitionDuration='0s';veil.style.opacity=1}return}
@@ -231,7 +233,14 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   };
   // back/forward cache: a page restored from history is still in the dark it
   // collapsed into — open it again instead of leaving a black screen
-  addEventListener('pageshow',function(e){if(e.persisted){point(false);window.COSMOS.open()}});
+  addEventListener('pageshow',function(e){if(e.persisted){leaving=false;point(false);window.COSMOS.open()}});
+  // the lift lives in each page's own scene script; if that script never runs
+  // (a CDN that does not answer, WebGL refused) the page would stay black for
+  // good. Whatever happens, the dark opens by itself.
+  setTimeout(function(){if(!opened&&!leaving)window.COSMOS.open()},4500);
+  // the one way out of a srcdoc frame is the top frame; if that is refused, a
+  // new top-level load — never the whole viewer inside this page's own frame
+  window.COSMOS.go=function(href){try{top.location=href}catch(err){window.open(href,'_top')}};
 })();
 </script>
 
@@ -239,7 +248,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 
 <div class="hud" id="tl">br_id_ge · vi.ritual</div>
 <div class="hud" id="tr">notations #2 · rituals · hosq</div>
-<div class="hud" id="bl"><a href="https://di-studio.xyz">di.iiii</a></div>
+<div class="hud" id="bl"><a data-origin href="https://diiii.xyz/" target="_top">di.iiii</a></div>
 <div class="hud" id="br">jul 20 – aug 2 2026 · state philharmonia</div>
 
 <main>
@@ -280,7 +289,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <section id="standing">
     <h2>already standing</h2>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/algovrithm" target="_top">algovrithm →</a>
+      <a class="pname" data-origin href="https://diiii.xyz/algovrithm" target="_top">algovrithm →</a>
       <p class="pline">emilya nikoghosyan's work, already part of notations 2 xr.</p>
     </div>
   </section>
@@ -316,9 +325,10 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
 (function(){
   var veil=document.getElementById('veil');
   if(!veil)return;
-  var ORIGIN=window.diiPageOrigin||'https://diiii.xyz';
+  var ORIGIN=window.diiPageOrigin||(/^https?:$/.test(location.protocol)?location.origin:'https://diiii.xyz');
 
-  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),function(a){
+  // data-origin links (di.iiii, algovrithm) follow the tier too, without the crossing
+  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene],a[data-origin]'),function(a){
     try{
       var u=new URL(a.getAttribute('href'),location.href);
       a.href=ORIGIN+u.pathname+u.search+u.hash;
@@ -340,9 +350,7 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
     e.preventDefault();
     var href=a.href;
     var s=COSMOS.seed(),x=e.detail?e.clientX:s[0],y=e.detail?e.clientY:s[1];
-    COSMOS.collapse(x,y,function(){
-      try{top.location=href}catch(err){location.href=href}
-    });
+    COSMOS.collapse(x,y,function(){COSMOS.go(href)});
   },true);
 })();
 </script>
@@ -384,7 +392,8 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
       if(m.type==='mesh:event'&&m.channel==='keeper'){seen=Date.now();face();}};
     ws.onerror=function(){};
     ws.onclose=function(){if(tried++<1)setTimeout(mesh,8000)};   // one retry, then quiet
-    addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}});
+    addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}},{once:true});
+    addEventListener('pageshow',function(e){if(e.persisted){tried=0;mesh()}},{once:true});
   })();
 })();
 </script>

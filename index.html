@@ -387,7 +387,7 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
   var inCubic=function(k){return k*k*k};
   var outCubic=function(k){return 1-Math.pow(1-k,2.2)};
   var inOut=function(k){return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2};
-  var dot=null;
+  var dot=null,leaving=false,opened=false;
   function point(on){
     if(!on){if(dot){dot.remove();dot=null}return}
     if(dot)return;
@@ -401,6 +401,7 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
     seed:seed,
     // arriving: the scene opens out of the seed
     open:function(){
+      opened=true;
       if(!veil)return;
       if(REDUCED)return clear();
       var s=seed(),R=far(s[0],s[1]);
@@ -411,6 +412,7 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
     // a timer started in the caller's own click, so the navigation keeps the
     // click's user activation
     collapse:function(x,y,go){
+      if(leaving)return;leaving=true;               // a second tap is the same crossing
       var ms=REDUCED?0:720;
       setTimeout(go,ms);
       if(!veil||REDUCED){if(veil){veil.style.transitionDuration='0s';veil.style.opacity=1}return}
@@ -434,7 +436,14 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
   };
   // back/forward cache: a page restored from history is still in the dark it
   // collapsed into — open it again instead of leaving a black screen
-  addEventListener('pageshow',function(e){if(e.persisted){point(false);window.COSMOS.open()}});
+  addEventListener('pageshow',function(e){if(e.persisted){leaving=false;point(false);window.COSMOS.open()}});
+  // the lift lives in each page's own scene script; if that script never runs
+  // (a CDN that does not answer, WebGL refused) the page would stay black for
+  // good. Whatever happens, the dark opens by itself.
+  setTimeout(function(){if(!opened&&!leaving)window.COSMOS.open()},4500);
+  // the one way out of a srcdoc frame is the top frame; if that is refused, a
+  // new top-level load — never the whole viewer inside this page's own frame
+  window.COSMOS.go=function(href){try{top.location=href}catch(err){window.open(href,'_top')}};
 })();
 </script>
 <div id="cur"></div>
@@ -539,7 +548,7 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
 ;(function(){
   const veil=document.getElementById('veil')
   if(!veil)return
-  const ORIGIN=window.diiPageOrigin||'https://diiii.xyz'
+  const ORIGIN=window.diiPageOrigin||(/^https?:$/.test(location.protocol)?location.origin:'https://diiii.xyz')
   Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),a=>{
     try{const u=new URL(a.getAttribute('href'),location.href);a.href=ORIGIN+u.pathname+u.search+u.hash}
     catch(e){}
@@ -556,7 +565,7 @@ try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){
     e.preventDefault()
     const href=a.href
     const s=COSMOS.seed(),x=e.detail?e.clientX:s[0],y=e.detail?e.clientY:s[1]
-    COSMOS.collapse(x,y,()=>{try{top.location=href}catch(err){location.href=href}})
+    COSMOS.collapse(x,y,()=>COSMOS.go(href))
   },true)
 })()
 
@@ -1598,7 +1607,9 @@ function askKeeper(prompt,pool,vars){
 }
 
 // ── the field ─────────────────────────────────────────────────────────────
-const FIELD_URL=(Q.get('field')||($('meta[name="field-url"]')||{}).content||'').replace(/\/+$/,'')
+// the metas are what a file off disk uses; inside the viewer the host it serves from wins,
+// or dev's rite reads, posts and deletes against whatever host the build wrote down
+const FIELD_URL=(Q.get('field')||(window.diiPageOrigin?window.diiPageOrigin+'/serverXR/api/spaces/br_id_ge':'')||($('meta[name="field-url"]')||{}).content||'').replace(/\/+$/,'')
 let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]')}catch(e){field=[]}
 $('#sField').textContent=field.length
 if(FIELD_URL){
@@ -1618,7 +1629,7 @@ if(FIELD_URL){
 }
 
 // ── co-presence. Protocol untouched; peers are one faint point each. ──────
-const MESH_URL=Q.get('mesh')||($('meta[name="mesh-url"]')||{}).content||''
+const MESH_URL=Q.get('mesh')||(window.diiPageOrigin?window.diiPageOrigin.replace(/^http/,'ws')+'/serverXR/mesh':'')||($('meta[name="mesh-url"]')||{}).content||''
 const myNode='n'+Math.random().toString(36).slice(2,8)
 const Mesh={ws:null,live:false,peers:new Map(),lastSend:0,
   connect(){
@@ -2148,7 +2159,7 @@ function fieldHref(){
   // that is supposed to rehearse the ending could never rehearse it. di.iiii
   // now hands the page its own origin; the literal stays as the fallback for
   // an older viewer and for opening this file straight off disk.
-  const host=(typeof window!=='undefined'&&window.diiPageOrigin)||'https://diiii.xyz'
+  const host=window.diiPageOrigin||(/^https?:$/.test(location.protocol)?location.origin:'https://diiii.xyz')
   let u=host+'/br_id_ge/field?just='+encodeURIComponent(word)
   if(crossing)u+='&me='+encodeURIComponent(crossing.id)
   if(mark)u+='&mark=1'
@@ -2241,7 +2252,7 @@ $('#keepLink').addEventListener('click',e=>{
   k.fillText(name||'—',540,760)
   // the footer ran off both edges of the sheet whenever the mono font had not
   // loaded into the canvas and a wider fallback stood in for it
-  const foot='br_id_ge · vi.ritual · notations #2 · di-studio.xyz/br_id_ge'
+  const foot='br_id_ge · vi.ritual · notations #2 · diiii.xyz/br_id_ge'
   let ffs=30
   k.font=ffs+'px "Space Mono",ui-monospace,Menlo,monospace'
   while(ffs>14&&k.measureText(foot).width>940){ffs-=2;k.font=ffs+'px "Space Mono",ui-monospace,Menlo,monospace'}

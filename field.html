@@ -8,7 +8,7 @@
 <meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual — the field">
 <meta property="og:description" content="Every core is one crossing of the bridge — still walking, together.">
 <meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-echo.jpg">
-<meta property="og:url" content="https://di-studio.xyz/br_id_ge/field">
+<meta property="og:url" content="https://diiii.xyz/br_id_ge/field">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@300;400&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
@@ -240,7 +240,7 @@ html.veiled #veil{opacity:1}
   .hud{font-size:.46rem;letter-spacing:.12em}
   #hd .arm{font-size:.52rem;letter-spacing:.34em}
   /* the mode switch lifts clear of the link in the corner beneath it */
-  #mode{bottom:2.6rem}
+  #mode{bottom:2.6rem;font-size:.46rem;letter-spacing:.12em}
   /* a panel floating over the middle of a phone IS the screen. It becomes a
      sheet at the bottom, where a thumb is and the field is not. */
   /* …and it stops short of the bottom row, so the sheet never sits on top of
@@ -344,7 +344,7 @@ html.embed canvas{cursor:default}
   var inCubic=function(k){return k*k*k};
   var outCubic=function(k){return 1-Math.pow(1-k,2.2)};
   var inOut=function(k){return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2};
-  var dot=null;
+  var dot=null,leaving=false,opened=false;
   function point(on){
     if(!on){if(dot){dot.remove();dot=null}return}
     if(dot)return;
@@ -358,6 +358,7 @@ html.embed canvas{cursor:default}
     seed:seed,
     // arriving: the scene opens out of the seed
     open:function(){
+      opened=true;
       if(!veil)return;
       if(REDUCED)return clear();
       var s=seed(),R=far(s[0],s[1]);
@@ -368,6 +369,7 @@ html.embed canvas{cursor:default}
     // a timer started in the caller's own click, so the navigation keeps the
     // click's user activation
     collapse:function(x,y,go){
+      if(leaving)return;leaving=true;               // a second tap is the same crossing
       var ms=REDUCED?0:720;
       setTimeout(go,ms);
       if(!veil||REDUCED){if(veil){veil.style.transitionDuration='0s';veil.style.opacity=1}return}
@@ -391,7 +393,14 @@ html.embed canvas{cursor:default}
   };
   // back/forward cache: a page restored from history is still in the dark it
   // collapsed into — open it again instead of leaving a black screen
-  addEventListener('pageshow',function(e){if(e.persisted){point(false);window.COSMOS.open()}});
+  addEventListener('pageshow',function(e){if(e.persisted){leaving=false;point(false);window.COSMOS.open()}});
+  // the lift lives in each page's own scene script; if that script never runs
+  // (a CDN that does not answer, WebGL refused) the page would stay black for
+  // good. Whatever happens, the dark opens by itself.
+  setTimeout(function(){if(!opened&&!leaving)window.COSMOS.open()},4500);
+  // the one way out of a srcdoc frame is the top frame; if that is refused, a
+  // new top-level load — never the whole viewer inside this page's own frame
+  window.COSMOS.go=function(href){try{top.location=href}catch(err){window.open(href,'_top')}};
 })();
 </script>
 <div id="frame"></div>
@@ -474,7 +483,7 @@ function fadeVeil(opacity,ms){
   veil.style.opacity=opacity;
 }
 if(!EMBED&&veil){
-  const ORIGIN=window.diiPageOrigin||'https://diiii.xyz';
+  const ORIGIN=window.diiPageOrigin||(/^https?:$/.test(location.protocol)?location.origin:'https://diiii.xyz');
   Array.prototype.forEach.call(document.querySelectorAll('a[data-scene]'),a=>{
     try{const u=new URL(a.getAttribute('href'),location.href);a.href=ORIGIN+u.pathname+u.search+u.hash}
     catch(e){}
@@ -486,7 +495,7 @@ if(!EMBED&&veil){
     e.preventDefault();
     const href=a.href;
     const s=COSMOS.seed(),x=e.detail?e.clientX:s[0],y=e.detail?e.clientY:s[1];
-    COSMOS.collapse(x,y,()=>{try{top.location=href}catch(err){location.href=href}});
+    COSMOS.collapse(x,y,()=>COSMOS.go(href));
   },true);
 }
 
@@ -803,6 +812,7 @@ const keeper=(()=>{
 const wireMat=new THREE.LineBasicMaterial({color:0x8f8b83,transparent:true,opacity:.10});
 const wireGeo=new THREE.BufferGeometry();
 const wire=new THREE.LineSegments(wireGeo,wireMat);wire.frustumCulled=false;world.add(wire);
+let wireBuf=null;   // grown, never reallocated per frame
 function sewWire(t){
   const vis=[...cores.values()].filter(g=>g.visible);
   const pts=[];
@@ -814,7 +824,10 @@ function sewWire(t){
         g.position.x,g.position.y,g.position.z);}});
   if(!EMBED)vis.forEach(g=>{const top=g.position.y+(PORT?1.75:1.55)-0.5;
     pts.push(g.position.x,0.06,g.position.z,g.position.x,top,g.position.z);});
-  wireGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pts),3));
+  if(!wireBuf||wireBuf.length<pts.length){
+    wireBuf=new Float32Array(Math.max(pts.length,wireBuf?wireBuf.length*2:1536));
+    wireGeo.setAttribute('position',new THREE.BufferAttribute(wireBuf,3));}
+  wireBuf.set(pts);wireGeo.attributes.position.needsUpdate=true;wireGeo.setDrawRange(0,pts.length/3);
   wireMat.opacity=((EMBED?0.06:0.30)+Math.sin(t*.7)*.03)+(keeperOnline()?.05:0);
   wireMat.color.set(keeperOnline()?LIVE:0x8f8b83);}
 let keeperSeen=-1e9,keeperName='';
@@ -830,6 +843,7 @@ function keeperFace(){
   keeperMat.color.set(on?LIVE:0x8f8b83);
   keeperEyeMat.color.set(on?LIVE:0x8f8b83);
   keeper.userData.orbits.forEach(o=>o.material.color.set(on?LIVE:0x8f8b83));
+  keeper.userData.label.material.map?.dispose();
   keeper.userData.label.material.map=labelTex('պահապան',on?('keeper · '+(keeperName||'jet.di')+' awake'):'keeper · asleep');
   keeper.userData.label.material.needsUpdate=true;
   // The eye belongs to jet.di alone. When di.bo keeps, the window must not
@@ -1203,10 +1217,19 @@ window.__keeper=()=>{
     x:(v.x*.5+.5)*innerWidth,y:(-v.y*.5+.5)*innerHeight};};
 window.__room=()=>({seat,here:[...roomWho.keys()],open:!kPanel.hidden,node:myNode});
 
+let fieldAnswered=false;
+function fieldSilent(){
+  if(fieldAnswered)return;
+  document.getElementById('n').textContent='—';
+  document.getElementById('countLine').textContent='the field is not answering';
+  document.getElementById('hint').hidden=true;}
 async function loadField(){
   try{
-    const r=await fetch(API+'/scene');if(!r.ok)return;
+    const r=await fetch(API+'/scene');if(!r.ok)return fieldSilent();
     const objects=((await r.json()).scene||{}).objects||[];
+    if(!fieldAnswered){fieldAnswered=true;
+      document.getElementById('countLine').textContent='each one = a crossing';
+      document.getElementById('hint').hidden=false;}
     const insc=objects.filter(o=>String(o.id||'').startsWith('insc-'));
     insc.forEach(o=>{if(!cores.has(o.id))cores.set(o.id,placeCore(o.data||'',cores.size,o.id,o.mark));});
     gatherSeats();receive();claimSeat();offerTunnel();
@@ -1231,7 +1254,7 @@ async function loadField(){
     // the field is not only cores — anything carried into this space counts
     const carried=objects.length-insc.length;
     document.getElementById('others').textContent=carried>0?`+ ${carried} other things carried in`:'';
-  }catch(e){}}
+  }catch(e){fieldSilent()}}
 const fieldFirstLoad=loadField();setInterval(loadField,20000);
 addEventListener('focus',loadField);
 
