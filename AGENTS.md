@@ -64,7 +64,7 @@ actors, not decoration. The rite and the door carry the artwork's own face.
 another:
 
 ```bash
-node scripts/sync-space.mjs --all --tier staging
+node scripts/sync-space.mjs --all --tier dev
 node scripts/sync-space.mjs --audit        # all tiers, read-only, exit 1 on drift
 ```
 

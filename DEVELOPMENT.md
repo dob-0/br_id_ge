@@ -73,10 +73,10 @@ visibility, the tier map, and the list of pages that are supposed to exist.
 `di-space.<page>.json` owns one **page** — entry file, slug, title, assets.
 
 ```bash
-node scripts/sync-space.mjs --all --tier staging   # every page → the dev tier (dev.diiii.xyz; the key is still `staging`)
+node scripts/sync-space.mjs --all --tier dev       # every page → the dev tier (dev.diiii.xyz)
 node scripts/sync-space.mjs --all --tier prod      # the live door
 node scripts/sync-space.mjs --audit                # compare every tier, exit 1 on drift
-node scripts/sync-space.mjs --all --tier staging --dry-run
+node scripts/sync-space.mjs --all --tier dev --dry-run
 ```
 
 `--audit` is the one to reach for first. It reads all three tiers and prints a
