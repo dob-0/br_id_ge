@@ -286,18 +286,30 @@ body.inframe{--hudfloor:2.6rem}
 .rd.on::before{content:'\25CF'}       /* ● — awake, and feeding the reading */
 .rd:disabled{cursor:default}
 
-/* the door — a printed cover page */
-#door{position:fixed;inset:0;z-index:9;background:var(--paper);display:grid;place-items:center;
-  padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:opacity 1.1s ease}
+/* the door — the dark you crossed in, with one lamp to light. It used to be a
+   second printed cover: the same կամուրջ, the same paper, the same sentence as
+   bridge.html, so after "cross the bridge" people thought nothing had happened
+   and never gave the one touch the camera, sound and tilt need. Now the blackout
+   lifts onto the same black, and the only bright thing on it is the lamp. */
+#door{position:fixed;inset:0;z-index:9;background:#000;display:grid;place-items:center;
+  padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:opacity 1.1s ease;
+  -webkit-tap-highlight-color:transparent}
 #door.gone{opacity:0;pointer-events:none}
-#door .w{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,12vw,5.8rem);line-height:1;color:var(--ink)}
+#door .lamp{width:clamp(7.5rem,34vw,10rem);aspect-ratio:1;border-radius:50%;margin:0 auto;
+  background:radial-gradient(circle,#fffdf6 0,#f3f1ec 30%,#f3f1ec00 71%);
+  box-shadow:0 0 0 1px #f3f1ec55;position:relative;animation:lampbreath 2.6s ease-in-out infinite}
+/* the halo is a gradient, not a blurred shadow: phones drew the shadow as a square */
+#door .lamp::before{content:'';position:absolute;inset:-70%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,#1d4bff55 0,#1d4bff22 35%,#1d4bff00 68%)}
+@keyframes lampbreath{50%{transform:scale(1.07)}}
+#door .call{font-family:var(--mono);font-size:clamp(.9rem,3.6vw,1.1rem);letter-spacing:.22em;
+  color:#f3f1ec;margin-top:2.4rem;text-transform:lowercase}
 #door .t{font-family:var(--grot);font-weight:300;font-size:clamp(.82rem,2.6vw,1rem);letter-spacing:.02em;line-height:1.9;
-  color:var(--graphite);max-width:44ch;margin-top:2.2rem}
-#door .t em{font-style:normal;color:var(--live)}
-#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:var(--graphite);
+  color:#8f8b83;max-width:36ch;margin:1.4rem auto 0}
+#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:#6b6861;
   margin-top:2.4rem;line-height:1.9;text-transform:lowercase}
 
-@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#g3{transition:none}}
+@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#door .lamp{animation:none}#g3{transition:none}}
 @media (pointer:coarse){body{cursor:auto}}
 @media (max-width:560px){
   #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
@@ -392,15 +404,10 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
 
 <div id="door">
   <div>
-    <div class="w arm">կամուրջ</div>
-    <!-- "stand where the lamp can see you" is an instruction nobody holding a
-         phone can follow: the camera is a hand's width from their face and their
-         body is never in frame. It told most visitors to do the one thing their
-         device cannot, while the input they actually had went unmentioned. -->
-    <div class="t">a bridge between the real world and a shared one.
-      draw · move · turn it around — the bridge reads you however it can,
-      and your outline is read into letters. then answer once.<br>
-      <em>touch to open the lamp</em></div>
+    <div class="lamp" aria-hidden="true"></div>
+    <div class="call">touch to open the lamp</div>
+    <div class="t">draw · move · turn it around — the bridge reads you
+      however it can, and your outline is read into letters. then answer once.</div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
   </div>
 </div>
