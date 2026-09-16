@@ -38,7 +38,7 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 | `docs/PROJECT.md` | Canonical project docs |
 | `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
 | `docs/KEEPER.md` | The keeper — both bodies, channels, bring-up, failure modes |
-| `scripts/serve.mjs` | Local mirror of the whole space (staging tier by default) |
+| `scripts/serve.mjs` | Local mirror of the whole space (dev tier by default) |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
 | `scripts/auto-push-space.sh` | Multi-file repo sync watcher |
 
@@ -69,7 +69,7 @@ node scripts/sync-space.mjs --audit        # all tiers, read-only, exit 1 on dri
 ```
 
 Never hand-sync a single manifest and call the space synced — that is how prod,
-staging and the dev box ended up with three different names for it. Never edit
+dev and the local box ended up with three different names for it. Never edit
 `scripts/sync-space.mjs` here: it is vendored from di.iiii's
 `scripts/space-sync.mjs` (change it upstream, then `npm run space:sync:release`
 in di.iiii — see `docs/ai/space-sync-vendoring.md` there).
@@ -78,7 +78,7 @@ in di.iiii — see `docs/ai/space-sync-vendoring.md` there).
 (`.github/workflows/vendor-check.yml`, `scripts/sync-space-check.mjs`) — a fresh
 HTTPS fetch, no token needed, since di.iiii is public. If it goes red, the fix is
 always the same: run `npm run space:sync:release` in di.iiii. `sync-space.yml`
-(the workflow that actually pushes to staging/prod) gates on this passing first —
+(the workflow that actually pushes to dev/prod) gates on this passing first —
 a drifted engine must not be allowed to sync production.
 
 ## Golden Rule — see it before it ships
@@ -86,13 +86,13 @@ a drifted engine must not be allowed to sync production.
 Everything we build is LOOKED AT before it graduates, in this order:
 
 1. **local** — open the page in a browser (file:// or the di.iiii dev stack on :4000)
-2. **staging** — sync into the `br_id_ge` space at `staging.di-studio.xyz`
-   (`node scripts/sync-space.mjs --repo . --to https://staging.di-studio.xyz/serverXR`, or `node scripts/serve.mjs` locally)
+2. **dev** — sync into the `br_id_ge` space at `dev.diiii.xyz` (the manifest's tier key is still `staging`)
+   (`node scripts/sync-space.mjs --repo . --to https://dev.diiii.xyz/serverXR`, or `node scripts/serve.mjs` locally)
 3. only then merge/publish — Pages and prod follow
 
 **GitHub is the backend** — the place where things are KEPT, not where they are
 first seen. Never merge a visual surface to `main` that nobody has looked at on
-local + staging.
+local + dev.
 
 **We work IN di.iiii** — if something can run on di.iiii, it runs there: as a
 space project, on serverXR, through the mesh. Build for the platform first;
