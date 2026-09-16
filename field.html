@@ -316,6 +316,84 @@ html.embed canvas{cursor:default}
 <body>
 <div id="veil" aria-hidden="true"></div>
 <noscript><style>#veil{display:none!important}</style></noscript>
+<script>
+// THE COSMOS — how every crossing between door, rite and field moves, the same
+// way on all three pages (this block is copied verbatim into each). A scene is
+// not faded, it is made and unmade the way a universe is: leaving, the page
+// collapses into the point you touched, drawn to the seed and left as one point
+// of light; arriving, the next scene opens out of that same point. The rite's
+// lamp sits exactly on the seed, so the point you collapsed into is the lamp you
+// then touch — and that touch is the bang (COSMOS.bang). The veil is still the
+// blackout's black; the moving edge is a soft mask, never a hard circle, so it
+// reads as light spreading and not as a wipe. Reduced motion: plain cuts.
+(function(){
+  var veil=document.getElementById('veil');
+  var REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SOFT=56;
+  function seedY(){return innerHeight*(innerHeight<600?.28:.42)}
+  function seed(){return [innerWidth/2,seedY()]}
+  function far(x,y){return Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+SOFT}
+  function mask(el,x,y,r,soft){
+    var m=r<=0?'none':'radial-gradient(circle at '+x.toFixed(1)+'px '+y.toFixed(1)+'px,transparent '+r.toFixed(1)+'px,#000 '+(r+soft).toFixed(1)+'px)';
+    el.style.webkitMaskImage=m;el.style.maskImage=m;
+  }
+  function tween(ms,ease,step,done){
+    var t0=performance.now();
+    (function f(now){var k=Math.min(1,(now-t0)/ms);step(ease(k));if(k<1)requestAnimationFrame(f);else if(done)done()})(t0);
+  }
+  var inCubic=function(k){return k*k*k};
+  var outCubic=function(k){return 1-Math.pow(1-k,2.2)};
+  var inOut=function(k){return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2};
+  var dot=null;
+  function point(on){
+    if(!on){if(dot){dot.remove();dot=null}return}
+    if(dot)return;
+    dot=document.createElement('div');dot.setAttribute('aria-hidden','true');
+    var s=seed();
+    dot.style.cssText='position:fixed;z-index:1001;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;pointer-events:none;left:'+s[0]+'px;top:'+s[1]+'px;transition:transform .25s ease;transform:scale(0)';
+    document.body.appendChild(dot);void dot.offsetHeight;dot.style.transform='scale(1)';
+  }
+  function clear(){if(!veil)return;veil.style.transitionDuration='0s';veil.style.opacity=0;mask(veil,0,0,0,0);point(false)}
+  window.COSMOS={
+    seed:seed,
+    // arriving: the scene opens out of the seed
+    open:function(){
+      if(!veil)return;
+      if(REDUCED)return clear();
+      var s=seed(),R=far(s[0],s[1]);
+      veil.style.transitionDuration='0s';veil.style.opacity=1;
+      tween(1300,inOut,function(k){mask(veil,s[0],s[1],k*R,SOFT*(0.4+k))},clear);
+    },
+    // leaving: collapse into the touched point, drawn to the seed; `go` runs on
+    // a timer started in the caller's own click, so the navigation keeps the
+    // click's user activation
+    collapse:function(x,y,go){
+      var ms=REDUCED?0:720;
+      setTimeout(go,ms);
+      if(!veil||REDUCED){if(veil){veil.style.transitionDuration='0s';veil.style.opacity=1}return}
+      var s=seed(),R=far(x,y);
+      veil.style.transitionDuration='0s';veil.style.opacity=1;
+      tween(ms-60,inCubic,function(k){
+        mask(veil,x+(s[0]-x)*k,y+(s[1]-y)*k,(1-k)*R,SOFT*(1-k*.8));
+      },function(){mask(veil,0,0,0,0);point(true)});
+    },
+    // the bang: `el` (a dark sheet) opens from its lamp at (x,y) until nothing
+    // of it is left, then `done`
+    // — first the lamp gathers (a breath held), then it goes, fast at birth and
+    // slowing as it spreads, the way an expansion does
+    bang:function(el,x,y,r0,done){
+      if(REDUCED){done();return}
+      var R=far(x,y)+160;
+      setTimeout(function(){
+        tween(2000,outCubic,function(k){mask(el,x,y,r0+k*(R-r0),30+k*130)},done);
+      },280);
+    }
+  };
+  // back/forward cache: a page restored from history is still in the dark it
+  // collapsed into — open it again instead of leaving a black screen
+  addEventListener('pageshow',function(e){if(e.persisted){point(false);window.COSMOS.open()}});
+})();
+</script>
 <div id="frame"></div>
 <canvas id="c"></canvas>
 <div class="hud" id="hd"><b>br_id_ge</b> · vi.ritual · the field<div class="arm">Կ Ա Մ ՈՒ Ր Ջ</div></div>
@@ -407,8 +485,8 @@ if(!EMBED&&veil){
     if(!a||!a.href)return;
     e.preventDefault();
     const href=a.href;
-    fadeVeil(1,400);
-    setTimeout(()=>{try{top.location=href}catch(err){location.href=href}},REDUCED?0:400);
+    const s=COSMOS.seed(),x=e.detail?e.clientX:s[0],y=e.detail?e.clientY:s[1];
+    COSMOS.collapse(x,y,()=>{try{top.location=href}catch(err){location.href=href}});
   },true);
 }
 
@@ -1167,7 +1245,7 @@ if(!EMBED&&veil){
   const fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
   const capped=new Promise(r=>setTimeout(r,2500));
   Promise.race([Promise.all([fonts,fieldFirstLoad]),capped]).then(()=>{
-    requestAnimationFrame(()=>requestAnimationFrame(()=>fadeVeil(0,800)));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>COSMOS.open()));
   });
 }
 
