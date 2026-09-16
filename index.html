@@ -1786,7 +1786,7 @@ const GATE_LABEL=['','cross the bridge →','go on →','set it down →']
 let gateNext=-1,gateQuiet=false,gateLabel='',gateAt=0
 // seconds of stillness before a gate crosses by itself: the threshold waits for
 // the drawing hand to rest; after the greeting, only for the line to be read
-const FUSE_S=[0,6,4.5]
+const FUSE_S=[0,12,4.5]
 let lastProgressS=0
 const STUCK_S=15
 function armGate(next,quiet){
@@ -2809,15 +2809,16 @@ function frame(now){
       // during the threshold the drawing is the answer to every fault the lamp
       // could have — the note comes back the moment the crossing starts
       $('#sLamp').textContent=drawnN?drawnN+' letters drawn':'draw — the letters come'
-      $('#tell').classList.toggle('on',!drawnN&&!strokes.length&&performance.now()>=cardUntil)
-    }else{$('#tell').classList.remove('on')}
-    if(!writing()&&lampNote){
+    }else if(lampNote){
       // said the moment it is known, not eight seconds later: waiting for a
       // reader that is never coming is the whole of the stuck
       $('#sLamp').textContent=lampNote
     }else if(stalled&&started){
       $('#sLamp').textContent='touch to read'
     }
+    // the prompt is not part of the lamp's report: with a camera open the
+    // "body seen" line won that chain and the one instruction never showed
+    $('#tell').classList.toggle('on',writing()&&!drawnN&&!strokes.length&&performance.now()>=cardUntil)
     advance()
     Mesh.send(clamp(P.x/W,0,1),clamp(P.y/H,0,1),frac())
     if(((now/1000)|0)%3===0)Mesh.sweep()
