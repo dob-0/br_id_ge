@@ -114,12 +114,14 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
    nearly invisible — the one line the rite asks you to fill read as empty air */
 .ask input::placeholder{color:var(--graphite)}
 .ask input:focus{border-bottom-color:var(--live)}
-.ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--graphite);margin-top:1.3rem;
-  background:none;border:0;cursor:pointer;pointer-events:none;
-  /* a fingertip needs somewhere to land */
-  min-height:44px;padding:0 1.4rem}
-.ask .go:hover,.ask .go:focus-visible{color:var(--ink)}
+.ask .go{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--ink);margin-top:1.8rem;background:rgba(243,241,236,.92);
+  border:1px solid var(--hairline);border-radius:2px;cursor:pointer;pointer-events:none;
+  /* the answer used to be faint grey text under the line — read as a caption,
+     so people typed and then waited. It wears the gate's shape: a thing to press */
+  min-height:52px;padding:0 1.7rem;transition:border-color .25s,opacity .25s}
+.ask .go:hover,.ask .go:focus-visible{border-color:var(--ink)}
+.ask.empty .go{opacity:.4}
 
 /* Anything that SPEAKS gets paper under it. The keeper's blessing was landing
    inside a hundred read glyphs and could not be read at all — the letters are
@@ -165,6 +167,13 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
   min-height:52px;padding:.2rem 1.7rem;
   opacity:0;transition:opacity .9s ease}
 #gate.on{opacity:1;animation:gatebreath 3.4s ease-in-out infinite}
+/* THE FUSE. A button that only means "continue" asked for a tap at every turn,
+   and between the keeper's greeting and her next question it broke the
+   conversation in two. The gate now goes by itself: a hairline burns along its
+   foot while you are still, and when it reaches the end the rite goes on. A tap
+   still goes at once; a finger drawing on the page holds it. */
+#gate::after{content:'';position:absolute;left:-1px;bottom:-1px;height:2px;
+  width:calc(var(--fuse,0) * (100% + 2px));background:var(--ink)}
 /* the stalled form is quieter: it is a mercy, not an achievement */
 #gate.quiet{color:var(--graphite);animation:none}
 @keyframes gatebreath{
@@ -984,7 +993,7 @@ addEventListener('pointermove',e=>{lastTouchAt=performance.now()
     if(!(e.pointerType==='mouse'&&!e.buttons&&finishing()))
       inkMove(e.clientX,e.clientY,(performance.now()-t0)/1000)}
   if(e.pointerType==='mouse')drawCursor(e.clientX,e.clientY)},{passive:true})
-addEventListener('pointerdown',e=>{inkLift();if(e.pointerType==='mouse')drawCursor(e.clientX,e.clientY)},{passive:true})
+addEventListener('pointerdown',e=>{inkLift();lastTouchAt=performance.now();if(e.pointerType==='mouse')drawCursor(e.clientX,e.clientY)},{passive:true})
 document.addEventListener('mouseleave',()=>{if(curEl)curEl.classList.remove('on')})
 // ── writing: the threshold is a page you can play on ─────────────────────
 // Before the crossing the rite is not yet reading you — it is being drawn. A
@@ -1750,6 +1759,7 @@ function advance(){
   else if(!ready&&!asking&&!askDue&&!done&&next>1&&next<ACTS.length&&started
           &&performance.now()>=cardUntil
           &&(performance.now()-t0)/1000-lastProgressS>STUCK_S)armGate(next,true)
+  burnFuse()
   if(asking||done||performance.now()<cardUntil)return
   // the act's title plays first, then the act's question. Crossing IS being asked.
   if(act>=1&&!name)openAsk('name')
@@ -1757,7 +1767,10 @@ function advance(){
 }
 // ── the gate ─────────────────────────────────────────────────────────────
 const GATE_LABEL=['','carry this across →','the keeper is waiting →','set it down →']
-let gateNext=-1,gateQuiet=false,gateLabel=''
+let gateNext=-1,gateQuiet=false,gateLabel='',gateAt=0
+// seconds of stillness before a gate crosses by itself: the threshold waits for
+// the drawing hand to rest; after the greeting, only for the line to be read
+const FUSE_S=[0,6,4.5]
 let lastProgressS=0
 const STUCK_S=15
 function armGate(next,quiet){
@@ -1767,6 +1780,7 @@ function armGate(next,quiet){
     :next===1&&!drawnN?'cross the bridge →'
     :(GATE_LABEL[next]||'go on →')
   if(gateNext===next&&gateQuiet===quiet&&gateLabel===label)return
+  if(gateNext!==next)gateAt=performance.now()
   gateNext=next;gateQuiet=quiet;gateLabel=label
   const g=$('#gate');if(!g)return
   g.textContent=label
@@ -1778,9 +1792,20 @@ function armGate(next,quiet){
 function disarmGate(){
   gateNext=-1
   const g=$('#gate');if(!g)return
+  g.style.setProperty('--fuse',0)
   g.classList.remove('on')
   document.body.classList.remove('gated')
   setTimeout(()=>{if(gateNext<0)g.hidden=true},900)
+}
+function burnFuse(){
+  if(gateNext<1||gateQuiet||!FUSE_S[gateNext])return
+  const g=$('#gate');if(!g||!g.classList.contains('on'))return
+  const now=performance.now()
+  // at the threshold a moving finger is drawing — the fuse waits for it to lift
+  const from=gateNext===1?Math.max(gateAt,lastTouchAt):gateAt
+  const k=Math.max(0,Math.min(1,(now-from)/1000/FUSE_S[gateNext]))
+  g.style.setProperty('--fuse',k.toFixed(3))
+  if(k>=1)crossGate()
 }
 function crossGate(){
   const next=gateNext
@@ -1813,7 +1838,7 @@ function openAsk(kind){
     sub.textContent='what do you carry across'
     input.placeholder='մեկ բառ · one word'
   }
-  input.value=''
+  input.value='';ask.classList.add('empty')
   show(ask)
   setTimeout(()=>input.focus(),260)
 }
@@ -1833,6 +1858,7 @@ function submit(){
   }
 }
 input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submit()}})
+input.addEventListener('input',()=>ask.classList.toggle('empty',!input.value.trim()))
 // the tap path — the one that works on a phone at all
 $('#go').addEventListener('click',(e)=>{e.preventDefault();submit()})
 
