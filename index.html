@@ -286,30 +286,36 @@ body.inframe{--hudfloor:2.6rem}
 .rd.on::before{content:'\25CF'}       /* ● — awake, and feeding the reading */
 .rd:disabled{cursor:default}
 
-/* the door — the dark you crossed in, with one lamp to light. It used to be a
-   second printed cover: the same կամուրջ, the same paper, the same sentence as
-   bridge.html, so after "cross the bridge" people thought nothing had happened
-   and never gave the one touch the camera, sound and tilt need. Now the blackout
-   lifts onto the same black, and the only bright thing on it is the lamp. */
-#door{position:fixed;inset:0;z-index:9;background:#000;display:grid;place-items:center;
+/* the door — the sheet turned over. It used to be a second printed cover: the same
+   կամուրջ, the same paper, the same sentence as bridge.html, so after "cross the
+   bridge" people thought nothing had happened and never gave the one touch the
+   camera, sound and tilt need. The crossing already reads light → dark → light:
+   bridge.html is paper, the blackout is wet black, and this is where the black
+   dries into ink — the field-at-night palette, nothing new. On a dark sheet wet
+   is white, so the only white here is the lamp, the one thing still moving.
+   The call wears the gate's grammar turned over: the rite's one pressable shape. */
+#door{position:fixed;inset:0;z-index:9;background:#131313;display:grid;place-items:center;
   padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:opacity 1.1s ease;
   -webkit-tap-highlight-color:transparent}
 #door.gone{opacity:0;pointer-events:none}
-#door .lamp{width:clamp(7.5rem,34vw,10rem);aspect-ratio:1;border-radius:50%;margin:0 auto;
-  background:radial-gradient(circle,#fffdf6 0,#f3f1ec 30%,#f3f1ec00 71%);
-  box-shadow:0 0 0 1px #f3f1ec55;position:relative;animation:lampbreath 2.6s ease-in-out infinite}
-/* the halo is a gradient, not a blurred shadow: phones drew the shadow as a square */
-#door .lamp::before{content:'';position:absolute;inset:-70%;border-radius:50%;z-index:-1;
-  background:radial-gradient(circle,#1d4bff55 0,#1d4bff22 35%,#1d4bff00 68%)}
-@keyframes lampbreath{50%{transform:scale(1.07)}}
-#door .call{font-family:var(--mono);font-size:clamp(.9rem,3.6vw,1.1rem);letter-spacing:.22em;
-  color:#f3f1ec;margin-top:2.4rem;text-transform:lowercase}
+#door .lamp{position:relative;width:clamp(3.2rem,15vw,4.4rem);aspect-ratio:1;border-radius:50%;
+  margin:0 auto;background:#fff}
+#door .lamp::before,#door .lamp::after{content:'';position:absolute;inset:0;border-radius:50%;
+  border:1px solid #f3f1ec;opacity:0;animation:lampring 3.4s ease-out infinite}
+#door .lamp::after{animation-delay:1.7s}
+/* the ring grows by its box, not by scale: a scaled hairline thickens to 3px */
+@keyframes lampring{0%{inset:0;opacity:.7}100%{inset:-110%;opacity:0}}
+#door .call{display:inline-block;margin-top:clamp(4rem,12vh,6rem);
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;color:#f3f1ec;
+  border:1px solid #2b2a27;border-radius:2px;padding:1.1rem 1.7rem;min-height:52px;
+  animation:callbreath 3.4s ease-in-out infinite}
+@keyframes callbreath{0%,100%{border-color:#2b2a27}50%{border-color:#f3f1ec}}
 #door .t{font-family:var(--grot);font-weight:300;font-size:clamp(.82rem,2.6vw,1rem);letter-spacing:.02em;line-height:1.9;
-  color:#8f8b83;max-width:36ch;margin:1.4rem auto 0}
-#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:#6b6861;
+  color:#8f8b83;max-width:36ch;margin:2.2rem auto 0}
+#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:#8f8b83;opacity:.7;
   margin-top:2.4rem;line-height:1.9;text-transform:lowercase}
 
-@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#door .lamp{animation:none}#g3{transition:none}}
+@media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#door .lamp::before,#door .lamp::after{animation:none;opacity:.5;inset:-40%}#door .call{animation:none;border-color:#f3f1ec}#g3{transition:none}}
 @media (pointer:coarse){body{cursor:auto}}
 @media (max-width:560px){
   #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
@@ -405,7 +411,7 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
 <div id="door">
   <div>
     <div class="lamp" aria-hidden="true"></div>
-    <div class="call">touch to open the lamp</div>
+    <div><span class="call">touch to open the lamp</span></div>
     <div class="t">draw · move · turn it around — the bridge reads you
       however it can, and your outline is read into letters. then answer once.</div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
