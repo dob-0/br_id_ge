@@ -100,6 +100,9 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 
 .ask{display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:none}
 .ask.on{pointer-events:auto}
+/* only while the question is actually asked — a hidden button still sat on the
+   ending's sentence, and a tap there inscribed a second crossing */
+.ask.on .go{pointer-events:auto}
 .ask .q{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,5.4vw,2.5rem);
   line-height:1.25;max-width:22ch;color:var(--ink)}
 .ask .sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
@@ -113,7 +116,7 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 .ask input:focus{border-bottom-color:var(--live)}
 .ask .go{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;
   color:var(--graphite);margin-top:1.3rem;
-  background:none;border:0;cursor:pointer;pointer-events:auto;
+  background:none;border:0;cursor:pointer;pointer-events:none;
   /* a fingertip needs somewhere to land */
   min-height:44px;padding:0 1.4rem}
 .ask .go:hover,.ask .go:focus-visible{color:var(--ink)}
@@ -834,7 +837,16 @@ let video=null,camOn=false,camStream=null
 // died on the way is never mistaken for a rite that is simply over — the whole
 // failure used to be a status line still cheerfully reading "lamp open".
 let lampNote=''
-async function openLamp(facing){
+let lampOpening=null
+function openLamp(facing){
+  // a second tap while the lamp opens, or on a lamp already open on this lens,
+  // used to start another stream and another segmenter every time
+  if(lampOpening)return lampOpening
+  if(camOn&&(!facing||facing===camFacing))return Promise.resolve()
+  lampOpening=openLampNow(facing).finally(()=>{lampOpening=null})
+  return lampOpening
+}
+async function openLampNow(facing){
   if(facing&&facing!==camFacing){
     camFacing=facing
     // a phone will not hand out both lenses at once — let the old one go first
@@ -897,6 +909,8 @@ async function openSeg(){
   // A phone that refuses the GPU delegate used to lose the body silently and for
   // the whole session: one throw, one `seg=null`, and nothing said. CPU is
   // slower and still reads.
+  try{seg&&seg.close&&seg.close()}catch(e){}
+  seg=null
   for(const delegate of ['GPU','CPU']){
     try{
       seg=await v.ImageSegmenter.createFromOptions(files,{
@@ -965,7 +979,10 @@ function drawCursor(x,y){if(!curEl)return;
   curEl.style.transform='translate('+x+'px,'+y+'px)';curEl.classList.add('on')}
 addEventListener('pointermove',e=>{lastTouchAt=performance.now()
   if(!hand.has){point(e.clientX,e.clientY)
-    inkMove(e.clientX,e.clientY,(performance.now()-t0)/1000)}
+    // at the ending the ink is the mark: a hovering mouse would replace the
+    // drawing with the cursor's trip to "keep a copy"
+    if(!(e.pointerType==='mouse'&&!e.buttons&&finishing()))
+      inkMove(e.clientX,e.clientY,(performance.now()-t0)/1000)}
   if(e.pointerType==='mouse')drawCursor(e.clientX,e.clientY)},{passive:true})
 addEventListener('pointerdown',e=>{inkLift();if(e.pointerType==='mouse')drawCursor(e.clientX,e.clientY)},{passive:true})
 document.addEventListener('mouseleave',()=>{if(curEl)curEl.classList.remove('on')})
@@ -1090,6 +1107,7 @@ function markStore(){
   try{localStorage.setItem('br_id_ge_mark_'+crossing.id,mark)}catch(e){}
 }
 function markTake(){
+  if(pennedN<8)return false        // a speck is a tap that rolled, not a drawing
   const m=markEncode(penned)
   if(!m||m===mark)return false
   mark=m;markIn=0;markStore();fieldHref();markSend()
@@ -1129,8 +1147,9 @@ function bornAt(x,y,t){
   m.read=1;m.t=t;m.bloom=1;m.born=1;drawnN++
   SND.grain(x,y,0.75)
 }
-addEventListener('pointerup',()=>{inkLift();if(finishing())markTake()},{passive:true})
-addEventListener('pointercancel',()=>{inkLift();if(finishing())markTake()},{passive:true})
+const onControl=e=>e.target&&e.target.closest&&e.target.closest('a,button,#fieldVeil')
+addEventListener('pointerup',e=>{inkLift();if(finishing()&&!onControl(e))markTake()},{passive:true})
+addEventListener('pointercancel',e=>{inkLift();if(finishing()&&!onControl(e))markTake()},{passive:true})
 
 // a touch rings outward through the field — a slow wave of opacity, print not sparks
 const ripples=[]
@@ -1169,6 +1188,7 @@ async function openPose(){
     pose=await v.PoseLandmarker.createFromOptions(files,{
       baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',delegate:'GPU'},
       numPoses:1,runningMode:'VIDEO'})
+    if(rested){try{pose.close()}catch(e){}pose=null}
   }catch(e){pose=null}
 }
 function readPose(now){
@@ -1291,6 +1311,7 @@ async function openHands(){
     hl=await v.HandLandmarker.createFromOptions(files,{
       baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},
       numHands:1,runningMode:'VIDEO'})
+    if(rested){try{hl.close()}catch(e){}hl=null}
   }catch(e){hl=null}
 }
 function readHand(now){
@@ -1374,8 +1395,10 @@ let readBudget=0
 // already carrying it. Nothing here can switch anything else off — that was the
 // old bug, where an open camera seeing nothing disabled the finger.
 let tiltOn=false,tiltAt=0,lastTouchAt=0
+let tiltBound=false
 function startTilt(){
   const go=()=>{
+    if(tiltBound)return;tiltBound=true
     addEventListener('deviceorientation',(e)=>{
       if(e.gamma==null&&e.beta==null)return
       tiltOn=true;tiltAt=performance.now()
@@ -1610,6 +1633,7 @@ function askKeeper(prompt,pool,vars){
 // the metas are what a file off disk uses; inside the viewer the host it serves from wins,
 // or dev's rite reads, posts and deletes against whatever host the build wrote down
 const FIELD_URL=(Q.get('field')||(window.diiPageOrigin?window.diiPageOrigin+'/serverXR/api/spaces/br_id_ge':'')||($('meta[name="field-url"]')||{}).content||'').replace(/\/+$/,'')
+let myTag=null   // this visitor's own crossing, once made
 let field=[];try{field=JSON.parse(localStorage.getItem('br_id_ge_field')||'[]')}catch(e){field=[]}
 $('#sField').textContent=field.length
 if(FIELD_URL){
@@ -1623,6 +1647,8 @@ if(FIELD_URL){
     // page and the door while all three read the same endpoint. A cache is what
     // you show before the answer arrives, not something you add to it.
     field=remote.filter(Boolean)
+    // …but an answer that left before this crossing landed does not know it yet
+    if(myTag&&!field.includes(myTag))field.push(myTag)
     try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
     $('#sField').textContent=field.length
   }).catch(()=>{})
@@ -1792,13 +1818,16 @@ function openAsk(kind){
   setTimeout(()=>input.focus(),260)
 }
 function submit(){
+  // not asking is not "asking for the word": a second Enter after the name, or
+  // a tap on the ending, used to inscribe again — with the name as the word
+  if(!asking||inscribed)return
   const v=input.value.trim()
   if(!v)return
   if(asking==='name'){
-    name=v.slice(0,40);asking=null;show(null)
+    name=v.slice(0,40);asking=null;show(null);input.value='';input.blur()
     askKeeper('The visitor gives their name: '+name+'. Greet them in one line as they cross the bridge.',
       KEEPER_GREET,{name})
-      .then(l=>{if(l&&!done)said(l)})
+      .then(l=>{if(l&&!done&&!asking)said(l)})
   }else{
     word=v.slice(0,60);asking=null;inscribe()
   }
@@ -1854,6 +1883,7 @@ function inscribe(){
   // the choreography is the same, it simply stops making the visitor earn it.
   setTimeout(()=>CORE3.mount(),REDUCED?0:900)
   const tag=(name||'—')+' · '+word
+  myTag=tag
   field.push(tag)
   try{localStorage.setItem('br_id_ge_field',JSON.stringify(field.slice(-80)))}catch(e){}
   $('#sField').textContent=field.length
@@ -2526,7 +2556,7 @@ function begin(){
   act=0
   // hands and pose are decoration and cost a second wasm build each — no camera,
   // no reason to fetch them at all
-  openLamp().then(()=>{if(camOn){openHands();openPose()}})
+  openLamp().then(()=>{if(camOn&&Q.get('body')!=='0'){openHands();openPose()}})
   // Where motion costs nothing to ask for, the page can already be shaken from
   // the first second. iOS wants its own prompt and the door is already spending
   // one on the camera, so there it waits for the TILT reader to be tapped.
