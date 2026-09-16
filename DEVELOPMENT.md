@@ -73,10 +73,10 @@ visibility, the tier map, and the list of pages that are supposed to exist.
 `di-space.<page>.json` owns one **page** — entry file, slug, title, assets.
 
 ```bash
-node scripts/sync-space.mjs --all --tier staging   # every page, one command
+node scripts/sync-space.mjs --all --tier dev       # every page → the dev tier (dev.diiii.xyz)
 node scripts/sync-space.mjs --all --tier prod      # the live door
 node scripts/sync-space.mjs --audit                # compare every tier, exit 1 on drift
-node scripts/sync-space.mjs --all --tier staging --dry-run
+node scripts/sync-space.mjs --all --tier dev --dry-run
 ```
 
 `--audit` is the one to reach for first. It reads all three tiers and prints a
@@ -90,7 +90,7 @@ Nothing here deletes. Projects a tier has and the repo does not are reported so
 you can see them; removing one is a deliberate act, not a side effect of a sync.
 
 Tokens come from `.env.local` (gitignored) — `PROD_API_TOKEN`,
-`LIVE_API_TOKEN` (staging), `API_TOKEN` (local :4000). CI passes its own.
+`LIVE_API_TOKEN` (the dev tier, dev.diiii.xyz — the tier key is still `staging`), `API_TOKEN` (local :4000). CI passes its own.
 
 **Adding a surface:** add its `di-space.<page>.json`, then add that filename to
 `projects` in `di-space.space.json`. `--all` and the audit both pick it up; the

@@ -35,7 +35,8 @@ const TO = String(arg('--to', 'prod')).toLowerCase()
 const NAME = String(arg('--name', 'jet.di')).slice(0, 14)
 const ORIGINS = {
   prod: 'wss://di-studio.xyz/serverXR/mesh',
-  staging: 'wss://staging.di-studio.xyz/serverXR/mesh',
+  staging: 'wss://dev.diiii.xyz/serverXR/mesh',   // the dev tier (staging.di-studio.xyz is gone, 2026-09-16)
+  dev: 'wss://dev.diiii.xyz/serverXR/mesh',
   local: 'ws://localhost:4000/serverXR/mesh',
 }
 const MESH = ORIGINS[TO] || TO // any full ws:// url passes through
