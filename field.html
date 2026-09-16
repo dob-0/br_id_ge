@@ -31,7 +31,7 @@ if(new URLSearchParams(window.diiPageQuery||location.search).get('embed')!=='1')
    themselves: what the crossings left. Everything else is print. */
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
-  --live:#1d4bff;
+  --live:#1d4bff; --read:#66625b;
   /* black means NOW — ink still moving. The only true black in the estate,
      it exists only in motion and always dries into --ink, the record.
      No static element is ever #000. (The Unfinished Swan grammar.) */
@@ -46,7 +46,7 @@ if(new URLSearchParams(window.diiPageQuery||location.search).get('embed')!=='1')
    Wet is still the extreme — on a dark sheet, moving ink is pure white. The live
    blue lifts a step so it still reads against the ground. */
 :root.ink{--paper:#131313;--ink:#f3f1ec;--hairline:#2b2a27;--paper-room:#1c1b19;
-  --wet:#ffffff;--live:#6f8cff}
+  --wet:#ffffff;--live:#6f8cff;--read:#b3afa6}
 *{margin:0;padding:0;box-sizing:border-box}
 /* The `hidden` attribute loses to any id or class rule that sets display —
    #kPanel{display:flex} and #readers{display:flex} both silently outrank the
@@ -75,19 +75,19 @@ canvas.grabbing{cursor:grabbing}
   pointer-events:none;transition:opacity .8s ease}
 html.veiled #veil{opacity:1}
 @media (prefers-reduced-motion:reduce){#veil{transition:none}}
-.hud{position:fixed;z-index:2;pointer-events:none;font-size:.55rem;letter-spacing:.2em;
+.hud{position:fixed;z-index:2;pointer-events:none;font-size:.62rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--graphite);line-height:1.9}
 #hd{top:0;left:0;padding:1.35rem;color:var(--ink)}
 #hd b{font-weight:400}
 #hd .arm{font-family:var(--arm);font-weight:300;color:var(--graphite);
   letter-spacing:.5em;margin-top:.3rem;font-size:.6rem;text-transform:none}
-#count{top:0;right:0;padding:1.35rem;text-align:right}
+#count{top:0;right:0;padding:1.35rem;text-align:right;color:var(--read)}
 #count .n{color:var(--ink);font-weight:400}
 #cta{bottom:0;left:0;padding:1.35rem;pointer-events:auto}
-#cta a{color:var(--live);text-decoration:none;border-bottom:1px solid var(--hairline);
+#cta a{color:var(--live);text-decoration:none;font-size:.72rem;border-bottom:1px solid var(--hairline);
   padding-bottom:.25rem;transition:border-color .25s}
 #cta a:hover{border-color:var(--live)}
-#hint{bottom:0;right:0;padding:1.35rem;text-align:right}
+#hint{bottom:0;right:0;padding:1.35rem;text-align:right;color:var(--read)}
 #mode{bottom:0;left:50%;transform:translateX(-50%);padding:1.35rem;pointer-events:auto;
   background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:.55rem;
   letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
@@ -235,12 +235,12 @@ html.veiled #veil{opacity:1}
      a desktop feature by accident. It stays; the mouse half of it goes. */
   /* …and above the mode switch, which sits at 2.6rem and is centred: at 360px
      the two ran into each other by ~20px */
-  #hint{bottom:6.2rem;font-size:.44rem}
+  #hint{bottom:6.2rem;font-size:.6rem}
   #hint .mouse{display:none}
-  .hud{font-size:.46rem;letter-spacing:.12em}
+  .hud{font-size:.56rem;letter-spacing:.12em}
   #hd .arm{font-size:.52rem;letter-spacing:.34em}
   /* the mode switch lifts clear of the link in the corner beneath it */
-  #mode{bottom:2.6rem;font-size:.46rem;letter-spacing:.12em}
+  #mode{bottom:2.6rem;font-size:.56rem;letter-spacing:.12em}
   /* a panel floating over the middle of a phone IS the screen. It becomes a
      sheet at the bottom, where a thumb is and the field is not. */
   /* …and it stops short of the bottom row, so the sheet never sits on top of

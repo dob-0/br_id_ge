@@ -26,6 +26,9 @@
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
   --live:#1d4bff;
+  /* graphite is 3:1 on paper — fine for chrome, unreadable for old eyes.
+     Anything a visitor must READ to go on wears this instead. */
+  --read:#66625b;
   /* how far the bottom HUD sits off the floor — the di.iiii viewer floats a
      "Made with di.iiii" badge down there and the rite must clear it */
   --hudfloor:0rem;
@@ -105,16 +108,16 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 .ask.on .go{pointer-events:auto}
 .ask .q{font-family:var(--arm);font-weight:300;font-size:clamp(1.5rem,5.4vw,2.5rem);
   line-height:1.25;max-width:22ch;color:var(--ink)}
-.ask .sub{font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--graphite);margin-top:1.1rem}
+.ask .sub{font-family:var(--grot);font-weight:300;font-size:clamp(.95rem,3vw,1.1rem);letter-spacing:.02em;
+  color:var(--read);margin-top:.9rem}
 .ask input{margin-top:2.6rem;background:none;border:0;border-bottom:1px solid var(--hairline);
   color:var(--ink);font-family:var(--arm);font-weight:300;font-size:clamp(1.6rem,6vw,2.6rem);
   text-align:center;width:min(90vw,26ch);padding:.2rem 0 .5rem;outline:none;caret-color:var(--live)}
 /* graphite, not hairline: at 1.22:1 against the paper the prompt to write was
    nearly invisible — the one line the rite asks you to fill read as empty air */
-.ask input::placeholder{color:var(--graphite)}
+.ask input::placeholder{color:var(--read);opacity:.8}
 .ask input:focus{border-bottom-color:var(--live)}
-.ask .go{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;
+.ask .go{font-family:var(--mono);font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;
   color:var(--ink);margin-top:1.8rem;background:rgba(243,241,236,.92);
   border:1px solid var(--hairline);border-radius:2px;cursor:pointer;pointer-events:none;
   /* the answer used to be faint grey text under the line — read as a caption,
@@ -161,7 +164,7 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
    uppercase mono reads as a label, and nobody presses a label. */
 #gate{position:fixed;z-index:6;left:50%;transform:translateX(-50%);
   bottom:clamp(6.5rem,20vh,10rem);
-  font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;
+  font-family:var(--mono);font-size:.82rem;letter-spacing:.3em;text-transform:uppercase;
   color:var(--ink);background:rgba(243,241,236,.92);cursor:pointer;
   border:1px solid var(--hairline);border-radius:2px;
   min-height:52px;padding:.2rem 1.7rem;
@@ -217,15 +220,15 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 .end .body-line{margin-top:.55rem}
 .end #fieldLink{margin-top:.8rem}
 .end #passage{margin-top:1.1rem}
-.end .note{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;line-height:1.9;
-  color:var(--graphite);max-width:34ch;text-transform:lowercase}
-.end .body-line{font-family:var(--mono);font-size:.58rem;letter-spacing:.26em;
-  text-transform:uppercase;color:var(--graphite)}
+.end .note{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;line-height:1.9;
+  color:var(--read);max-width:34ch;text-transform:lowercase}
+.end .body-line{font-family:var(--mono);font-size:.66rem;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--read)}
 /* Each door is a fingertip's worth of page, not a 19px line of 9px type — that
    is what these measured, on the one screen where the visitor is asked to
    choose between three things. The reach grows upward and invisibly; the rule
    stays exactly where it was, under the words. */
-.end .field-link{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;
+.end .field-link{font-family:var(--mono);font-size:.74rem;letter-spacing:.22em;
   text-transform:lowercase;color:var(--live);text-decoration:none;
   border-bottom:1px solid var(--hairline);padding:1.6rem .9rem .3rem;pointer-events:auto}
 .end .field-link:hover{border-color:var(--live)}
@@ -235,8 +238,8 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
    before the letters are laid out; a block that GROWS afterwards walks the
    closing line straight back into the body's bottom arc, which is the fault
    endFloor() exists to prevent. */
-.end .passage{font-family:var(--mono);font-size:.55rem;letter-spacing:.22em;
-  text-transform:lowercase;color:var(--graphite);visibility:hidden}
+.end .passage{font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;
+  text-transform:lowercase;color:var(--read);visibility:hidden}
 .end .passage.on{visibility:visible}
 
 /* LAYER 2½ — the field, opened INSIDE the ending. Not a link to a place: the
@@ -269,7 +272,7 @@ body.gated #type{padding-bottom:calc(clamp(6.5rem,20vh,10rem) + 3.4rem)}
 @media (prefers-reduced-motion:reduce){#fieldWin{transition:none}}
 
 /* LAYER 3 — the HUD: data pinned to the frame's corners. Everything it says is true. */
-.hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.55rem;letter-spacing:.2em;
+.hud{position:fixed;z-index:3;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--graphite);pointer-events:none}
 #hudTitle{top:0;left:0;padding:1.35rem max(1.35rem,env(safe-area-inset-left));color:var(--ink)}
 /* inside the di.iiii viewer a project-switcher pill owns that corner */
@@ -282,10 +285,16 @@ body.inframe{--hudfloor:2.6rem}
 #hudTitle b{font-weight:400}
 #hudAct{top:0;right:0;padding:1.35rem max(1.35rem,env(safe-area-inset-right));text-align:right}
 #state{right:0;bottom:var(--hudfloor);padding:1.35rem max(1.35rem,env(safe-area-inset-right));
-  display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
+  font-size:.72rem;color:var(--read);display:flex;gap:1.4rem;justify-content:flex-end;text-align:right}
 #state b{font-weight:400;color:var(--ink)}
 #sHere b{color:var(--live)}
 
+#tell{position:fixed;left:0;right:0;top:64%;z-index:3;pointer-events:none;text-align:center;
+  padding:0 1.5rem;opacity:0;transition:opacity .8s ease}
+#tell.on{opacity:1}
+#tell span{display:block;color:var(--ink)}
+#tell .arm{font-family:var(--arm);font-weight:300;font-size:clamp(1.3rem,5vw,1.9rem);line-height:1.3}
+#tell span+span{font-family:var(--grot);font-weight:300;font-size:clamp(1rem,3.4vw,1.2rem);color:var(--read);margin-top:.2rem}
 /* the readers — bottom left, the one part of the HUD that accepts a touch */
 #readers{left:0;bottom:var(--hudfloor);padding:1.35rem max(1.35rem,env(safe-area-inset-left));
   display:flex;gap:1rem;pointer-events:auto}
@@ -328,19 +337,19 @@ body.inframe{--hudfloor:2.6rem}
 /* the ring grows by its box, not by scale: a scaled hairline thickens to 3px */
 @keyframes lampring{0%{inset:0;opacity:.7}100%{inset:-110%;opacity:0}}
 #door .call{display:inline-block;
-  font-family:var(--mono);font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;color:#f3f1ec;
+  font-family:var(--mono);font-size:.82rem;letter-spacing:.3em;text-transform:uppercase;color:#f3f1ec;
   border:1px solid #2b2a27;border-radius:2px;padding:1.1rem 1.7rem;min-height:52px;
   animation:callbreath 3.4s ease-in-out infinite}
 @keyframes callbreath{0%,100%{border-color:#2b2a27}50%{border-color:#f3f1ec}}
-#door .t{font-family:var(--grot);font-weight:300;font-size:clamp(.82rem,2.6vw,1rem);letter-spacing:.02em;line-height:1.9;
-  color:#8f8b83;max-width:36ch;margin:2.2rem auto 0}
-#door .p{font-family:var(--mono);font-size:.52rem;letter-spacing:.16em;color:#8f8b83;opacity:.7;
+#door .t{font-family:var(--grot);font-weight:300;font-size:clamp(.95rem,3vw,1.1rem);letter-spacing:.02em;line-height:1.8;
+  color:#b3afa6;max-width:36ch;margin:2.2rem auto 0}
+#door .p{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;color:#b3afa6;
   margin-top:2.4rem;line-height:1.9;text-transform:lowercase}
 
 @media (prefers-reduced-motion:reduce){#type>*{transition:none}#door{transition:none}#door .lamp::before,#door .lamp::after{animation:none;opacity:.5;inset:-40%}#door .words{animation:none}#door .call{animation:none;border-color:#f3f1ec}#g3{transition:none}}
 @media (pointer:coarse){body{cursor:auto}}
 @media (max-width:560px){
-  #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.52rem}
+  #state{flex-direction:column;align-items:flex-end;gap:.4rem;font-size:.66rem}
   #hudTitle,#hudAct{padding:1.1rem}
   /* Readers and status both live at the bottom, and on a narrow screen the
      status line ("draw your mark — it goes with you") is wide enough to run
@@ -491,6 +500,12 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
   </div>
 </div>
 
+<!-- the one thing to do right now, said plainly in the middle of the page. The
+     only instruction used to be eight-point grey type in a corner: a child never
+     saw it and an older visitor could not read it. It shows while there is
+     nothing drawn yet and leaves at the first stroke. -->
+<div id="tell" aria-live="polite"><span class="arm">նկարիր մատով</span><span>draw with your finger</span></div>
+
 <div class="hud" id="state">
   <span><b id="sRead">0</b> read</span>
   <span><b id="sField">0</b> in the field</span>
@@ -522,8 +537,9 @@ body.ending #hudTitle,body.ending #hudAct{opacity:.3;transition:opacity 1.8s eas
     <div class="lamp" aria-hidden="true"></div>
     <div class="words">
     <div><span class="call">touch to open the lamp</span></div>
-    <div class="t">draw · move · turn it around — the bridge reads you
-      however it can, and your outline is read into letters. then answer once.</div>
+    <div class="t">draw with your finger, or move in front of the camera —
+      the bridge turns your outline into letters. then it asks you two things:
+      your name, and one word.</div>
     <div class="p">nothing is recorded · no image leaves this device<br>only your name and one word cross</div>
     </div>
   </div>
@@ -1766,7 +1782,7 @@ function advance(){
   else if(act>=2&&name&&!word)openAsk('word')
 }
 // ── the gate ─────────────────────────────────────────────────────────────
-const GATE_LABEL=['','carry this across →','the keeper is waiting →','set it down →']
+const GATE_LABEL=['','cross the bridge →','go on →','set it down →']
 let gateNext=-1,gateQuiet=false,gateLabel='',gateAt=0
 // seconds of stillness before a gate crosses by itself: the threshold waits for
 // the drawing hand to rest; after the greeting, only for the line to be read
@@ -1776,9 +1792,7 @@ const STUCK_S=15
 function armGate(next,quiet){
   // "carry this across" before anything has been drawn is a promise about a
   // thing that does not exist — the label follows what is actually in hand
-  const label=quiet?'go on →'
-    :next===1&&!drawnN?'cross the bridge →'
-    :(GATE_LABEL[next]||'go on →')
+  const label=quiet?'go on →':(GATE_LABEL[next]||'go on →')
   if(gateNext===next&&gateQuiet===quiet&&gateLabel===label)return
   if(gateNext!==next)gateAt=performance.now()
   gateNext=next;gateQuiet=quiet;gateLabel=label
@@ -1803,7 +1817,9 @@ function burnFuse(){
   const now=performance.now()
   // at the threshold a moving finger is drawing — the fuse waits for it to lift
   const from=gateNext===1?Math.max(gateAt,lastTouchAt):gateAt
-  const k=Math.max(0,Math.min(1,(now-from)/1000/FUSE_S[gateNext]))
+  let secs=FUSE_S[gateNext]
+  if(gateNext===2){const w=$('#end .said').textContent.split(/\s+/).filter(Boolean).length;secs=Math.max(7,2.5+w*.5)}
+  const k=Math.max(0,Math.min(1,(now-from)/1000/secs))
   g.style.setProperty('--fuse',k.toFixed(3))
   if(k>=1)crossGate()
 }
@@ -1828,14 +1844,14 @@ function openAsk(kind){
   // the question is the only thing on screen — the act gate steps aside
   disarmGate()
   const q=ask.querySelector('.q'),sub=ask.querySelector('.sub'),go=ask.querySelector('.go')
-  if(go)go.textContent=kind==='name'?'answer →':'inscribe →'
+  if(go)go.textContent='answer →'
   if(kind==='name'){
     q.textContent='Ո՞վ ես դու։'
     sub.textContent='who are you'
     input.placeholder='ձեր անունը · your name'
   }else{
     q.textContent='Ի՞նչ ես բերում։'
-    sub.textContent='what do you carry across'
+    sub.textContent='one word you bring with you'
     input.placeholder='մեկ բառ · one word'
   }
   input.value='';ask.classList.add('empty')
@@ -2793,7 +2809,9 @@ function frame(now){
       // during the threshold the drawing is the answer to every fault the lamp
       // could have — the note comes back the moment the crossing starts
       $('#sLamp').textContent=drawnN?drawnN+' letters drawn':'draw — the letters come'
-    }else if(lampNote){
+      $('#tell').classList.toggle('on',!drawnN&&!strokes.length&&performance.now()>=cardUntil)
+    }else{$('#tell').classList.remove('on')}
+    if(!writing()&&lampNote){
       // said the moment it is known, not eight seconds later: waiting for a
       // reader that is never coming is the whole of the stuck
       $('#sLamp').textContent=lampNote

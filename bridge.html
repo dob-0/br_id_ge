@@ -18,7 +18,7 @@
    one graphite, one live blue. Print, not glow. */
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
-  --live:#1d4bff;
+  --live:#1d4bff; --read:#66625b;
   --arm:'Noto Serif Armenian',Georgia,serif;
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
@@ -44,7 +44,7 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
    so its line is never erased at a corner */
 .hud{position:fixed;z-index:1;background:var(--paper);
   transition:opacity .5s ease,visibility .5s;
-  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
   color:var(--graphite);line-height:1.9;padding:1.35rem}
 .hud a{color:inherit;text-decoration:none}
 .hud a:hover{color:var(--ink)}
@@ -82,15 +82,16 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   letter-spacing:.06em;line-height:1.1}
 .lat{font-size:.6rem;letter-spacing:.44em;text-transform:lowercase;
   color:var(--graphite);margin-top:.7rem}
-.lede{font-family:var(--arm);font-weight:300;font-size:clamp(1rem,3.2vw,1.25rem);
-  line-height:1.7;color:var(--graphite);margin-top:2.4rem}
+.lede{font-family:var(--arm);font-weight:300;font-size:clamp(1.05rem,3.4vw,1.3rem);
+  line-height:1.7;color:var(--read);margin-top:2.4rem}
 .lede b{font-weight:400;color:var(--ink)}
+/* the one thing to press wears the shape every pressable thing in the piece wears */
 .cross{display:inline-block;margin-top:2.6rem;color:var(--live);text-decoration:none;
-  font-size:.75rem;letter-spacing:.28em;text-transform:lowercase;
-  border-bottom:1px solid var(--hairline);padding-bottom:.35rem;transition:border-color .25s}
+  font-size:.85rem;letter-spacing:.28em;text-transform:lowercase;
+  border:1px solid var(--hairline);border-radius:2px;padding:1rem 1.7rem;min-height:52px;transition:border-color .25s}
 .cross:hover,.cross:focus-visible{border-color:var(--live)}
-.field{display:block;margin-top:1.4rem;color:var(--graphite);text-decoration:none;
-  font-size:.6rem;letter-spacing:.2em;text-transform:lowercase}
+.field{display:block;margin-top:1.6rem;color:var(--read);text-decoration:none;
+  font-size:.72rem;letter-spacing:.2em;text-transform:lowercase}
 .field:hover,.field:focus-visible{color:var(--ink)}
 /* THE PULSE — the field's real number, spoken only when the field answers.
    Height reserved so the door never shifts; the line arrives or it doesn't.
