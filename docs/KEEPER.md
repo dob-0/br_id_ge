@@ -86,8 +86,15 @@ node scripts/keeper-presence.mjs --eye /dev/video0 \
 
 ### di.bo — the voice on the wire
 
-It joins the mesh on boot, as part of the bot — **live on the VPS since
-2026-08-05**, `/opt/di-bo`, unit `di-bo`. Nothing to start:
+> **2026-10-07: the code moved here, to [`keeper/`](../keeper/README.md).** di.bo, the
+> Telegram bot, became the di.iiii team's assistant and no longer keeps the field,
+> announces crossings or carries the tunnel. "di.bo" stays the keeper's name on the
+> mesh. Until something runs `node keeper/keeper.mjs` on a machine that stays up, the
+> field shows the keeper asleep. What follows is how it ran inside the bot, kept as
+> the record.
+
+It joined the mesh on boot, as part of the bot — **live on the VPS from
+2026-08-05**, `/opt/di-bo`, unit `di-bo`:
 
 ```bash
 KEEPER=1                                  # default; KEEPER=0 disables entirely
@@ -112,7 +119,7 @@ Standalone, without Telegram — for the show rig, or to see the lattice turn
 blue before trusting that it does (asks print to the console):
 
 ```bash
-node ~/di-bo/keeper.mjs
+node keeper/keeper.mjs
 ```
 
 ### The rehearsal tier
@@ -122,7 +129,7 @@ is retargeted by `sync-space.yml` to `wss://staging.di-studio.xyz/serverXR/mesh`
 — so until 2026-08-05 staging's field sat at `asleep` with nobody on its mesh,
 and anyone rehearsing there saw the piece with its centre missing.
 
-Unit `di-bo-staging` on the same VPS now keeps that room: standalone
+Unit `di-bo-staging` on the same VPS kept that room (template now `keeper/keeper-staging.service`): standalone
 `keeper.mjs --mesh wss://staging.di-studio.xyz/serverXR/mesh`, logging to
 `/var/log/di-bo-staging.log`. It is deliberately **not** a second `bot.mjs` —
 two would long-poll Telegram with the same token and fight over every update.
@@ -141,7 +148,7 @@ Schema and logs prove nothing here; the keeper is a thing on a page that is
 either blue or it isn't. The full pass, as run on 2026-08-04:
 
 ```bash
-node ~/di-bo/keeper.mjs                      # di.bo joins the prod mesh by hand
+node keeper/keeper.mjs                       # di.bo joins the prod mesh by hand
 node ~/br_id_ge/scripts/serve.mjs --to prod  # the real field, locally
 # open http://localhost:8899/br_id_ge/field
 ```
@@ -152,8 +159,8 @@ room `bridge` should print a `keeper` heartbeat every 5s. That listener now
 exists, and it is the only check that has never lied:
 
 ```bash
-node ~/di-bo/check-keeper.mjs                 # prod   — exit 0 kept, 1 silent, 2 mesh down
-node ~/di-bo/check-keeper.mjs --to staging    # staging
+node keeper/check-keeper.mjs                  # prod   — exit 0 kept, 1 silent, 2 mesh down
+node keeper/check-keeper.mjs --to staging     # staging
 ```
 
 Four states, all of which must be *looked at*:
@@ -234,6 +241,6 @@ stays live. Bring the tab to the front before believing what it says.
 | `br_id_ge/field.html` | the client — lattice, window, `keeperFace()`, `__keeper()` |
 | `br_id_ge/scripts/keeper-presence.mjs` | jet.di, Node version (webcam + ollama) |
 | `dibot/deploy/scripts/keeper_agent.py` | jet.di, robot version (ROS camera + /tts) |
-| `di-bo/keeper.mjs` | di.bo — handover rules, throttle, transport, CLI |
-| `di-bo/bot.mjs` | wiring: config, `/say`, `/status`, the echo into Telegram |
+| `br_id_ge/keeper/keeper.mjs` | di.bo — handover rules, throttle, transport, CLI (from di-bo `91268bd`) |
+| `br_id_ge/keeper/telegram.mjs` | the Telegram half: the echo, the mind, `/say`, the tunnel threads — hosted by no bot since 2026-10-07 |
 | `di.iiii/serverXR/src/meshHub.js` | the hub both sides meet in |

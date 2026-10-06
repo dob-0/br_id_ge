@@ -38,6 +38,7 @@ wcc (Emilya's branch)               ← World Creative Commons, sibling space on
 | `docs/PROJECT.md` | Canonical project docs |
 | `docs/MASTER_CONTEXT.md` | Curatorial ground truth — hosq collaboration, Notations #2, notation concept |
 | `docs/KEEPER.md` | The keeper — both bodies, channels, bring-up, failure modes |
+| `keeper/` | The keeper's code, moved from di-bo 2026-10-07 — `keeper/README.md`; tests: `node keeper/test.mjs` |
 | `scripts/serve.mjs` | Local mirror of the whole space (staging tier by default) |
 | `scripts/auto-push-readme.sh` | Auto-commit watcher with secret scan |
 | `scripts/auto-push-space.sh` | Multi-file repo sync watcher |
@@ -49,7 +50,7 @@ actors, not decoration. The rite and the door carry the artwork's own face.
 
 ## Known Draft Status
 
-- No test suite, no lint configuration.
+- No test suite for the pages, no lint configuration. `keeper/` has its own: `node keeper/test.mjs`.
 
 ## Default Safe Actions
 

@@ -1,0 +1,37 @@
+[Unit]
+# The keeper for the rehearsal tier, and nothing else.
+#
+# A body can only hold one room: the prod keeper holds the prod mesh, and
+# staging's field.html is retargeted by br_id_ge's sync to
+# wss://staging.di-studio.xyz/serverXR/mesh -- a room with nobody in it, so
+# staging showed `asleep` while prod was blue. This is the same keeper against
+# the other tier.
+#
+# Deliberately keeper.mjs alone: it holds no Telegram token, so nothing can
+# fight a bot over its long poll. Standalone still answers -- startKeeper
+# publishes KEPT_LINE itself -- it just has no Telegram to echo the ask into,
+# which is right here. Nobody is meant to be handed answers by hand on the
+# rehearsal tier.
+#
+# Moved from di-bo (di-bo-staging.service, master 91268bd) on 2026-10-07. It
+# ran on the VPS from /opt/di-bo; the VPS is gone and no host runs it today.
+# On a host: a checkout of br_id_ge at /opt/br_id_ge, Node 22+, then
+#   cp keeper/keeper-staging.service /etc/systemd/system/br-id-ge-keeper-staging.service
+#   systemctl daemon-reload && systemctl enable --now br-id-ge-keeper-staging
+# Undo: systemctl disable --now br-id-ge-keeper-staging && rm that file.
+Description=br_id_ge keeper (staging mesh)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/br_id_ge
+ExecStart=/usr/bin/node /opt/br_id_ge/keeper/keeper.mjs --mesh wss://staging.di-studio.xyz/serverXR/mesh --name di.bo
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/br-id-ge-keeper-staging.log
+StandardError=append:/var/log/br-id-ge-keeper-staging.log
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

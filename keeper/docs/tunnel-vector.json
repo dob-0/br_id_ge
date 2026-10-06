@@ -1,0 +1,24 @@
+{
+  "_why": "A cross-implementation test vector. The tunnel has two halves — serverXR mints, di.bo verifies — and every other protocol in this estate that had two halves has drifted silently with both sides' tests green: the Armenian address token, then the channel prefix. A shared vector is the cheapest thing that cannot drift, because it fails on whichever side changed. Both suites MUST assert against this file.",
+  "algorithm": "base64url( 0x01 || insc16 || exp_u32be || hmac16 ), hmac = HMAC-SHA256(secret, first 21 bytes) truncated to 16 bytes",
+  "notes": [
+    "The token is DETERMINISTIC, not random. Random bytes would need a server-side store; the signature IS the binding, which is why no table exists.",
+    "exp is unix MINUTES, big-endian uint32.",
+    "insc16 is the 16 raw bytes of the inscription uuid, with the 'insc-' prefix and the dashes removed.",
+    "The output is base64url with no padding — exactly Telegram's permitted ?start= alphabet (A-Za-z0-9_-). A dotted v1.<id>.<sig> form would be rejected by Telegram."
+  ],
+  "vector": {
+    "secret": "tunnel-test-vector-secret",
+    "inscription": "insc-a012122a-cbfa-4155-84e1-69d0a532c251",
+    "exp_unix_minutes": 29000000,
+    "token": "AaASEirL-kFVhOFp0KUywlEBuoFAu5VhheohbVOrQR6a9rC0kg",
+    "token_length": 50
+  },
+  "must_reject": {
+    "wrong_secret": "a token minted with any other secret",
+    "expired": "exp_unix_minutes <= now",
+    "hand_built": "a token whose id is correct but whose hmac is zeroed — the field is world-readable, so every insc- id is public and forging must require the secret",
+    "wrong_length": "anything that is not exactly 50 base64url chars",
+    "wrong_version": "a leading byte that is not 0x01"
+  }
+}
