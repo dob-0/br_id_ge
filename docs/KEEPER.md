@@ -117,13 +117,13 @@ node ~/di-bo/keeper.mjs
 
 ### The rehearsal tier
 
-A body holds **one** room. `di-bo` keeps prod, and staging's copy of this page
-is retargeted by `sync-space.yml` to `wss://staging.di-studio.xyz/serverXR/mesh`
-— so until 2026-08-05 staging's field sat at `asleep` with nobody on its mesh,
+A body holds **one** room. `di-bo` keeps prod, and the dev tier's copy of this page
+is retargeted by `sync-space.yml` to `wss://dev.diiii.xyz/serverXR/mesh`
+— so until 2026-08-05 the dev tier's field sat at `asleep` with nobody on its mesh,
 and anyone rehearsing there saw the piece with its centre missing.
 
-Unit `di-bo-staging` on the same VPS now keeps that room: standalone
-`keeper.mjs --mesh wss://staging.di-studio.xyz/serverXR/mesh`, logging to
+Unit `di-bo-staging` on the same VPS now keeps that room (the dev tier's): standalone
+`keeper.mjs --mesh wss://dev.diiii.xyz/serverXR/mesh`, logging to
 `/var/log/di-bo-staging.log`. It is deliberately **not** a second `bot.mjs` —
 two would long-poll Telegram with the same token and fight over every update.
 Standalone still answers the visitor, because `startKeeper` publishes
@@ -153,7 +153,7 @@ exists, and it is the only check that has never lied:
 
 ```bash
 node ~/di-bo/check-keeper.mjs                 # prod   — exit 0 kept, 1 silent, 2 mesh down
-node ~/di-bo/check-keeper.mjs --to staging    # staging
+node ~/di-bo/check-keeper.mjs --to staging    # the dev tier (dev.diiii.xyz)
 ```
 
 Four states, all of which must be *looked at*:
@@ -205,7 +205,7 @@ stays live. Bring the tab to the front before believing what it says.
   `MESH_PROTECTED_NODE_PREFIXES` (default `keeper`) unless it proves
   `MESH_ROOM_SECRET` — the room itself stays open, so a visitor still joins with
   no credential. **Armed on both tiers since 2026-08-08** (probed 2026-08-10: a
-  bare `keeper-*` join is refused on prod AND staging while an anonymous visitor
+  bare `keeper-*` join is refused on prod AND dev while an anonymous visitor
   still joins). The robot's own client does not carry the secret yet — until it
   does, jet.di cannot claim the id on an armed relay. To re-check: an unarmed
   relay and an armed one look identical from outside until you try to claim the
@@ -215,7 +215,7 @@ stays live. Bring the tab to the front before believing what it says.
 - **Two answers to one question** — both bodies answering. Should be impossible
   (jet.di's heartbeat mutes di.bo within 15s), and if it happens, one of them is
   not hearing the other's heartbeat: check both are on `room=bridge` and the
-  same tier (prod vs staging).
+  same tier (prod vs dev).
 - **The eye shows an old frame** — only jet.di publishes `keeper:eye`. The field
   drops the frame when the keeper falls asleep, so a stale image means a keeper
   that never went asleep between bodies.

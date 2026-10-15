@@ -27,7 +27,8 @@ const arg = (name, fallback) => {
 const PORT = Number(arg('--port', process.env.PORT || 8899))
 const TO = String(arg('--to', 'staging')).toLowerCase()
 const ORIGINS = {
-  staging: 'https://staging.di-studio.xyz',
+  staging: 'https://dev.diiii.xyz',   // the dev tier; staging.di-studio.xyz is gone (2026-09-16)
+  dev: 'https://dev.diiii.xyz',
   prod: 'https://di-studio.xyz',
   local: 'http://localhost:4000',
 }
@@ -64,9 +65,9 @@ function localize(html) {
   return String(html)
     .replaceAll('https://di-studio.xyz/serverXR', SERVER)
     .replaceAll('wss://di-studio.xyz/serverXR/mesh', MESH)
-    .replaceAll('https://staging.di-studio.xyz/serverXR', SERVER)
+    .replaceAll('https://dev.diiii.xyz/serverXR', SERVER)
     .replaceAll('https://di-studio.xyz/br_id_ge', SPACE)
-    .replaceAll('https://staging.di-studio.xyz/br_id_ge', SPACE)
+    .replaceAll('https://dev.diiii.xyz/br_id_ge', SPACE)
 }
 
 async function sendFile(res, file, { rewrite = false } = {}) {

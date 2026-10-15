@@ -460,7 +460,7 @@ const resolveTarget = async (args) => {
     ...(await loadEnvFile(path.join(ROOT_DIR, '..', 'di.iiii', 'serverXR', '.env.local'))),
   }
   const key = args.prod ? 'PROD' : 'LIVE'
-  const live = (args.to || env[`${key}_API_URL`] || 'https://staging.di-studio.xyz/serverXR').replace(/\/+$/, '')
+  const live = (args.to || env[`${key}_API_URL`] || 'https://dev.diiii.xyz/serverXR').replace(/\/+$/, '')
   const token = args.token || process.env[`${key}_API_TOKEN`] || env[`${key}_API_TOKEN`] || env.API_TOKEN || ''
   return { live, token }
 }

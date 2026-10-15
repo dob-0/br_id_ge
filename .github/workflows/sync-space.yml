@@ -89,7 +89,7 @@ jobs:
 
           # rehearsal first — but never let it hold the live space back
           staging_ok=1
-          sync_tier staging https://staging.di-studio.xyz/serverXR "${STAGING_TOKEN:-}" \
+          sync_tier staging https://dev.diiii.xyz/serverXR "${STAGING_TOKEN:-}" \
             || { staging_ok=0; echo "::warning::staging sync did not complete — prod continues, staging is now behind."; }
 
           sync_tier prod https://di-studio.xyz/serverXR "$PROD_TOKEN"

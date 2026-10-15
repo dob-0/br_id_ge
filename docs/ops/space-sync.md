@@ -30,14 +30,14 @@ list of project manifests that must exist. `di-space.<page>.json` owns one
 | `deviceAccess` | viewer grants a real origin so the camera can open (the rite) |
 
 There is no `live` field any more — the caller names the tier
-(`--tier staging|prod|local` or `--to <url>`), and the engine rewrites
+(`--tier dev|prod|local` or `--to <url>`), and the engine rewrites
 `di-studio.xyz` hosts to the target tier so a staging copy never writes into the
 live field.
 
 ## Run it
 
 ```bash
-node scripts/sync-space.mjs --all --tier staging   # every project, one command
+node scripts/sync-space.mjs --all --tier dev       # every project, one command
 node scripts/sync-space.mjs --audit                # all tiers, read-only, exit 1 on drift
 ```
 

@@ -8,7 +8,7 @@
 <meta property="og:title" content="br_id_ge XR_ Notations:vi.ritual">
 <meta property="og:description" content="A bridge between the real world and a shared digital one. Cross, answer once — your word keeps walking with everyone who crossed.">
 <meta property="og:image" content="https://dob-0.github.io/br_id_ge/assets/hosq-bridge.jpg">
-<meta property="og:url" content="https://di-studio.xyz/br_id_ge">
+<meta property="og:url" content="https://diiii.xyz/br_id_ge">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
    one graphite, one live blue. Print, not glow. */
 :root{
   --paper:#f3f1ec; --ink:#131313; --graphite:#8f8b83; --hairline:#dcd8cf;
-  --live:#1d4bff;
+  --live:#1d4bff; --read:#66625b;
   --arm:'Noto Serif Armenian',Georgia,serif;
   --mono:'Space Mono',ui-monospace,Menlo,monospace;
 }
@@ -27,18 +27,36 @@ html,body{min-height:100%;background:var(--paper)}
 body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
 #frame{position:fixed;inset:10px;border:1px solid var(--hairline);pointer-events:none;z-index:2}
 @media (max-width:560px){#frame{inset:8px}}
+
+/* THE BLACKOUT — moving door→rite→field is one piece, not three page loads.
+   A full-screen veil, painted dark before any of this page's own content, so
+   the door never flashes paper on the way in; it fades up only once fonts
+   have actually loaded. The SAME dark the di.iiii viewer's own LoadingScreen
+   uses (--di-black, #000 — di.iiii/src/styles/base.css) so the cut to that
+   screen (when a cross-scene link is tapped) lands on black already, not on
+   paper. No JS: the noscript rule below removes it, so a reader with no
+   scripting never sits behind a veil nothing will ever lift. */
+#veil{position:fixed;inset:0;z-index:1000;background:#000;opacity:1;
+  pointer-events:none;transition:opacity .8s ease}
+@media (prefers-reduced-motion:reduce){#veil{transition:none}}
 /* the corners belong to the door: they wear the paper (so nothing ever shows
    through them) and yield once the page scrolls past; the frame stays above
    so its line is never erased at a corner */
 .hud{position:fixed;z-index:1;background:var(--paper);
   transition:opacity .5s ease,visibility .5s;
-  font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
   color:var(--graphite);line-height:1.9;padding:1.35rem}
 .hud a{color:inherit;text-decoration:none}
 .hud a:hover{color:var(--ink)}
 #tl{top:0;left:0;color:var(--ink)}
 #tr{top:0;right:0;text-align:right}
-#bl{bottom:0;left:0}
+/* di.iiii is a wordmark, never a corner label — it keeps its own lowercase
+   against .hud's uppercase transform. This was already true before the
+   inframe offset below: the badge's own "di.iiii" text (a different element,
+   outside this document, painted over ours) was what actually showed here;
+   moving #bl clear of it exposed our own copy, which the uppercase rule had
+   been quietly wrong about all along. */
+#bl{bottom:0;left:0;text-transform:lowercase}
 #br{bottom:0;right:0;text-align:right}
 /* The two top corners are ~470px of text between them; below about 470px wide
    they simply run into each other (measured: 91px of overlap at 360). Give each
@@ -46,6 +64,15 @@ body{color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased
 @media (max-width:560px){.hud{padding:1.1rem;font-size:.46rem;letter-spacing:.12em}
   #br{display:none}
   #tl,#tr{max-width:calc(50% - .6rem)}}
+
+/* INSIDE THE di.iiii VIEWER. A published page is a srcdoc iframe with the
+   viewer's own chrome over it: a project-switcher pill top-left and a "Made
+   with di.iiii" badge bottom-left. The door's own "di.iiii" corner sits in
+   that exact spot and printed straight through the badge, on phone and
+   desktop — field.html already steps its own bottom row out of the same
+   corner; the door never did. Same offsets. */
+body.inframe #bl{bottom:2.4rem}
+@media (max-width:560px){body.inframe #bl{bottom:2.9rem}}
 
 /* the door keeps the whole first viewport to itself; everything else waits below */
 main{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
@@ -55,15 +82,16 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   letter-spacing:.06em;line-height:1.1}
 .lat{font-size:.6rem;letter-spacing:.44em;text-transform:lowercase;
   color:var(--graphite);margin-top:.7rem}
-.lede{font-family:var(--arm);font-weight:300;font-size:clamp(1rem,3.2vw,1.25rem);
-  line-height:1.7;color:var(--graphite);margin-top:2.4rem}
+.lede{font-family:var(--arm);font-weight:300;font-size:clamp(1.05rem,3.4vw,1.3rem);
+  line-height:1.7;color:var(--read);margin-top:2.4rem}
 .lede b{font-weight:400;color:var(--ink)}
+/* the one thing to press wears the shape every pressable thing in the piece wears */
 .cross{display:inline-block;margin-top:2.6rem;color:var(--live);text-decoration:none;
-  font-size:.75rem;letter-spacing:.28em;text-transform:lowercase;
-  border-bottom:1px solid var(--hairline);padding-bottom:.35rem;transition:border-color .25s}
+  font-size:.85rem;letter-spacing:.28em;text-transform:lowercase;
+  border:1px solid var(--hairline);border-radius:2px;padding:1rem 1.7rem;min-height:52px;transition:border-color .25s}
 .cross:hover,.cross:focus-visible{border-color:var(--live)}
-.field{display:block;margin-top:1.4rem;color:var(--graphite);text-decoration:none;
-  font-size:.6rem;letter-spacing:.2em;text-transform:lowercase}
+.field{display:block;margin-top:1.6rem;color:var(--read);text-decoration:none;
+  font-size:.72rem;letter-spacing:.2em;text-transform:lowercase}
 .field:hover,.field:focus-visible{color:var(--ink)}
 /* THE PULSE — the field's real number, spoken only when the field answers.
    Height reserved so the door never shifts; the line arrives or it doesn't.
@@ -127,11 +155,101 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
 </head>
 <body>
 
+<div id="veil" aria-hidden="true"></div>
+<noscript><style>#veil{display:none!important}</style></noscript>
+<script>
+// THE COSMOS — how every crossing between door, rite and field moves, the same
+// way on all three pages (this block is copied verbatim into each). A scene is
+// not faded, it is made and unmade the way a universe is: leaving, the page
+// collapses into the point you touched, drawn to the seed and left as one point
+// of light; arriving, the next scene opens out of that same point. The rite's
+// lamp sits exactly on the seed, so the point you collapsed into is the lamp you
+// then touch — and that touch is the bang (COSMOS.bang). The veil is still the
+// blackout's black; the moving edge is a soft mask, never a hard circle, so it
+// reads as light spreading and not as a wipe. Reduced motion: plain cuts.
+(function(){
+  var veil=document.getElementById('veil');
+  var REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SOFT=56;
+  function seedY(){return innerHeight*(innerHeight<600?.28:.42)}
+  function seed(){return [innerWidth/2,seedY()]}
+  function far(x,y){return Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y))+SOFT}
+  function mask(el,x,y,r,soft){
+    var m=r<=0?'none':'radial-gradient(circle at '+x.toFixed(1)+'px '+y.toFixed(1)+'px,transparent '+r.toFixed(1)+'px,#000 '+(r+soft).toFixed(1)+'px)';
+    el.style.webkitMaskImage=m;el.style.maskImage=m;
+  }
+  function tween(ms,ease,step,done){
+    var t0=performance.now();
+    (function f(now){var k=Math.min(1,(now-t0)/ms);step(ease(k));if(k<1)requestAnimationFrame(f);else if(done)done()})(t0);
+  }
+  var inCubic=function(k){return k*k*k};
+  var outCubic=function(k){return 1-Math.pow(1-k,2.2)};
+  var inOut=function(k){return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2};
+  var dot=null,leaving=false,opened=false;
+  function point(on){
+    if(!on){if(dot){dot.remove();dot=null}return}
+    if(dot)return;
+    dot=document.createElement('div');dot.setAttribute('aria-hidden','true');
+    var s=seed();
+    dot.style.cssText='position:fixed;z-index:1001;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;pointer-events:none;left:'+s[0]+'px;top:'+s[1]+'px;transition:transform .25s ease;transform:scale(0)';
+    document.body.appendChild(dot);void dot.offsetHeight;dot.style.transform='scale(1)';
+  }
+  function clear(){if(!veil)return;veil.style.transitionDuration='0s';veil.style.opacity=0;mask(veil,0,0,0,0);point(false)}
+  window.COSMOS={
+    seed:seed,
+    // arriving: the scene opens out of the seed
+    open:function(){
+      opened=true;
+      if(!veil)return;
+      if(REDUCED)return clear();
+      var s=seed(),R=far(s[0],s[1]);
+      veil.style.transitionDuration='0s';veil.style.opacity=1;
+      tween(1300,inOut,function(k){mask(veil,s[0],s[1],k*R,SOFT*(0.4+k))},clear);
+    },
+    // leaving: collapse into the touched point, drawn to the seed; `go` runs on
+    // a timer started in the caller's own click, so the navigation keeps the
+    // click's user activation
+    collapse:function(x,y,go){
+      if(leaving)return;leaving=true;               // a second tap is the same crossing
+      var ms=REDUCED?0:720;
+      setTimeout(go,ms);
+      if(!veil||REDUCED){if(veil){veil.style.transitionDuration='0s';veil.style.opacity=1}return}
+      var s=seed(),R=far(x,y);
+      veil.style.transitionDuration='0s';veil.style.opacity=1;
+      tween(ms-60,inCubic,function(k){
+        mask(veil,x+(s[0]-x)*k,y+(s[1]-y)*k,(1-k)*R,SOFT*(1-k*.8));
+      },function(){mask(veil,0,0,0,0);point(true)});
+    },
+    // the bang: `el` (a dark sheet) opens from its lamp at (x,y) until nothing
+    // of it is left, then `done`
+    // — first the lamp gathers (a breath held), then it goes, fast at birth and
+    // slowing as it spreads, the way an expansion does
+    bang:function(el,x,y,r0,done){
+      if(REDUCED){done();return}
+      var R=far(x,y)+160;
+      setTimeout(function(){
+        tween(2000,outCubic,function(k){mask(el,x,y,r0+k*(R-r0),30+k*130)},done);
+      },280);
+    }
+  };
+  // back/forward cache: a page restored from history is still in the dark it
+  // collapsed into — open it again instead of leaving a black screen
+  addEventListener('pageshow',function(e){if(e.persisted){leaving=false;point(false);window.COSMOS.open()}});
+  // the lift lives in each page's own scene script; if that script never runs
+  // (a CDN that does not answer, WebGL refused) the page would stay black for
+  // good. Whatever happens, the dark opens by itself.
+  setTimeout(function(){if(!opened&&!leaving)window.COSMOS.open()},4500);
+  // the one way out of a srcdoc frame is the top frame; if that is refused, a
+  // new top-level load — never the whole viewer inside this page's own frame
+  window.COSMOS.go=function(href){try{top.location=href}catch(err){window.open(href,'_top')}};
+})();
+</script>
+
 <div id="frame" aria-hidden="true"></div>
 
 <div class="hud" id="tl">br_id_ge · vi.ritual</div>
 <div class="hud" id="tr">notations #2 · rituals · hosq</div>
-<div class="hud" id="bl"><a href="https://di-studio.xyz">di.iiii</a></div>
+<div class="hud" id="bl"><a data-origin href="https://diiii.xyz/" target="_top">di.iiii</a></div>
 <div class="hud" id="br">jul 20 – aug 2 2026 · state philharmonia</div>
 
 <main>
@@ -140,8 +258,8 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <p class="lede">a bridge between the real world and a shared one.
     cross, answer once — <b>who are you, and what do you carry?</b> —
     and what you carry keeps walking with everyone who crossed before you.</p>
-  <a class="cross" href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
-  <a class="field" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
+  <a class="cross" data-scene href="https://di-studio.xyz/br_id_ge/rite" target="_top">cross the bridge →</a>
+  <a class="field" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the field · see who's crossed →</a>
   <p class="pulse" id="pulse"><span class="dot">·</span><b id="pn"></b> <span id="pw">crossings</span> so far</p>
   <a class="down" href="#parts" aria-label="the parts, below">↓</a>
 </main>
@@ -150,19 +268,19 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <section id="parts">
     <h2>the parts</h2>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/rite" target="_top">the rite · vi.ritual →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/rite" target="_top">the rite · vi.ritual →</a>
       <p class="pline">a short rite over a bridge of glowing armenian letters —
         cross, answer, and leave a <b>core</b> in the field.</p>
       <button class="qbtn" id="qt" aria-expanded="false" aria-controls="qq">the two questions</button>
       <p class="qq" id="qq"><span>who are you, and what do you carry?</span></p>
     </div>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the field →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the field →</a>
       <p class="pline">every crossing stands here, permanent — the count on the
         door is this field's, live.</p>
     </div>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/br_id_ge/field" target="_top">the room →</a>
+      <a class="pname" data-scene href="https://di-studio.xyz/br_id_ge/field" target="_top">the room →</a>
       <p class="pline">inside the field the crossed speak, and anyone may ask
         <b>պահապան</b> — the keeper, an ai archivist that holds the record of
         every crossing, and says so itself. tap պահապան in the field to enter.</p>
@@ -172,7 +290,7 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <section id="standing">
     <h2>already standing</h2>
     <div class="part">
-      <a class="pname" href="https://di-studio.xyz/algovrithm" target="_top">algovrithm →</a>
+      <a class="pname" data-origin href="https://diiii.xyz/algovrithm" target="_top">algovrithm →</a>
       <p class="pline">emilya nikoghosyan's work, already part of notations 2 xr.</p>
     </div>
   </section>
@@ -188,6 +306,55 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
   <p class="honest">built openly with ai tools</p>
 </div>
 
+<script>
+// Published pages render inside a srcdoc iframe with the di.iiii viewer's own
+// chrome over them (pill top-left, "Made with di.iiii" badge bottom-left) —
+// see the body.inframe rules above. Same detection as field.html/index.html.
+try{if(window.self!==window.top)document.body.classList.add('inframe')}catch(e){document.body.classList.add('inframe')}
+</script>
+<script>
+// THE BLACKOUT — see the #veil comment above. Same-tier links: every
+// data-scene anchor is rewritten to window.diiPageOrigin (the shell's real
+// origin, handed down because a srcdoc page has no URL of its own) instead
+// of the hardcoded di-studio.xyz literal it ships with — a click on dev now
+// stays on dev.diiii.xyz. A click on one of those anchors fades the veil down
+// and THEN navigates the top frame, in the same handler (not a later tick),
+// so the sandbox's transient user-activation window
+// (allow-top-navigation-by-user-activation) is still open when the delayed
+// navigation actually fires. Modifier/middle clicks and keyboard activation
+// are left alone as ordinary links — only a plain click is intercepted.
+(function(){
+  var veil=document.getElementById('veil');
+  if(!veil)return;
+  var ORIGIN=window.diiPageOrigin||(/^https?:$/.test(location.protocol)?location.origin:'https://diiii.xyz');
+
+  // data-origin links (di.iiii, algovrithm) follow the tier too, without the crossing
+  Array.prototype.forEach.call(document.querySelectorAll('a[data-scene],a[data-origin]'),function(a){
+    try{
+      var u=new URL(a.getAttribute('href'),location.href);
+      a.href=ORIGIN+u.pathname+u.search+u.hash;
+    }catch(e){}
+  });
+
+  // fade up once fonts are actually in — capped so a slow network never
+  // leaves anyone sitting in the dark
+  var fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  var capped=new Promise(function(r){setTimeout(r,2500)});
+  Promise.race([fonts,capped]).then(function(){
+    requestAnimationFrame(function(){requestAnimationFrame(function(){COSMOS.open()})});
+  });
+
+  document.addEventListener('click',function(e){
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    var a=e.target.closest('a[data-scene]');
+    if(!a||!a.href)return;
+    e.preventDefault();
+    var href=a.href;
+    var s=COSMOS.seed(),x=e.detail?e.clientX:s[0],y=e.detail?e.clientY:s[1];
+    COSMOS.collapse(x,y,function(){COSMOS.go(href)});
+  },true);
+})();
+</script>
 <script>
 // The door learns the field's pulse — and says nothing it does not know.
 // Same space, same mesh as field.html; published pages are srcdoc iframes with
@@ -226,7 +393,8 @@ h1{font-family:var(--arm);font-weight:300;font-size:clamp(2.6rem,10vw,4.6rem);
       if(m.type==='mesh:event'&&m.channel==='keeper'){seen=Date.now();face();}};
     ws.onerror=function(){};
     ws.onclose=function(){if(tried++<1)setTimeout(mesh,8000)};   // one retry, then quiet
-    addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}});
+    addEventListener('pagehide',function(){ws.onclose=null;try{ws.close()}catch(e){}},{once:true});
+    addEventListener('pageshow',function(e){if(e.persisted){tried=0;mesh()}},{once:true});
   })();
 })();
 </script>
